@@ -1,0 +1,342 @@
+@import './assets/sass/_colors.css';
+@import './assets/sass/displays';
+@import './assets/sass/css/_paddings.scss';
+@import './assets/sass/css/_typography.css'; 
+@import './assets/sass/css/_resetFontSize.css';
+
+.sections{
+  display: grid;
+  gap: 25px;
+  width: 100%;
+  // height: 80%;
+  background: white;
+  border-radius: 18px 18px 0px 0px;
+  padding: 25px;
+  animation: smooth .5s ease;
+  color: black;
+  // border: #007a5a 1px solid;
+
+  &-container{
+      display: grid;
+      gap: 15px;
+      // height: 80%;
+      // background: #20b556;
+  }
+  &-contain{
+    display: grid;
+    gap: 15px;
+    h2{
+      margin: 25px 0;
+    }
+  }
+  &-grid{
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 15px;
+    
+    @media (max-width: 550px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+}
+// estilos de pantalla términos y condiciones y similares
+.tycsection{
+  display: grid;
+  width: 100%;
+  height: 100%;
+  // border: #007a5a 1px solid;
+  gap: 16px;
+  &-header{
+    padding: 24px;
+    background: white;
+
+    span{
+      letter-spacing: 3px;
+    }
+  }
+  &-rules{
+    display: grid;
+    background: white;
+    padding: 24px;
+    gap: 10px;
+
+    strong{
+      font-weight: 600;
+    }
+  }
+}
+
+
+.legaldocs{
+  display: grid;
+  width: 100%;
+  height: 100%;
+  border: #007a5a 1px solid;
+  gap: 16px;
+  &-header{
+    padding: 24px;
+    background: white;
+
+    span{
+      letter-spacing: 3px;
+    }
+  }
+  &-rules{
+    display: grid;
+    background: white;
+    padding: 24px;
+  }
+}
+// fin estilos de pantalla términos y condiciones y similares
+
+// estilos de pantalla checkout
+.checkout{
+  display: grid;
+  padding: 25px;
+  grid-template-columns: 1fr 30%;
+  @media (max-width: 680px) {
+    grid-template-columns: 1fr;
+  }
+  &-left{
+    display: grid;
+    gap: 10px;
+    &-info{
+      display: flex;
+      justify-content: space-between;
+    }
+    &-img{
+      display: flex;
+      gap: 10px;
+      img{
+        width: 25%;
+      }
+      strong{
+        font-weight: 500;
+      }
+    }
+  }
+  &-right{
+    gap: 10px;
+    display: grid;
+    align-items: start;
+    height: fit-content;
+    &-info{
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+    }
+  }
+}
+// fin estilos de pantalla checkout
+
+// estilos de pantalla comentarios
+.comments{
+  gap: 10px;
+  align-items: start;
+  display: grid;
+  background: white;
+  border-radius: 16px;
+  padding: 25px;
+  height: fit-content;
+
+  @media (max-width: 680px) {
+    padding: 12px;
+    align-items: center;
+  }
+  &-addcomment{
+    display: grid;
+  }
+  &-form{
+    display: grid;
+    // border: #EC3337 1px solid;
+    align-items: center;
+    form{
+      align-items: center;
+      
+      display: grid;
+      grid-template-columns: 7% 1fr 10%;
+      gap: 10px;
+
+      @media (max-width: 680px) {
+        align-items:center;
+        display: grid;
+        grid-template-columns: 1fr;
+      }
+
+      input{
+
+      }
+      textarea{
+        width: 100%;
+        outline: none;
+        border-radius: 10px;
+        border: rgb(211, 208, 208) 1px solid;
+        padding: 10px;
+
+        @media (max-width: 680px) {
+          height: 70px;
+          background: transparent;
+        }
+      }
+      button{
+        height: fit-content;
+        font-size: 12px;
+      }
+    }
+  }
+  &-list{
+    height: 200px;
+    border: rgb(211, 208, 208) 1px solid;
+    border-radius: 10px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+  }
+}
+// fin estilos de pantalla comentarios
+
+
+// estilos de pantalla productos
+.productscreen{
+  display: grid;
+  gap: 25px;
+  width: 100%;
+  // height: 80%;
+  background: white;
+  border-radius: 18px 18px 0px 0px;
+  padding: 25px;
+  animation: smooth .5s ease;
+  display: grid;
+  grid-template-columns: 25% 1fr;
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+  }
+
+  &-showroute{
+    font-size: 16px;
+    font-weight: 500;
+  }
+  &-container{
+    grid-column: 2;
+    display: grid;
+    @media (max-width: 1024px) {
+      grid-template-columns: 1fr;
+      grid-column: 1;
+    }
+}
+  &-features{
+    grid-column: 1;
+    display: grid;
+    width: 100%;
+    height: fit-content;
+    padding: 16px;
+    box-shadow: 
+    rgba(215, 213, 213, 0.607) 1px 1px 3px, 
+    rgba(215, 213, 213, 0.607) -1px -1px 3px;
+    background: #f5f1f1;
+    border-radius: 18px;
+    @media (max-width: 1024px) {
+      display: none;
+    }
+  }
+  &-cards{
+    display: grid;
+    gap: 20px;
+    grid-template-columns: repeat(4, 1fr);
+    
+    @media (max-width: 550px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  &-contain{
+    display: grid;
+    gap: 15px;
+
+  }
+}
+// fin estilos de pantalla productos
+
+/* menu vertical de política de privacidad */
+.verticalmenu{
+display: grid;
+gap: 7px;
+ a{
+  color: black;
+  &:hover{
+    color: #EC3337;
+  }
+ }
+}
+/* fin menu vertical de política de privacidad */
+
+/* estilos de componente checkbox */
+.checkbox {
+  display: block;
+  position: relative;
+  padding-left: 35px;
+  margin-bottom: 25px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 22px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+/* Hide the browser's default checkbox */
+.checkbox input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+/* Create a custom checkbox */
+.checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 25px;
+  width: 25px;
+  border-radius: 6px;
+  background-color: transparent;
+  border: gray 1px solid;
+}
+
+/* On mouse-over, add a grey background color */
+// .checkbox:hover input ~ .checkmark {
+//   background-color: #ccc;
+// }
+
+/* When the checkbox is checked, add a blue background */
+.checkbox input:checked ~ .checkmark {
+  background: linear-gradient(0deg, #007a5a, #007a5a), #20b556;
+}
+
+/* Create the checkmark/indicator (hidden when not checked) */
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+/* Show the checkmark when checked */
+.checkbox input:checked ~ .checkmark:after {
+  display: block;
+}
+
+/* Style the checkmark/indicator */
+.checkbox .checkmark:after {
+  left: 8px;
+  top: 4px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+
+/* fin de estilos de componente checkbox */
