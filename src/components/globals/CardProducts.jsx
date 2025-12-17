@@ -502,7 +502,16 @@ export const CardProducts = ({
             </div>
           )}
           {buyCr && (<div className="productcard-btn">
-            <BaseButton img={true} icon={"wallet"} classs={"button full-outline"} textLabel={true} label={"Comprar"} />
+            <BaseButton 
+              img={true} 
+              icon={"wallet"} 
+              classs={'button primary'} 
+              colorbtn={"var(--bg-primary)"}
+              colortextbtnprimary={"var(--light)"}
+              colorbtnhoverprimary={"var(--bg-primary-tr)"}
+              colortextbtnhoverprimary={"white"}  
+              textLabel={true} 
+              label={"Comprar"} />
           </div>)}
 
           <p className="productcard__p"> {description} </p>

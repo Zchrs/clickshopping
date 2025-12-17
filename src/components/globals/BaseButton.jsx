@@ -2,7 +2,7 @@
 /* eslint-disable react/no-unknown-property */
 /* eslint-disable react/prop-types */
 import { Link } from "react-router-dom";
-import { getImg } from "../../../globalActions";
+import { getFile, getImg } from "../../../globalActions";
 
 import styled from "styled-components";
 
@@ -74,7 +74,7 @@ export const BaseButton = ({
         onSubmit={onSubmit}
         {...(target & { target })}>
         <Link className="button__a" to={link} rel="noopener" target={target}>
-          {img && <img src={getImg("svg", `${icon}`, "svg")} alt="" />}
+          {img && <img src={getFile("svg", `${icon}`, "svg")} alt="" />}
           {svg && (
            <img src={getImg("svg", `${svgIcon}`, "svg")} alt="" />
           )}

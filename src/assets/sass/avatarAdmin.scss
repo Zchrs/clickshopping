@@ -91,7 +91,7 @@
             align-self: center;
             color: rgb(68, 66, 66);
             &:hover{
-                background: #EC3337;
+                background: var(--primary);
                 color: white;
                 img{
                     filter: brightness(500%);
