@@ -24,7 +24,7 @@ export const AdminLayout = () => {
 const LayoutApp = styled.section `
     
     display: grid;
-    background: #EC3337;
+    background: var(--dark);
     min-height: 100vh;
     height: 100%;
     

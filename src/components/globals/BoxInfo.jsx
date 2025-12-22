@@ -87,11 +87,10 @@ export const BoxInfo = (props) => {
               <BaseButton
                 label={t("auth.login")}
                 classs={'button primary'} 
-                textLabel={true} 
-                colorbtn={"var(--secondary)"}
-                colortextbtnprimary={"black"}
+                colorbtn={"var(--primary)"}
+                colortextbtnprimary={"var(--light)"}
                 colorbtnhoverprimary={"var(--bg-primary-tr)"}
-                colortextbtnhoverprimary={""}
+                colortextbtnhoverprimary={"var(--light)"}
                 link={"auth/login"}
               />
             )}

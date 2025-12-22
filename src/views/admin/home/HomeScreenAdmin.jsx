@@ -108,7 +108,16 @@ export const HomeScreenAdmin = () => {
           <Link className="home-a">{t('auth.forgetPass')}</Link>
         </div>
         <div>
-          <BaseButton handleClick={handleLoginAdmin} classs={"button full-outline-white-small"} textLabel={true} label={t('auth.login')}/>
+          <BaseButton 
+          handleClick={handleLoginAdmin} 
+          classs={"button primary"} 
+          colorbtn={"var(--primary)"}
+          colortextbtnprimary={"var(--light)"}
+          colorbtnhoverprimary={"var(--primary-light)"}
+          colortextbtnhoverprimary={"var(--light)"}
+          textLabel={true} 
+          label={t('auth.login')}
+          />
         </div>
       </form>
       <p className="home-p">Control panel V1.0</p>
