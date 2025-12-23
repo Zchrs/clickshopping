@@ -31,6 +31,8 @@ export const HomeScreen = () => {
   const [laptopProducts, setLaptopProducts] = useState([]);
   const ratings = useSelector((state) => state.product.ratings);
   const lang = useSelector((state) => state.langUI.lang);
+  console.log(cellphoneProducts)
+
 
   const fetchProducts = (category) => async (dispatch) => {
     try {
@@ -203,13 +205,13 @@ export const HomeScreen = () => {
                 prodHover={() => handleSetProductClick(itemC)}
                 addToWish={"addwishlist-red"}
                 addTocart={"addcart-red"}
-                img2={`${itemC.image}`}
+                img={itemL.images[0].img_url}
                 sellingsText={true}
                 sellings={t("globals.sellings")}
                 priceText={true}
                 price={itemC.price}
                 productInfo={itemC}
-                jpg2="true"
+                jpg="true"
                 description={itemC.description}
                 beforePrice={itemC.previousPrice}
                 title={itemC.title}
@@ -239,17 +241,16 @@ export const HomeScreen = () => {
                 prodHover={() => handleSetProductClick(itemCl)}
                 addToWish={"addwishlist-red"}
                 addTocart={"addcart-red"}
-                img2={itemCl.images && itemCl.images.length > 0 ? itemCl.images[1].img_url : ''}
+                img={itemCl.images && itemCl.images.length > 0 ? itemCl.images[1].img_url : ''}
                 sellingsText={true}
                 sellings={t("globals.sellings")}
                 priceText={true}
                 price={itemCl.price}
                 productInfo={itemCl}
-                jpg2="true"
+                jpg="true"
                 description={itemCl.description}
                 beforePrice={itemCl.previousPrice}
-                title={itemCl.title}
-                thumbnails={itemCl.thumbnails}
+                title={itemCl.name}
                 category={"Celulares"}
                 ratingss={true}
                 ratings={ratings}

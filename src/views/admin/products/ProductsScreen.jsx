@@ -61,7 +61,7 @@ const ScreenProducts = styled.section`
         margin-bottom: 0;
         list-style: none;
         width: fit-content;
-        border-bottom: #ec333621 1px solid;
+        border-bottom: var(--primary-light) 1px solid;
         
     }
 
@@ -71,14 +71,13 @@ const ScreenProducts = styled.section`
         color: black;
         text-decoration: none;
         background: white;
-        border: #ec333621 1px solid;
+        border: var(--primary-light) 1px solid;
         transition: all ease .5s;
         border-radius: 8px 8px 0 0;
    
         &:hover {
-            background: #EC3337;
+            background: var(--primary);
             color: white;
-            border: #EC3337 1px solid;
             transform: scale(1.05);
             
         }
@@ -86,9 +85,9 @@ const ScreenProducts = styled.section`
     }
 
     .nav-tabs .nav-link.active {
-        background: #EC3337;
+        background: var(--primary);
         color: white;
-        border: #EC3337 1px solid;
+        border-bottom: var(--primary) 1px solid;
         border-radius: 8px 8px 0 0;
     }
     

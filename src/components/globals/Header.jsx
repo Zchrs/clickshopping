@@ -71,7 +71,7 @@ export const Header = () => {
   
   return (
     <div className="head">
-      <div className={menuFixed ? 'head-top' : 'head-top'} >
+      <div className={menuFixed ? 'head-top' : 'head-hidden'} >
         <div className="head-logo">
           <img src={getFile('svg', 'logo', 'svg')} alt="Logo" />
         </div>

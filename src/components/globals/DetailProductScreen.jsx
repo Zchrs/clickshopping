@@ -213,7 +213,6 @@ export const DetailProductScreen = ({
           <div className="detailproduct-contain">
             <div id='swiper-container'>
                 <Slider />
-      
             </div>
           </div>
           <div className="detailproduct-contain scroll">
@@ -255,7 +254,11 @@ export const DetailProductScreen = ({
               </p>
               <div className="detailproduct-contain-btns">
                   <BaseButton
-                  classs={"button full-red"}
+                          classs={'button primary'} 
+        colorbtn={"var(--danger)"}
+        colortextbtnprimary={"var(--light)"}
+        colorbtnhoverprimary={"var(--bg-primary-tr)"}
+        colortextbtnhoverprimary={"var(--light)"}
                   img={true}
                   icon={"whatsapp-grey"}
                   handleClick={handleCheckoutClick}
@@ -267,7 +270,11 @@ export const DetailProductScreen = ({
                     img={true} 
                     icon={"addcart-red"} 
                     textLabel={true} 
-                    classs={"button full-outline"} 
+                            classs={'button primary'} 
+        colorbtn={"var(--primary)"}
+        colortextbtnprimary={"var(--light)"}
+        colorbtnhoverprimary={"var(--bg-primary-tr)"}
+        colortextbtnhoverprimary={"var(--light)"}
                     label={"Agregar al carrito"}
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave} 
@@ -278,14 +285,22 @@ export const DetailProductScreen = ({
                   <BaseButton 
                     img={true} 
                     icon={"share-red"} 
-                    classs={"button full-black"} 
+                            classs={'button primary'} 
+        colorbtn={"var(--success)"}
+        colortextbtnprimary={"var(--light)"}
+        colorbtnhoverprimary={"var(--bg-primary-tr)"}
+        colortextbtnhoverprimary={"var(--light)"}
                     textLabel={true} 
                     label={"Compartir"} 
                   />
                   <BaseButton 
                     img={true} 
                     icon={"addwishlist"} 
-                    classs={"button short-black"}
+                            classs={'button primary'} 
+        colorbtn={"var(--dark)"}
+        colortextbtnprimary={"var(--light)"}
+        colorbtnhoverprimary={"var(--bg-primary-tr)"}
+        colortextbtnhoverprimary={"var(--light)"}
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
                     handleClick={handleAddToWishList}

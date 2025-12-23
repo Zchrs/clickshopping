@@ -208,7 +208,17 @@ export const CreateProduct = () => {
             {errors.image && <p className="warnings-form">{errors.image}</p>}
         </div>
         <div>
-        <BaseButton disabled={!isFormComplete} handleClick={handleSubmitProduct} classs={"button little-red"} textLabel={true} label={"Añadir producto"}/>
+        <BaseButton 
+        disabled={!isFormComplete} 
+        handleClick={handleSubmitProduct} 
+        classs={'button primary'} 
+        colorbtn={"var(--primary)"}
+        colortextbtnprimary={"var(--light)"}
+        colorbtnhoverprimary={"var(--bg-primary-tr)"}
+        colortextbtnhoverprimary={"var(--light)"}
+        textLabel={true} 
+        label={"Añadir producto"}
+        />
         </div>
       </form>
     </ProductUpload>
