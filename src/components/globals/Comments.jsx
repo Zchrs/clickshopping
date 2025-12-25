@@ -3,6 +3,8 @@ import { useState } from 'react';
 import { Avatar } from './Avatar';
 import { BaseButton } from './BaseButton';
 import { useTranslation } from 'react-i18next'; 
+import axios from 'axios';
+// import { useSelector } from 'react-redux';
 const Comment = ({ name, content }) => {
   return (
     <div className="comments-addcomment">
@@ -12,16 +14,36 @@ const Comment = ({ name, content }) => {
   );
 };
 
-const CommentForm = ({ addComment }) => {
-  const [name, setName] = useState('');
+const CommentForm = ({ addComment, productId, names }) => {
   const [content, setContent] = useState('');
-  const { t } = useTranslation(); 
-  const handleSubmit = (e) => {
+  // const user = useSelector((state) => state.auth.user);
+  // const names = user.name + ' ' + user.lastname;
+  
+  const { t } = useTranslation();
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!name || !content) return;
-    addComment({ name, content });
-    setName('');
-    setContent('');
+
+    if (!content) return;
+
+    try {
+      const { data } = await axios.post(
+        import.meta.env.VITE_APP_API_POST_PRODUCTS_COMMENT,
+        {
+          user_id: names,
+          product_id: productId,
+          comment: content,
+        }
+      );
+
+      addComment(data);
+      setContent('');
+    } catch (error) {
+      console.error(
+        'Error al guardar el comentario:',
+        error.response?.data || error.message
+      );
+    }
   };
 
   return (
@@ -36,6 +58,7 @@ const CommentForm = ({ addComment }) => {
             onChange={(e) => setContent(e.target.value)}
           ></textarea>
           <BaseButton 
+          handleclick={handleSubmit}
           textLabel={true} 
           label={t('globals.commentBtn')} 
           classs={'button primary'} 

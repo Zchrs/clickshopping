@@ -29,9 +29,10 @@ export const HomeScreen = () => {
   const [cellphoneProducts, setCellphoneProducts] = useState([]);
   const [clothingProducts, setClothingProducts] = useState([]);
   const [laptopProducts, setLaptopProducts] = useState([]);
+  
   const ratings = useSelector((state) => state.product.ratings);
   const lang = useSelector((state) => state.langUI.lang);
-  console.log(cellphoneProducts)
+
 
 
   const fetchProducts = (category) => async (dispatch) => {
@@ -85,7 +86,7 @@ export const HomeScreen = () => {
 
   useEffect(() => {
     dispatch(fetchProducts("Celulares")).then((prods) => setCellphoneProducts(prods));
-    dispatch(fetchProducts("ropa para niños")).then((prods) => setClothingProducts(prods));
+    dispatch(fetchProducts("Accesorios")).then((prods) => setClothingProducts(prods));
     dispatch(fetchProducts("portatiles")).then((prods) => setLaptopProducts(prods));
   }, [dispatch]);
   
