@@ -21,9 +21,6 @@ import { selectedProduct, setProduct } from "../../actions/productActions";
 export const HomeScreen = () => {
   const dispatch = useDispatch();
   const { t, i18n } = useTranslation();
-  const laptopsShow = laptops.slice(0, 5);
-  const mobile = mobilePhones.slice(0, 5);
-  const grains = alimentsGrains.slice(0, 5);
   const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState([]);
   const [cellphoneProducts, setCellphoneProducts] = useState([]);
