@@ -30,7 +30,7 @@ try {
     }
 
     // Directorio de subida en Hostinger
-    $uploadDir = '/home/u100171750/domains/ultrasystem.shop/public_html/uploads/';
+    $uploadDir = '/home/u100171750/domains/ultrasystem.shop/public_html/public/';
     if (!is_dir($uploadDir)) {
         if (!mkdir($uploadDir, 0755, true)) {
             throw new Exception('No se pudo crear el directorio de destino', 500);
@@ -77,7 +77,7 @@ try {
             throw new Exception("Error al guardar el archivo: $fileName", 500);
         }
 
-        $uploadedFiles[] = 'https://ultrasystem.shop/uploads/' . $newFilename;
+        $uploadedFiles[] = 'https://ultrasystem.shop/public/' . $newFilename;
     }
 
     $response = [
@@ -90,7 +90,7 @@ try {
     // Eliminar archivos subidos parcialmente en caso de error
     if (!empty($uploadedFiles)) {
         foreach ($uploadedFiles as $fileUrl) {
-            $filePath = str_replace('https://ultrasystem.shop/uploads/', $uploadDir, $fileUrl);
+            $filePath = str_replace('https://ultrasystem.shop/public/', $uploadDir, $fileUrl);
             if (file_exists($filePath)) {
                 unlink($filePath);
             }

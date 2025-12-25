@@ -62,7 +62,7 @@ try {
     }
 
     // 6. Crear directorio de subida si no existe
-    $uploadDir = '/home/u100171750/domains/ultrasystem.shop/public_html/uploads/';
+    $uploadDir = '/home/u100171750/domains/ultrasystem.shop/public_html/public/';
     if (!is_dir($uploadDir)) {
         if (!mkdir($uploadDir, 0755, true)) {
             file_put_contents($logFile, "[ERROR] No se pudo crear el directorio: $uploadDir\n", FILE_APPEND);
@@ -82,7 +82,7 @@ try {
     }
 
     // 8. Construir URL de respuesta
-    $imageUrl = 'https://ultrasystem.shop/uploads/' . $filename;
+    $imageUrl = 'https://ultrasystem.shop/public/' . $filename;
     $response = [
         'success' => true,
         'imageUrl' => $imageUrl,
