@@ -152,7 +152,14 @@ export const RulesRouter = () => {
 };
 
 // router admin
+
+
+
 export const AdminRouter = () => {
+    const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(startCheckingAdmin());
+  }, [dispatch]);
 
   return (
     <>

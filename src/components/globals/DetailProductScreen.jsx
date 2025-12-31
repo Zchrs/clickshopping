@@ -11,7 +11,7 @@ import Swal from 'sweetalert2';
 import styled from 'styled-components';
 import { useEffect } from 'react';
 import { clearProduct, selectedProduct } from '../../actions/productActions';
-import { initialAddCartForm, useForm } from '../../hooks/useForm';
+import { initialForm, useForm } from '../../hooks/useForm';
 
 export const DetailProductScreen = ({
   user_id, 
@@ -81,7 +81,7 @@ export const DetailProductScreen = ({
     handleSubmitAddCart,
     handleSubmitAddWishlist,
     setFormCart
-  } = useForm(initialAddCartForm, dataFormErrors);
+  } = useForm(initialForm, dataFormErrors);
 
 
   const handleSetProductInfo = () => {
@@ -104,7 +104,7 @@ export const DetailProductScreen = ({
     // console.log(productHover, 'producto quitado')
     dispatch(clearProduct(productHover));
     localStorage.removeItem("productHover", productHover);
-    setFormCart(initialAddCartForm);
+    setFormCart(initialForm);
   };
 
 

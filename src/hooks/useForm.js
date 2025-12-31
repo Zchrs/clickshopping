@@ -172,6 +172,22 @@ export const useForm = (initialForm, validateForm) => {
     });
   };
 
+    const handleSetImages = (imageUrls) => {
+    setForm({
+      ...form,
+      img_url: imageUrls,
+    });
+  };
+
+    const handleImagesChange = (e) => {
+    const files = Array.from(e.target.files);
+    const imgUrls = files.map((file) => URL.createObjectURL(file));
+    setForm((form) => ({
+      ...form,
+      img_url: imgUrls, // Guardar las URLs de las imágenes
+    }));
+  };
+
   // formularios y estados del producto
   const handleChangeProduct = (e) => {
     const { name, value } = e.target;
@@ -815,6 +831,8 @@ export const useForm = (initialForm, validateForm) => {
     handleSubmitAddCart,
     handleSubmitProduct,
     handleSetImage,
+    handleSetImages,
+    handleImagesChange,
     handleChecked,
     loadingActive,
     handleChange,

@@ -1,238 +1,539 @@
-/* eslint-disable no-undef */
-/* eslint-disable no-unused-vars */
-import React from 'react'
-import jsxRuntime from 'react/jsx-runtime';
-import { useTranslation } from 'react-i18next';
+import { useRef } from "react";
 
-// export const validationsForm = (form, props) => {
+export const useValidations = () => {
+  // Definición de todas las refs necesarias
+  const formRefs = {
+    country: useRef(null),
+    title: useRef(null),
+    name: useRef(null),
+    fullname: useRef(null),
+    nameManager: useRef(null),
+    codeAccess: useRef(null),
+    idNumberManager: useRef(null),
+    lastname: useRef(null),
+    typeDoc: useRef(null),
+    dnaId: useRef(null),
+    docIdManager: useRef(null),
+    expDate: useRef(null),
+    state: useRef(null),
+    city: useRef(null),
+    address: useRef(null),
+    message: useRef(null),
+    phone: useRef(null),
+    area: useRef(null),
+    phoneManager: useRef(null),
+    email: useRef(null),
+    emailManager: useRef(null),
+    pass: useRef(null),
+    password: useRef(null),
+    rePassword: useRef(null),
+    price: useRef(null),
+    district: useRef(null),
+    category: useRef(null),
+    furnished: useRef(null),
+    admon: useRef(null),
+    role: useRef(null),
+    description: useRef(null),
+    bedRoom: useRef(null),
+    bathRoom: useRef(null),
+    diningRoom: useRef(null),
+    closets: useRef(null),
+    kitchen: useRef(null),
+    floor: useRef(null),
+    parking: useRef(null),
+    stratum: useRef(null),
+    clothing: useRef(null),
+    action: useRef(null),
+    image: useRef(null),
+    img_url: useRef(null),
+    user_id: useRef(null),
+    property_id: useRef(null),
+    quantity: useRef(null),
+    verifyCode: useRef(null)
+  };
+  
 
-//   const { t } = useTranslation();
-  
-//     let errors = {};
-//     let regexName = /^[A-Za-zÑñÁáÉéÍíÓóÚúÜü\s]+$/;
-//     let regexEmail = /^(\w+[/./-]?){1,}@[a-z]+[/.]\w{2,}$/;
-//     let regexPass = /^@[A-Za-zÑñÁáÉéÍíÓóÚúÜü\s]+$/;
-//     let regexMessage = /^.{1,300}$/;
-//     let regexPhone = /^\+[0-9]{1,3}\s?[0-9]{10}$/;
-//     let name = document.getElementById("name");
-//     let lastName = document.getElementById("lastname");
-//     let country = document.getElementById("country");
-//     // console.log(country)
-//     let email = document.getElementById("email");
-//     let phone = document.getElementById("phone");
-//     let message = document.getElementById("message");
-//     let pass = document.getElementById("password");
-//     let repass = document.getElementById("repassword");
-  
-//     if (!form.name) {
-//       name.style.cssText = "border: red 1px solid;";
-//       errors.name = "Field name is required";
-//     } else if (!regexName.test(form.name.trim())) {
-//       errors.name = "Name field have must only letters";
-//     } else {
-//       name.style.cssText = "border: #34B0BE 1px solid;; color: red;";
-//     }
-  
-//     if (!form.lastname) {
-//       lastName.style.cssText = "border: red 1px solid";
-//       errors.lastname = "Field last name is required";
-//     } else if (!regexName.test(form.lastname.trim())) {
-//       errors.lastname = "Last name field have must only letters; color: red;";
-//     } else {
-//       lastName.style.cssText = "border: #34B0BE 1px solid;";
-//     }
-  
-//     if (!form.email) {
-//       email.style.cssText = "border: red 1px solid";
-//       errors.email = "Field email is required";
-//     } else if (!regexEmail.test(form.email.trim())) {
-//       errors.email = "Email incorrect";
-//     } else {
-//       email.style.cssText = "border: #34B0BE 1px solid; color: red;";
-//     }
-  
-//     // if (!form.phone) {
-//     //   phone.style.cssText = "border: red 1px solid";
-//     //   errors.phone = "Field phone are required";
-//     // } else if (!regexPhone.test(form.phone.trim())) {
-//     //   errors.phone = "Phone field have must only numbers";
-//     // } else if (phone.value.length <= '12') {
-//     //   errors.phone = "Phone format incorrect";
-//     // }else {
-//     //   phone.style.cssText = "border: #34B0BE 1px solid;";
-//     // }
-  
-  
-//     if (!form.country) {
-//       country.style.cssText = "border: red 1px solid";
-//       errors.country = "Field country is required";
-//     } else {
-//       country.style.cssText = "border: #34B0BE 1px solid;";
-//     }
-  
-  
-//     if (!form.pass ) {
-//       pass.style.cssText = "border: red 1px solid";
-//       errors.pass = "Password is required";
-      
-//     } else if (!regexPass.test(form.pass.trim())) {
-//       errors.pass = "pass field have must letters and numbers";
-//     } else {
-//       pass.style.cssText = "border: #34B0BE 1px solid;";
-//     }
-  
-//     // if (!form.repass ) {
-//     //   repass.style.cssText = "border: red 1px solid";
-      
-//     // } else if (!regexPass.test(form.pass.trim())) {
-//     //   errors.repass = "pass field have must letters and numbers";
-//     // } else {
-//     //   repass.style.cssText = "border: #34B0BE 1px solid;";
-//     // }
-  
-//     // if (pass.value !== repass.value) {
-//     //   repass.style.cssText = "border: red 1px solid";
-//     //   pass.style.cssText = "border: red 1px solid";
-//     //   errors.pass = "Passwords no matches"
-//     // }else if (pass.value === '' && repass.value === '') {
-//     //   repass.style.cssText = "border: red 1px solid";
-//     //   pass.style.cssText = "border: red 1px solid";
-//     //   errors.pass = "Pass pass are required";
-//     //   errors.repass = "Please confirm repass";
-//     // } else if (pass.value.length <= '6') {
-//     //   errors.pass = "Password must contain 7 or more characters";
-//     // }
-//     // else {
-//     //   pass.style.cssText = "border: #34B0BE 1px solid;";
-//     //   repass.style.cssText = "border: #34B0BE 1px solid;";
-//     // }
-  
-//     // if (!form.message) {
-//     //   message.style.cssText = "border: red 1px solid";
-//     //   errors.message = "Field message are required";
-//     // } else if (!regexMessage.test(form.message.trim())) {
-//     //   errors.message = "Limit characters exceded 300 max";
-//     // } else {
-//     //   message.style.cssText = "border: #34B0BE 1px solid;";
-//     // }
-  
-//     return errors;
-//   };
-
-
-  
-export const ValidationsForm = ({ form }) => {
+  const validateForm = (form) => {
+    let errors = {};
     
-  const { t } = useTranslation();
-  
+    // Expresiones regulares para validaciones
+    const regexName = /^[A-Za-zÑñÁáÉéÍíÓóÚúÜü\s]+$/;
+    const regexEmail = /^(\w+[/./-]?){1,}@[a-z]+[/.]\w{2,}$/;
+    const regexPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&]+$/;
+    const regexPrice = /^\d+(\.\d{1,2})?$/;
+    const regexOnlyNumbers = /^\d{6}$/;
+    const regexPhone = /^\+?[\d\s-]{8,20}$/;
+
+    
+
+    // Función helper para manejar estilos de error
+    const setFieldErrorStyle = (fieldName, hasError) => {
+      const fieldRef = formRefs[fieldName]?.current;
+    
+      if (!fieldRef || !fieldRef.style) {
+        // console.warn(`Ref inválida o aún no montada para: ${fieldName}`);
+        return;
+      }
+    
+      fieldRef.style.cssText = hasError
+        ? "border: 1px solid red; border-radius: 10px;"
+        : "border: 1px solid #34B0BE; border-radius: 10px;";
+    };
+
+    // Validación para cada campo
+    const validateField = (fieldName, value, validationFn, errorMessage) => {
+      if (!value) {
+        setFieldErrorStyle(fieldName, true);
+        return errorMessage.required;
+      }
+      
+      if (validationFn && !validationFn(value)) {
+        setFieldErrorStyle(fieldName, true);
+        return errorMessage.invalid;
+      }
+      
+      setFieldErrorStyle(fieldName, false);
+      return null;
+    };
+
+    // Validaciones específicas
+    errors.country = validateField('country', form.country, null, {
+      required: "Debes seleccionar el país"
+    });
+
+    errors.name = validateField('name', form.name, 
+      (val) => regexName.test(val.trim()), {
+        required: "Debes ingresar el nombre",
+        invalid: "El nombre debe tener solo letras"
+      }
+    );
+
+    errors.title = validateField('title', form.title, 
+      (val) => regexName.test(val.trim()), {
+        required: "Debes ingresar el nombre",
+        invalid: "El nombre debe tener solo letras"
+      }
+    );
+
+    errors.role = validateField('role', form.role, 
+      (val) => regexName.test(val.trim()), {
+        required: "Debes ingresar una opción",
+        invalid: "El nombre debe tener solo letras"
+      }
+    );
+
+    errors.fullname = validateField('fullname', form.fullname, 
+      (val) => regexName.test(val.trim()), {
+        required: "Debes ingresar el nombre completo",
+        invalid: "El nombre debe tener solo letras"
+      }
+    );
+    errors.nameManager = validateField('nameManager', form.nameManager, 
+      (val) => regexName.test(val.trim()), {
+        required: "Debes ingresar el nombre",
+        invalid: "El nombre debe tener solo letras"
+      }
+    );
+
+    errors.lastname = validateField('lastname', form.lastname, 
+      (val) => regexName.test(val.trim()), {
+        required: "Debes ingresar el apellido",
+        invalid: "El apellido debe tener solo letras"
+      }
+    );
+    errors.message = validateField('message', form.message, 
+      (val) => regexName.test(val.trim()), {
+        required: "Debes ingresar los datos a corregor",
+        invalid: "Solo se aceptan letras"
+      }
+    );
+
+    errors.typeDoc = validateField('typeDoc', form.typeDoc, null, {
+      required: "Debes seleccionar el tipo de documento"
+    });
+
+    errors.dnaId = validateField('dnaId', form.dnaId, 
+      (val) => val.length >= 6, {
+        required: "Número de documento requerido",
+        invalid: "Formato de documento incorrecto"
+      }
+    );
+
+    errors.docIdManager = validateField('docIdManager', form.docIdManager, 
+      (val) => val.length >= 6, {
+        required: "Número de documento requerido",
+        invalid: "Formato de documento incorrecto"
+      }
+    );
+
+    errors.area = validateField('area', form.area, 
+      (val) => val.length >= 2, {
+        required: "Número de documento requerido",
+        invalid: "Formato de documento incorrecto"
+      }
+    );
+
+    errors.expDate = validateField('expDate', form.expDate, 
+      (val) => val.length >= 6, {
+        required: "Fecha de expedición requerida",
+        invalid: "Fecha de expedición incorrecta"
+      }
+    );
+
+    errors.state = validateField('state', form.state, null, {
+      required: "Debes seleccionar un departamento"
+    });
+
+    errors.city = validateField('city', form.city, null, {
+      required: "Debes seleccionar una ciudad"
+    });
+
+    errors.address = validateField('address', form.address, null, {
+      required: "Debes ingresar la dirección"
+    });
+
+    errors.phone = validateField('phone', form.phone, 
+      (val) => regexPhone.test(val.trim()) && val.trim().length > 11, {
+        required: "Teléfono requerido",
+        invalid: "Formato de teléfono incorrecto"
+      }
+    );
+    
+    errors.phoneManager = validateField('phoneManager', form.phoneManager, 
+      (val) => regexPhone.test(val.trim()) && val.trim().length > 11, {
+        required: "Teléfono requerido",
+        invalid: "Formato de teléfono incorrecto"
+      }
+    );
+
+    errors.email = validateField('email', form.email, 
+      (val) => regexEmail.test(val.trim()), {
+        required: "Correo electrónico requerido",
+        invalid: "Formato de correo incorrecto"
+      }
+    );
+
+    errors.emailManager = validateField('emailManager', form.emailManager, 
+      (val) => regexEmail.test(val.trim()), {
+        required: "Correo electrónico requerido",
+        invalid: "Formato de correo incorrecto"
+      }
+    );
+
+    errors.codeAccess = validateField('codeAccess', form.codeAccess, 
+      (val) => val.length > 6 && (val.trim()), {
+        required: "Código de acceso requerido",
+        invalid: "La contraseña debe tener al menos 6 caracteres con letras, números y símbolos"
+      }
+    );
+
+    errors.verifyCode = validateField('verifyCode', form.verifyCode, 
+      (val) => val.length > 5 && regexOnlyNumbers.test(val.trim()), {
+        required: "Código de acceso requerido",
+        invalid: "Código de acceso incorrecto"
+      }
+    );
+
+    errors.pass = validateField('pass', form.pass, 
+      (val) => val.length > 6 && regexPassword.test(val.trim()), {
+        required: "Contraseña requerida",
+        invalid: "La contraseña debe tener al menos 6 caracteres con letras, números y símbolos"
+      }
+    );
+    errors.password = validateField('password', form.password, 
+      (val) => val.length > 6 && regexPassword.test(val.trim()), {
+        required: "Contraseña requerida",
+        invalid: "La contraseña debe tener al menos 6 caracteres con letras, números y símbolos"
+      }
+    );
+    errors.rePassword = validateField('rePassword', form.rePassword, 
+      (val) => val.length > 6 && regexPassword.test(val.trim()), {
+        required: "Contraseña requerida",
+        invalid: "La contraseña debe tener al menos 6 caracteres con letras, números y símbolos"
+      }
+    );
+
+    // Validaciones para propiedades (si es necesario)
+    errors.price = validateField('price', form.price, 
+      (val) => regexPrice.test(val.trim()), {
+        required: "Precio requerido",
+        invalid: "Formato de precio incorrecto"
+      }
+    );
+
+    errors.district = validateField('district', form.district, null, {
+      required: "Debes seleccionar el barrio"
+    });
+
+    errors.category = validateField('category', form.category, null, {
+      required: "Debes agregar una categoría"
+    });
+
+    errors.furnished = validateField('furnished', form.furnished, null, {
+      required: "Debes especificar si el inmueble es amoblado"
+    });
+    
+    errors.admon = validateField('admon', form.admon, null, {
+      required: "Debes especificar si el inmueble incluye administración"
+    }); 
+
+    errors.description = validateField('description', form.description, null, {
+      required: "Debes añadir una descripción"
+    });
+
+    errors.bedRoom = validateField('bedRoom', form.bedRoom, null, {
+      required: "Debes seleccionar el número de habitaciones"
+    });
+
+    errors.bathRoom = validateField('bathRoom', form.bathRoom, null, {
+      required: "Debes seleccionar el número de baños"
+    });
+
+    errors.diningRoom = validateField('diningRoom', form.diningRoom, null, {
+      required: "Debes seleccionar el número sala comedores comer"
+    });
+
+    errors.closets = validateField('closets', form.closets, null, {
+      required: "Debes seleccionar el número de closets"
+    });
+
+    errors.kitchen = validateField('kitchen', form.kitchen, null, {
+      required: "Debes seleccionar el tipo de cocina"
+    });
+
+    errors.floor = validateField('floor', form.floor, null, {
+      required: "Debes seleccionar el tipo de piso"
+    });
+
+    errors.parking = validateField('parking', form.parking, null, {
+      required: "Debes seleccionar si hay parqueadero"
+    });
+
+    errors.stratum = validateField('stratum', form.stratum, null, {
+      required: "Debes seleccionar el estrato"
+    });
+
+    errors.clothing = validateField('clothing', form.clothing, null, {
+      required: "Debes seleccionar si tiene zona de lavado ropa"
+    });
+
+    errors.action = validateField('action', form.action, null, {
+      required: "Debes seleccionar una acción"
+    });     
+
+    // Elimina los errores nulos para tener un objeto limpio
+    Object.keys(errors).forEach(key => {
+      if (errors[key] === null) {
+        delete errors[key];
+      }
+    });
+
+    return errors;
+  };
+
+  const validateFormListPropertyClient = (form) => {
   let errors = {};
-  let regexName = /^[A-Za-zÑñÁáÉéÍíÓóÚúÜü\s]+$/;
-  let regexEmail = /^(\w+[/./-]?){1,}@[a-z]+[/.]\w{2,}$/;
-  let regexPass = /^@[A-Za-zÑñÁáÉéÍíÓóÚúÜü\s]+$/;
-  let regexMessage = /^.{1,300}$/;
-  let regexPhone = /^\+[0-9]{1,3}\s?[0-9]{10}$/;
-  // let name = document.getElementById("name");
-  // let lastName = document.getElementById("lastname");
-  // let country = document.getElementById("country");
-  // console.log(country)
-  const name = React.useRef(null);
-  const lastName = React.useRef(null);
-  const email = React.useRef(null);
-  const country = React.useRef(null);
-  const pass = React.useRef(null);
 
-  if (!form.name) {
-    name.style.cssText = "border: red 1px solid;";
-    errors.name = t('auth.fieldName');
-  } else if (!regexName.test(form.name.trim())) {
-    errors.name = "Name field have must only letters";
-  } else {
-    name.style.cssText = "border: #34B0BE 1px solid;; color: red;";
+  // Expresiones regulares
+  const regexName = /^[A-Za-zÑñÁáÉéÍíÓóÚúÜü\s]+$/;
+  const regexEmail = /^(\w+[/./-]?){1,}@[a-z]+[/.]\w{2,}$/;
+  const regexPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&]+$/;
+  const regexPrice = /^\d+(\.\d{1,2})?$/;
+  const regexPhone = /^\+?[\d\s-]{8,20}$/;
+
+  const setFieldErrorStyle = (fieldName, hasError) => {
+    const fieldRef = formRefs[fieldName]?.current;
+    if (!fieldRef || !fieldRef.style) return;
+
+    fieldRef.style.cssText = hasError
+      ? "border: 1px solid red; border-radius: 10px;"
+      : "border: 1px solid #34B0BE; border-radius: 10px;";
+  };
+
+  const validateField = (fieldName, value, validationFn, errorMessage) => {
+    if (!value) {
+      setFieldErrorStyle(fieldName, true);
+      return errorMessage.required;
+    }
+
+    if (validationFn && !validationFn(value)) {
+      setFieldErrorStyle(fieldName, true);
+      return errorMessage.invalid;
+    }
+
+    setFieldErrorStyle(fieldName, false);
+    return null;
+  };
+
+  // Validaciones solo si el campo existe en el objeto form:
+  if ('country' in form) {
+    errors.country = validateField('country', form.country, null, {
+      required: "Debes seleccionar el país"
+    });
+  }
+  if ('role' in form) {
+    errors.role = validateField('role', form.role, null, {
+      required: "Debes seleccionar una opción"
+    });
   }
 
-  if (!form.lastname) {
-    lastName.style.cssText = "border: red 1px solid";
-    errors.lastname = t('auth.fieldLastName');
-  } else if (!regexName.test(form.lastname.trim())) {
-    errors.lastname = "Last name field have must only letters; color: red;";
-  } else {
-    lastName.style.cssText = "border: #34B0BE 1px solid;";
+  if ('name' in form) {
+    errors.name = validateField('name', form.name, val => regexName.test(val.trim()), {
+      required: "Debes ingresar el nombre",
+      invalid: "El nombre debe tener solo letras"
+    });
   }
 
-  if (!form.email) {
-    email.style.cssText = "border: red 1px solid";
-    errors.email = t('auth.fieldEmail');
-  } else if (!regexEmail.test(form.email.trim())) {
-    errors.email = "Email incorrect";
-  } else {
-    email.style.cssText = "border: #34B0BE 1px solid; color: red;";
+  if ('title' in form) {
+    errors.title = validateField('title', form.title, val => regexName.test(val.trim()), {
+      required: "Debes ingresar el nombre",
+      invalid: "El nombre debe tener solo letras"
+    });
   }
 
-  // if (!form.phone) {
-  //   phone.style.cssText = "border: red 1px solid";
-  //   errors.phone = "Field phone are required";
-  // } else if (!regexPhone.test(form.phone.trim())) {
-  //   errors.phone = "Phone field have must only numbers";
-  // } else if (phone.value.length <= '12') {
-  //   errors.phone = "Phone format incorrect";
-  // }else {
-  //   phone.style.cssText = "border: #34B0BE 1px solid;";
-  // }
-
-
-  if (!form.country) {
-    country.style.cssText = "border: red 1px solid";
-    errors.country = t('auth.fieldCountry');
-  } else {
-    country.style.cssText = "border: #34B0BE 1px solid;";
+  if ('nameManager' in form) {
+    errors.nameManager = validateField('nameManager', form.nameManager, val => regexName.test(val.trim()), {
+      required: "Debes ingresar el nombre",
+      invalid: "El nombre debe tener solo letras"
+    });
   }
 
-
-  if (!form.pass ) {
-    pass.style.cssText = "border: red 1px solid";
-    errors.pass = t('auth.fieldPass');
-    
-  } else if (!regexPass.test(form.pass.trim())) {
-    errors.pass = "pass field have must letters and numbers";
-  } else {
-    pass.style.cssText = "border: #34B0BE 1px solid;";
+  if ('lastname' in form) {
+    errors.lastname = validateField('lastname', form.lastname, val => regexName.test(val.trim()), {
+      required: "Debes ingresar el apellido",
+      invalid: "El apellido debe tener solo letras"
+    });
+  }
+  if ('message' in form) {
+    errors.message = validateField('message', form.message, val => regexName.test(val.trim()), {
+      required: "Debes ingresar el apellido",
+      invalid: "El apellido debe tener solo letras"
+    });
   }
 
-  // if (!form.repass ) {
-  //   repass.style.cssText = "border: red 1px solid";
-    
-  // } else if (!regexPass.test(form.pass.trim())) {
-  //   errors.repass = "pass field have must letters and numbers";
-  // } else {
-  //   repass.style.cssText = "border: #34B0BE 1px solid;";
-  // }
-
-  // if (pass.value !== repass.value) {
-  //   repass.style.cssText = "border: red 1px solid";
-  //   pass.style.cssText = "border: red 1px solid";
-  //   errors.pass = "Passwords no matches"
-  // }else if (pass.value === '' && repass.value === '') {
-  //   repass.style.cssText = "border: red 1px solid";
-  //   pass.style.cssText = "border: red 1px solid";
-  //   errors.pass = "Pass pass are required";
-  //   errors.repass = "Please confirm repass";
-  // } else if (pass.value.length <= '6') {
-  //   errors.pass = "Password must contain 7 or more characters";
-  // }
-  // else {
-  //   pass.style.cssText = "border: #34B0BE 1px solid;";
-  //   repass.style.cssText = "border: #34B0BE 1px solid;";
-  // }
-
-  // if (!form.message) {
-  //   message.style.cssText = "border: red 1px solid";
-  //   errors.message = "Field message are required";
-  // } else if (!regexMessage.test(form.message.trim())) {
-  //   errors.message = "Limit characters exceded 300 max";
-  // } else {
-  //   message.style.cssText = "border: #34B0BE 1px solid;";
-  // }
-    return jsxRuntime.jsxs(errors)
-    
+  if ('typeDoc' in form) {
+    errors.typeDoc = validateField('typeDoc', form.typeDoc, null, {
+      required: "Debes seleccionar el tipo de documento"
+    });
   }
-  
+
+  if ('dnaId' in form) {
+    errors.dnaId = validateField('dnaId', form.dnaId, val => val.length >= 6, {
+      required: "Número de documento requerido",
+      invalid: "Formato de documento incorrecto"
+    });
+  }
+
+  if ('docIdManager' in form) {
+    errors.docIdManager = validateField('docIdManager', form.docIdManager, val => val.length >= 6, {
+      required: "Número de documento requerido",
+      invalid: "Formato de documento incorrecto"
+    });
+  }
+
+  if ('expDate' in form) {
+    errors.expDate = validateField('expDate', form.expDate, val => val.length >= 6, {
+      required: "Fecha de expedición requerida",
+      invalid: "Fecha de expedición incorrecta"
+    });
+  }
+
+  if ('state' in form) {
+    errors.state = validateField('state', form.state, null, {
+      required: "Debes seleccionar un departamento"
+    });
+  }
+
+  if ('city' in form) {
+    errors.city = validateField('city', form.city, null, {
+      required: "Debes seleccionar una ciudad"
+    });
+  }
+
+  if ('address' in form) {
+    errors.address = validateField('address', form.address, null, {
+      required: "Debes ingresar la dirección"
+    });
+  }
+
+  if ('phone' in form) {
+    errors.phone = validateField('phone', form.phone, val => regexPhone.test(val.trim()) && val.trim().length > 11, {
+      required: "Teléfono requerido",
+      invalid: "Formato de teléfono incorrecto"
+    });
+  }
+
+  if ('phoneManager' in form) {
+    errors.phoneManager = validateField('phoneManager', form.phoneManager, val => regexPhone.test(val.trim()) && val.trim().length > 11, {
+      required: "Teléfono requerido",
+      invalid: "Formato de teléfono incorrecto"
+    });
+  }
+
+  if ('email' in form) {
+    errors.email = validateField('email', form.email, val => regexEmail.test(val.trim()), {
+      required: "Correo electrónico requerido",
+      invalid: "Formato de correo incorrecto"
+    });
+  }
+
+  if ('emailManager' in form) {
+    errors.emailManager = validateField('emailManager', form.emailManager, val => regexEmail.test(val.trim()), {
+      required: "Correo electrónico requerido",
+      invalid: "Formato de correo incorrecto"
+    });
+  }
+
+  if ('password' in form) {
+    errors.password = validateField('password', form.password, val => val.length > 6 && regexPassword.test(val.trim()), {
+      required: "Contraseña requerida",
+      invalid: "La contraseña debe tener al menos 6 caracteres con letras, números y símbolos"
+    });
+  }
+
+  if ('price' in form) {
+    errors.price = validateField('price', form.price, val => regexPrice.test(val.trim()), {
+      required: "Precio requerido",
+      invalid: "Formato de precio incorrecto"
+    });
+  }
+
+  // Otros campos
+  const optionalFields = {
+    district: "Debes seleccionar el barrio",
+    category: "Debes agregar una categoría",
+    furnished: "Debes especificar si el inmueble es amoblado",
+    admon: "Debes especificar si el inmueble incluye administración",
+    description: "Debes añadir una descripción",
+    bedRoom: "Debes seleccionar el número de habitaciones",
+    bathRoom: "Debes seleccionar el número de baños",
+    diningRoom: "Debes seleccionar el número sala comedores comer",
+    closets: "Debes seleccionar el número de closets",
+    kitchen: "Debes seleccionar el tipo de cocina",
+    floor: "Debes seleccionar el tipo de piso",
+    parking: "Debes seleccionar si hay parqueadero",
+    stratum: "Debes seleccionar el estrato",
+    clothing: "Debes seleccionar si tiene zona de lavado ropa",
+    action: "Debes seleccionar una acción"
+  };
+
+  Object.entries(optionalFields).forEach(([field, message]) => {
+    if (field in form) {
+      errors[field] = validateField(field, form[field], null, { required: message });
+    }
+  });
+
+  // Limpiar errores nulos
+  Object.keys(errors).forEach((key) => {
+    if (errors[key] === null) {
+      delete errors[key];
+    }
+  });
+
+  return errors;
+};
+
+
+  return { formRefs, validateForm, validateFormListPropertyClient };
+};
+ 

@@ -141,7 +141,7 @@ export const startLoginAdmin = (email, pass, ) => {
     if (body.ok) {
       console.log(body)
       localStorage.setItem("role", body.admin.role);
-      localStorage.setItem("token", body.admin.token);
+      localStorage.setItem("tokenAdmin", body.admin.token);
       localStorage.setItem("token-init-date", new Date().getTime());
         dispatch(
           loginAdminSuccess({
@@ -232,7 +232,7 @@ export const startLoginAdmin = (email, pass, ) => {
         if (body.ok) {
           
           localStorage.setItem("role", body.role);
-          localStorage.setItem("token", body.token);
+          localStorage.setItem("tokenAdmin", body.token);
           localStorage.setItem("token-init-date", new Date().getTime());
          
           dispatch(

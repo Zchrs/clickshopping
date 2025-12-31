@@ -94,8 +94,8 @@ export const CreateProduct = () => {
     handleChange,
     handleBlur,
     handleSubmitProduct,
-    handleSetImage,
-    handleImageChange
+    handleSetImages,
+    handleImagesChange
   } = useForm(initialProductForm, validationsForm);
 
 
@@ -199,11 +199,11 @@ export const CreateProduct = () => {
         <div>
         <MultiDropZone
               onBlur={handleBlur}
-              id="img_url"
+              id="images"
               name="img_url"
               type="file"
-              onChange={handleImageChange}
-              setImages={handleSetImage}
+              onChange={handleImagesChange}
+              setImages={handleSetImages}
               />
             {errors.image && <p className="warnings-form">{errors.image}</p>}
         </div>

@@ -8,11 +8,6 @@ import { useTranslation } from "react-i18next";
 import { CardProductsSmall } from "../../components/globals/CardProductsSmall";
 import Comments from "../../components/globals/Comments";
 import { getFile } from "../../reducers/globalReducer";
-import {
-  mobilePhones,
-  alimentsGrains,
-  laptops,
-} from "../../simulatedApi/simulatedApi";
 import { startChecking } from "../../actions/authActions";
 import io from "socket.io-client";
 import "../home/home.scss";
@@ -203,7 +198,7 @@ export const HomeScreen = () => {
                 prodHover={() => handleSetProductClick(itemC)}
                 addToWish={"addwishlist-red"}
                 addTocart={"addcart-red"}
-                img={itemL.images[0].img_url}
+                img={itemC.images[0].img_url}
                 sellingsText={true}
                 sellings={t("globals.sellings")}
                 priceText={true}
