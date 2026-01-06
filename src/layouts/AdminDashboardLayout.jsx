@@ -43,7 +43,7 @@ const AdmDashLayout = styled.section`
     max-width: 1920px;
     height: fit-content;
     min-height: 100vh;
-    background: #f5f1f1;
+    background: #f2f8ff;
     align-items: baseline;
     
     .dashboardlayout-header{

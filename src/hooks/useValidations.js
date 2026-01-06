@@ -28,6 +28,7 @@ export const useValidations = () => {
     password: useRef(null),
     rePassword: useRef(null),
     price: useRef(null),
+    previousPrice: useRef(null),
     district: useRef(null),
     category: useRef(null),
     furnished: useRef(null),
@@ -37,7 +38,7 @@ export const useValidations = () => {
     bedRoom: useRef(null),
     bathRoom: useRef(null),
     diningRoom: useRef(null),
-    closets: useRef(null),
+    quantity: useRef(null),
     kitchen: useRef(null),
     floor: useRef(null),
     parking: useRef(null),
@@ -47,8 +48,7 @@ export const useValidations = () => {
     image: useRef(null),
     img_url: useRef(null),
     user_id: useRef(null),
-    property_id: useRef(null),
-    quantity: useRef(null),
+    product_id: useRef(null),
     verifyCode: useRef(null)
   };
   
@@ -260,6 +260,12 @@ export const useValidations = () => {
         invalid: "Formato de precio incorrecto"
       }
     );
+    errors.previousPrice = validateField('previousPrice', form.previousPrice, 
+      (val) => regexPrice.test(val.trim()), {
+        required: "Precio requerido",
+        invalid: "Formato de precio incorrecto"
+      }
+    );
 
     errors.district = validateField('district', form.district, null, {
       required: "Debes seleccionar el barrio"
@@ -293,8 +299,8 @@ export const useValidations = () => {
       required: "Debes seleccionar el número sala comedores comer"
     });
 
-    errors.closets = validateField('closets', form.closets, null, {
-      required: "Debes seleccionar el número de closets"
+    errors.quantity = validateField('quantity', form.quantity, null, {
+      required: "Debes seleccionar el número de quantity"
     });
 
     errors.kitchen = validateField('kitchen', form.kitchen, null, {
@@ -497,6 +503,12 @@ export const useValidations = () => {
       invalid: "Formato de precio incorrecto"
     });
   }
+  if ('previousPrice' in form) {
+    errors.previousPrice = validateField('previousPrice', form.previousPrice, val => regexPrice.test(val.trim()), {
+      required: "Precio requerido",
+      invalid: "Formato de precio incorrecto"
+    });
+  }
 
   // Otros campos
   const optionalFields = {
@@ -508,7 +520,7 @@ export const useValidations = () => {
     bedRoom: "Debes seleccionar el número de habitaciones",
     bathRoom: "Debes seleccionar el número de baños",
     diningRoom: "Debes seleccionar el número sala comedores comer",
-    closets: "Debes seleccionar el número de closets",
+    quantity: "Debes seleccionar el número de quantity",
     kitchen: "Debes seleccionar el tipo de cocina",
     floor: "Debes seleccionar el tipo de piso",
     parking: "Debes seleccionar si hay parqueadero",

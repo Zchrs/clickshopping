@@ -8,8 +8,8 @@ import io from 'socket.io-client';
 import { Backward, BaseButton, BaseInput, CardProductsAdmin, MultiDropZone, UpdateProduct } from "../../../../index";
 
 import { clearProduct, fetchProducts, selectedProduct, setProduct, updateProduct } from '../../../actions/productActions';
-import { initialProductForm, useForm } from '../../../hooks/useForm';
-
+import { initialForm, useForm } from '../../../hooks/useForm';
+import { useValidations } from "../../../hooks/useValidations";
 
 export const ProductsAdded = ({ 
   item
@@ -19,21 +19,12 @@ export const ProductsAdded = ({
   const products = useSelector((state) => state.product.productInfo);
   const [showModal, setShowModal] = useState(false);
   const [selProduct, setSelProduct] = useState(null);
+const { formRefs, validateForm } = useValidations();
 
-  const initialForm = {
-      id: selProduct?.id || '',
-      name: selProduct?.name || '',
-      price: selProduct?.price || '',
-      previousPrice: selProduct?.previousPrice || '',
-      category: selProduct?.category || '',
-      quantity: selProduct?.quantity || '',
-      description: selProduct?.description || '',
-      img_url: selProduct?.images || [],
-  };
 
   const {
-      formProduct,
-      setFormProduct,
+      form,
+      setForm,
       deleteProduct,
       handleChangeProduct,
       setLoading,
@@ -85,9 +76,9 @@ export const ProductsAdded = ({
 
 
   useEffect(() => {
-      const isFormFilled = Object.values(formProduct).every(value => value !== '');
+      const isFormFilled = Object.values(form).every(value => value !== '');
       setIsFormComplete(isFormFilled);
-  }, [formProduct]);
+  }, [form]);
 
   
   const handleClearProduct = (item) => {
@@ -113,7 +104,7 @@ export const ProductsAdded = ({
       dispatch(setProduct(product));
       setSelProduct(product);
       console.log(product.id, 'desde handle update')
-      setFormProduct({
+      setForm({
           id: product.id,
           name: product.name,
           price: product.price,
@@ -204,9 +195,10 @@ export const ProductsAdded = ({
                                       name="name"
                                       classs={'inputs outline'}
                                       placeholder="Nombre del producto"
-                                      value={formProduct.name}
+                                      formRefs={form.name}
+                                      value={form.name}
                                       onChange={handleChangeProduct}
-                                  />
+                                      />
                               </div>
                               <div>
                                   <BaseInput
@@ -214,10 +206,11 @@ export const ProductsAdded = ({
                                       name="price"
                                       classs={'inputs outline'}
                                       placeholder="Precio"
-                                      value={formProduct.price}
+                                      formRefs={form.price}
+                                      value={form.price}
                                       onChange={handleChangeProduct}
                                       isNumber={true}
-                                  />
+                                      />
                               </div>
                               <div>
                                   <BaseInput
@@ -225,10 +218,11 @@ export const ProductsAdded = ({
                                       name="previousPrice"
                                       classs={'inputs outline'}
                                       placeholder="Precio anterior"
-                                      value={formProduct.previousPrice}
+                                      formRefs={form.previousPrice}
+                                      value={form.previousPrice}
                                       onChange={handleChangeProduct}
                                       isNumber={true}
-                                  />
+                                      />
                               </div>
                               <div>
                                   <BaseInput
@@ -236,9 +230,10 @@ export const ProductsAdded = ({
                                       name="category"
                                       classs={'inputs outline'}
                                       placeholder="Categoría"
-                                      value={formProduct.category}
+                                      formRefs={form.category}
+                                      value={form.category}
                                       onChange={handleChangeProduct}
-                                  />
+                                      />
                               </div>
                               <div>
                                   <BaseInput
@@ -246,10 +241,11 @@ export const ProductsAdded = ({
                                       name="quantity"
                                       classs={'inputs outline'}
                                       placeholder="Cantidad"
-                                      value={formProduct.quantity}
+                                      formRefs={form.quantity}
+                                      value={form.quantity}
                                       onChange={handleChangeProduct}
                                       isNumber={true}
-                                  />
+                                      />
                               </div>
                               <div>
                                   <BaseInput
@@ -257,7 +253,8 @@ export const ProductsAdded = ({
                                       name="description"
                                       classs={'inputs outline'}
                                       placeholder="Descripción"
-                                      value={formProduct.description}
+                                      formRefs={form.descriptions}
+                                      value={form.description}
                                       onChange={handleChangeProduct}
                                       isTextarea={true}
                                   />

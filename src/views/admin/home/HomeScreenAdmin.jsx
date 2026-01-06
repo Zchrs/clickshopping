@@ -5,12 +5,13 @@ import styled from 'styled-components';
 import { BaseButton, BaseInput } from "../../../../index";
 import { useForm } from "../../../hooks/useForm";
 import { startCheckingAdmin } from "../../../actions/authActions";
-
+import { useValidations } from "../../../hooks/useValidations";
 
 import { Link } from "react-router-dom"
 import { useEffect } from "react";
 
 export const HomeScreenAdmin = () => {
+  const { formRefs, validateForm } = useValidations();
 
   const { t } = useTranslation();
   const dispatch = useDispatch();
@@ -24,54 +25,16 @@ export const HomeScreenAdmin = () => {
     pass: "",
   };
 
-  const validationsLogin = (formAdmin) => {
-    let errors = {};
-   let regexEmail = /^(\w+[/./-]?){1,}@[a-z]+[/.]\w{2,}$/;
-    let regexPass = /^@[A-Za-zÑñÁáÉéÍíÓóÚúÜü\s]+$/;
-  
-  const email = document.getElementById("email");
-  const pass = document.getElementById("pass");
-  
-  if (!formAdmin.email) {
-    email.style.cssText = "border: red 1px solid";
-    errors.email = "Field email is required";
-  } else if (!regexEmail.test(formAdmin.email.trim())) {
-    errors.email = "Email incorrect";
-  } else {
-    email.style.cssText = "border: #34B0BE 1px solid;";
-  }
-  
-  
-  if (!formAdmin.pass) {
-    pass.style.cssText = "border: red 1px solid";
-    errors.pass = "Field Password is required";
-  } 
-  else if (!regexPass.test(formAdmin.pass.trim())) {
-    errors.pass = "Password field have must letters and numbers";
-  } else {
-    pass.style.cssText = "border: #34B0BE 1px solid;";
-    console.log('entrando al else');
-  }
-  if (pass.value !== '') {
-    pass.style.cssText = "border: #34B0BE 1px solid;";
-    errors.pass = false
-  }
-  
-  
-   return errors;
-  };
-
-
 
   const {
-    formAdmin,
+    form,
     errors,
     loading,
     response,
     handleLoginAdmin,
     handleChangeAdmin,
     handleBlur
-  } = useForm(initialForm, validationsLogin);
+  } = useForm(initialForm, validateForm);
 
   return (
     <AdminHome className="home">
@@ -82,13 +45,13 @@ export const HomeScreenAdmin = () => {
           placeholder={t('auth.email')}
           id="email"
           name="email"
-          value={formAdmin.email}
+          formRefs={formRefs.email}
+          value={form.email}
           onBlur={handleBlur}
           onChange={handleChangeAdmin}
           
           isEmail
           />
-          {errors.email && <p className="warnings-form">{errors.email}</p>}
         </div>
         <div>
           <BaseInput
@@ -96,13 +59,13 @@ export const HomeScreenAdmin = () => {
           placeholder={t('auth.yourPass')}
           onBlur={handleBlur}
           onChange={handleChangeAdmin}
-          value={formAdmin.pass}
+          formRefs={formRefs.pass}
+          value={form.pass}
           id="pass"
           name="pass" 
           isPassword
           
           />
-          {errors.pass && <p className="warnings-form">{errors.pass}</p>}
         </div>
         <div>
           <Link className="home-a">{t('auth.forgetPass')}</Link>

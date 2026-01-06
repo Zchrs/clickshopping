@@ -6,30 +6,27 @@ import { useState } from "react";
 import { Modal } from "./Modal";
 import { Rating } from "./Rating";
 import { Link } from "react-router-dom";
-import { useDispatch, useSelector } from 'react-redux';
-import { setProduct } from '../../actions/productActions';
+import { useDispatch, useSelector } from "react-redux";
+import { setProduct } from "../../actions/productActions";
 
 import AddToCart from "./AddToCart";
 import { formatPrice } from "../../../globalActions";
 import styled from "styled-components";
 export const CardProductsSmall = ({
   title,
-  // productInfo,
   description,
   productLink,
   memberDiscount,
   thumbnails,
   img,
-  img2,
-  img3,
   price,
   previousPrice,
   discount,
   addToWish,
   prodHover,
-product_id,
-ratingss,
-ratings,
+  product_id,
+  ratingss,
+  ratings,
   premiumText,
   descriptionText,
   addCartBox,
@@ -40,16 +37,13 @@ ratings,
   sellingsText,
   sellings,
   onClick,
-  png,
-  jpg,
-  jpg2,
-  jpg3,
+  images,
 }) => {
   const [modal, setModal] = useState(false);
   const user = useSelector((state) => state.auth.user);
-  const scrollTop = () =>{
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
+  const scrollTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   // const handleOpenModal = () => {
   //   setModal(true);
@@ -60,7 +54,6 @@ ratings,
     setModal(false);
     console.log("click");
   };
-  
 
   const dispatch = useDispatch();
 
@@ -75,20 +68,21 @@ ratings,
       price,
       previousPrice,
       thumbnails,
-    }
-    
-      dispatch(setProduct(productInfo));
-      localStorage.setItem('product', productInfo);
-      // console.log(productInfo)
     };
-    
 
-  
+    dispatch(setProduct(productInfo));
+    localStorage.setItem("product", productInfo);
+    // console.log(productInfo)
+  };
+
   const handleFunctions = () => {
-    
-    scrollTop(),
-    handleSetProductInfo()
-  }
+    scrollTop(), handleSetProductInfo();
+  };
+
+  const getImageType = (url) => {
+    const ext = url.split(".").pop().toLowerCase();
+    return ext === "jpg" ? "jpeg" : ext;
+  };
 
   return (
     <CardSmall>
@@ -109,38 +103,38 @@ ratings,
         )}
         <Link onMouseEnter={prodHover} onClick={onClick} to={productLink}>
           <div className="productcard-contain">
-            {png && (
-              <img
-                loading="lazy"
-                src={img}
-                alt=""
-              />
-            )}
-            {jpg3 && (
-              <img
-                loading="lazy"
-                src={img3}
-                alt=""
-              />
-            )}
-            {jpg2 && (
-              <img
-                loading="lazy"
-                src={img2}
-                alt=""
-              />
-            )}
-            {jpg && (
-              <img loading="lazy" src={img} alt="" />
+            {Array.isArray(images) && images.length > 0 && (
+              <picture>
+                {images.map((img, index) => {
+                  const src = img.url || img; // soporta objeto o string
+                  const type = img.format || getImageType(src);
+
+                  return (
+                    <source key={index} srcSet={src} type={`image/${type}`} />
+                  );
+                })}
+
+                {/* fallback obligatorio */}
+                <img
+                  loading="lazy"
+                  src={img}
+                  alt={title}
+                />
+              </picture>
             )}
           </div>
         </Link>
         <div className="productcard-box">
           {descriptionText && <p className="productcard__p"> {description} </p>}
           {tittleText && <p className="productcard__p"> {title} </p>}
-          {priceText && <h2 className="productcard__h2"> ${formatPrice(price)} </h2>}
+          {priceText && (
+            <h2 className="productcard__h2"> ${formatPrice(price)} </h2>
+          )}
           {sellingsText && (
-            <p className="productcard__p productcard__selltext"> {sellings} 999</p>
+            <p className="productcard__p productcard__selltext">
+              {" "}
+              {sellings} 999
+            </p>
           )}
           {groupBox && (
             <div className="productcard-group">
@@ -152,7 +146,13 @@ ratings,
           )}
           {premiumText && <p className="productcard__p3"> {memberDiscount} </p>}
           <div className="productcard-rating">
-          {ratingss && <Rating ratings={ratings} productID={product_id} userID={user ? user.id : null} />}
+            {ratingss && (
+              <Rating
+                ratings={ratings}
+                productID={product_id}
+                userID={user ? user.id : null}
+              />
+            )}
           </div>
         </div>
         {modal && (
@@ -166,46 +166,43 @@ ratings,
     </CardSmall>
   );
 };
- const CardSmall = styled.section`
- .productcard {
-  font-family:'Quicksand', sans-serif;
-  position: relative;
+const CardSmall = styled.section`
+  .productcard {
+    font-family: "Quicksand", sans-serif;
+    position: relative;
     display: grid;
     height: 100%;
     border-radius: 8px;
     align-content: space-between;
-    box-shadow: 
-    rgba(215, 213, 213, 0.607) 1px 1px 3px, 
-    rgba(215, 213, 213, 0.607) -1px -1px 3px;
+    box-shadow: rgba(215, 213, 213, 0.607) 1px 1px 3px,
+      rgba(215, 213, 213, 0.607) -1px -1px 3px;
     background: white;
     gap: 2px;
     padding: 10px 8px;
-    transition: all ease .9s;
-    &:hover{
+    transition: all ease 0.9s;
+    &:hover {
       transform: scale(1.12);
-      box-shadow:rgba(128, 128, 128, 0.6) 1px 1px 6px, 
-      rgba(128, 128, 128, 0.6) -1px -1px 6px;
+      box-shadow: rgba(128, 128, 128, 0.6) 1px 1px 6px,
+        rgba(128, 128, 128, 0.6) -1px -1px 6px;
       z-index: 100;
     }
 
     @media (max-width: 580px) {
-      
     }
 
-    &-box{
+    &-box {
       display: grid;
       // max-height: 200px;
     }
 
-    &.background{
+    &.background {
       background: #f5f1f1;
-
     }
 
-    &-btn{
+    &-btn {
       margin: 5px 0;
     }
-  
+
     &__p {
       grid-column: 1 / 2;
       font-size: 15px;
@@ -214,32 +211,32 @@ ratings,
       line-height: 1.1;
       padding-bottom: 5px;
     }
-    &__quantity{
+    &__quantity {
       color: rgb(123, 120, 120);
       font-size: 14px;
       margin: 0;
       padding: 0;
     }
-    &__selltext{
+    &__selltext {
       color: rgb(190, 188, 188);
       font-size: 14px;
       margin: 0;
       padding: 0;
     }
-  
+
     &__p2 {
       grid-column: 2 / 3;
       text-decoration: line-through;
       line-height: 1;
       span {
-        color: #EC3337;
+        color: #ec3337;
         text-decoration: none;
       }
     }
-  
+
     &__p3 {
       font-size: 12px;
-      color: #EC3337;
+      color: #ec3337;
       line-height: 1.1;
 
       @media (max-width: 450px) {
@@ -247,7 +244,7 @@ ratings,
         color: black;
       }
     }
-  
+
     &__h2 {
       font-size: 15px;
       font-weight: 600;
@@ -255,11 +252,11 @@ ratings,
       margin: 0;
       padding: 2px 0;
     }
-  
+
     &-contain {
       display: grid;
       // place-items: center;
-  
+
       img {
         width: 100%;
         object-fit: contain;
@@ -270,15 +267,15 @@ ratings,
         }
       }
     }
-    &-rating{
+    &-rating {
       display: grid;
       width: fit-content;
     }
-    &-group{
+    &-group {
       display: flex;
       gap: 5px;
     }
-    &-addwishimg{
+    &-addwishimg {
       background: black;
       cursor: pointer;
       left: 10px;
@@ -291,22 +288,22 @@ ratings,
       padding: 10px;
       align-items: center;
       overflow: hidden;
-      transition: all ease .3s;
+      transition: all ease 0.3s;
 
-      img{
-        transition: all ease .3s;
+      img {
+        transition: all ease 0.3s;
         position: relative;
         width: 100%;
         filter: brightness(500%);
       }
-      &:hover{
-        background: #EC3337;
-        img{
+      &:hover {
+        background: #ec3337;
+        img {
           transform: scale(1.2);
         }
       }
     }
-    &-addcartimg{
+    &-addcartimg {
       background: black;
       cursor: pointer;
       right: 10px;
@@ -318,20 +315,20 @@ ratings,
       padding: 10px;
       width: 40px;
       height: 40px;
-      transition: all ease .3s;
+      transition: all ease 0.3s;
 
-      img{
-        transition: all ease .3s;
+      img {
+        transition: all ease 0.3s;
         position: relative;
         filter: brightness(500%);
         width: 100%;
       }
-      &:hover{
-        background: #EC3337;
-        img{
+      &:hover {
+        background: #ec3337;
+        img {
           transform: scale(1.2);
         }
       }
     }
   }
- `
+`;

@@ -21,6 +21,7 @@ export const HomeScreen = () => {
   const [cellphoneProducts, setCellphoneProducts] = useState([]);
   const [clothingProducts, setClothingProducts] = useState([]);
   const [laptopProducts, setLaptopProducts] = useState([]);
+
   
   const ratings = useSelector((state) => state.product.ratings);
   const lang = useSelector((state) => state.langUI.lang);
@@ -46,6 +47,7 @@ export const HomeScreen = () => {
         }
       }));
       dispatch(setProduct(productsComplete));
+      
       return productsComplete; // Devolvemos los productos aquí
     } catch (error) {
       console.error('Error al obtener los productos:', error);
@@ -159,7 +161,7 @@ export const HomeScreen = () => {
                 productLink={`/products/${itemL.id}`}
                 addToWish={"addwishlist-red"}
                 addTocart={"addcart-red"}
-                img={itemL.images && itemL.images.length > 0 ? itemL.images[1].img_url : ''}
+                img={itemL.images?.[0]?.img_url}
                 sellingsText={true}
                 sellings={t("globals.sellings")}
                 priceText={true}
@@ -167,11 +169,10 @@ export const HomeScreen = () => {
                 productInfo={itemL}
                 onClick={() => handleSetProductClick(itemL)}
                 prodHover={() => handleSetProductClick(itemL)}
-                jpg="true"
                 description={itemL.description}
                 beforePrice={itemL.previousPrice}
                 title={itemL.title}
-                thumbnails={itemL.thumbnails}
+                thumbnails={itemL.images}
                 products="portatiles"
                 ratingss={true}
                 ratings={ratings}

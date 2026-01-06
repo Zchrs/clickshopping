@@ -13,12 +13,6 @@ import {
 import { fetchWithoutToken } from "../helpers/fetch";
 import Swal from "sweetalert2";
 
-export const initialFormAdmin = {
-  fullname: "",
-  email: "",
-  pass: "",
-  codeAccess: "",
-};
 
 export const initialForm = {
   name: "",
@@ -27,31 +21,26 @@ export const initialForm = {
   phone: "",
   email: "",
   password: "",
-};
 
-export const initialProductForm = {
-  name: "",
   price: "",
   previousPrice: "",
   category: "",
-  quantity: "3",
+  quantity: "",
   description: "",
   img_url: [],
-};
-
-export const initialAddCartForm = {
   user_id: "",
   product_id: "",
-  price: "",
-  quantity: "1",
+
+  fullname: "",
+  pass: "",
+  codeAccess: "",
 };
+
+
 
 export const useForm = (initialForm, validateForm) => {
   // ---------------- variables de estado -----------------------
   const [form, setForm] = useState(initialForm);
-  const [formProduct, setFormProduct] = useState(initialProductForm);
-  const [formAdmin, setFormAdmin] = useState(initialFormAdmin);
-  const [formCart, setFormCart] = useState(initialAddCartForm);
   const [errors, setErrors] = useState({});
   const [errorsCart, setErrorsCart] = useState({});
   // const [active, setActive] = useState(null);
@@ -123,7 +112,6 @@ export const useForm = (initialForm, validateForm) => {
 
     if (value === "email") {
       validateEmails(name);
-      debugger;
     } else {
       return;
     }
@@ -132,8 +120,8 @@ export const useForm = (initialForm, validateForm) => {
   const handleChangeAdmin = (e) => {
     const { name, value } = e.target;
     console.log(value);
-    setFormAdmin({
-      ...formAdmin,
+    setForm({
+      ...form,
       [name]: value,
     });
 
@@ -152,19 +140,7 @@ export const useForm = (initialForm, validateForm) => {
     setModal(true);
     console.log("click");
   };
-  // const onChangeValidation = (e) => {
-  //   const { value } = e.target;
-  //   setForm({
-  //      value,
-  //   });
-  //   // debugger
-  //   if (value === "email") {
-  //     validateEmails(email)
-  //   } else {
-  //     return
-  //   }
 
-  // }
   const handleSetImage = (imageUrls) => {
     setForm({
       ...form,
@@ -192,8 +168,8 @@ export const useForm = (initialForm, validateForm) => {
   const handleChangeProduct = (e) => {
     const { name, value } = e.target;
     // console.log(value)
-    setFormProduct({
-      ...formProduct,
+    setForm({
+      ...form,
       [name]: value,
     });
   };
@@ -221,13 +197,13 @@ export const useForm = (initialForm, validateForm) => {
 
     try {
       const formData = new FormData();
-      formData.append('name', formProduct.name);
-      formData.append('price', formProduct.price);
-      formData.append('previousPrice', formProduct.previousPrice);
-      formData.append('category', formProduct.category);
-      formData.append('quantity', formProduct.quantity);
-      formData.append('description', formProduct.description);
-      formData.append('img_url', formProduct.img_url);
+      formData.append('name', form.name);
+      formData.append('price', form.price);
+      formData.append('previousPrice', form.previousPrice);
+      formData.append('category', form.category);
+      formData.append('quantity', form.quantity);
+      formData.append('description', form.description);
+      formData.append('img_url', form.img_url);
       const response = axios.put(
         `${import.meta.env.VITE_APP_API_UPDATE_PRODUCT_URL}/${id}`,
         formData,
@@ -282,7 +258,7 @@ export const useForm = (initialForm, validateForm) => {
 
   const handleSubmitProduct = async (e) => {
     e.preventDefault();
-  
+   
     const formData = {
       name: form.name,
       price: form.price,
@@ -331,7 +307,7 @@ export const useForm = (initialForm, validateForm) => {
       console.log(response);
       setLoading(false);
       setResponse(true);
-      setForm(initialProductForm);
+      setForm(initialForm);
       
       Swal.fire({
         title: '¡Éxito!',
@@ -490,7 +466,7 @@ export const useForm = (initialForm, validateForm) => {
 
   
     const finalFormAddCart = {
-      ...formCart,
+      ...form,
     };
     e.preventDefault();
     setLoading(true);
@@ -498,7 +474,7 @@ export const useForm = (initialForm, validateForm) => {
     try {
       const token = user.token;
       const response = await axios.post(
-        `${import.meta.env.VITE_APP_API_POST_CART_URL}/${formCart.product_id}`,
+        `${import.meta.env.VITE_APP_API_POST_CART_URL}/${form.product_id}`,
         finalFormAddCart,
         {
           body: finalFormAddCart,
@@ -512,13 +488,13 @@ export const useForm = (initialForm, validateForm) => {
       console.log(response);
       setLoading(false);
       setResponse(true);
-      setFormCart(initialAddCartForm);
+      setForm(initialForm);
       // setTimeout(() => setResponse(false, initialForm, ));
       setTimeout(
         () =>
           setResponse(
             false,
-            initialAddCartForm,
+            initialForm,
             Swal.fire({
               title: '¡Correcto!',
               text: `Agregaste un producto al carrito!`,
@@ -561,7 +537,7 @@ export const useForm = (initialForm, validateForm) => {
 
   
     const finalFormAddWishlist = {
-      ...formCart,
+      ...form,
     };
     e.preventDefault();
     setLoading(true);
@@ -569,7 +545,7 @@ export const useForm = (initialForm, validateForm) => {
     try {
       const token = user.token;
       const response = await axios.post(
-        `${import.meta.env.VITE_APP_API_POST_WISHLIST_URL}/${formCart.product_id}`,
+        `${import.meta.env.VITE_APP_API_POST_WISHLIST_URL}/${form.product_id}`,
         finalFormAddWishlist,
         {
           body: finalFormAddWishlist,
@@ -583,13 +559,13 @@ export const useForm = (initialForm, validateForm) => {
       console.log(response);
       setLoading(false);
       setResponse(true);
-      setFormCart(initialAddCartForm);
+      setForm(initialForm);
       // setTimeout(() => setResponse(false, initialForm, ));
       setTimeout(
         () =>
           setResponse(
             false,
-            initialAddCartForm,
+            initialForm,
             Swal.fire({
               title: '¡Correcto!',
               text: `Agregaste un producto en la lista de deseos!`,
@@ -630,12 +606,12 @@ export const useForm = (initialForm, validateForm) => {
 
   const handleBlurAdm = (e) => {
     handleChange(e);
-    setErrors(validateForm(formAdmin));
+    setErrors(validateForm(form));
   };
 
   const handleSubmitsAdmin = async (e, label) => {
     const finalForm = {
-      ...formAdmin,
+      ...form,
     };
     if (!finalForm.fullname) return;
     if (!finalForm.email) return;
@@ -662,7 +638,7 @@ export const useForm = (initialForm, validateForm) => {
       );
       setLoading(false);
       setResponse(true);
-      setFormAdmin(initialFormAdmin);
+      setForm(initialForm);
       setTimeout(
         () =>
           setResponse(
@@ -693,11 +669,11 @@ export const useForm = (initialForm, validateForm) => {
 
   const handleLoginAdmin = (e) => {
     debugger
-    if (!formAdmin.email) return;
-    if (!formAdmin.pass) return;
+    if (!form.email) return;
+    if (!form.pass) return;
     
     e.preventDefault();
-    dispatch(startLoginAdmin(formAdmin.email, formAdmin.pass));
+    dispatch(startLoginAdmin(form.email, form.pass));
 
     // console.log(form)
     loadingActive();
@@ -810,20 +786,15 @@ export const useForm = (initialForm, validateForm) => {
 
   return {
     form,
-    formAdmin,
-    formCart,
     errorsCart,
     errors,
     loading,
     response,
     modal,
-    formProduct, 
-    setFormProduct,
     deleteProduct,
     handleChangeProduct,
     setForm,
     setLoading,
-    setFormCart,
     handleImageChange,
     handleChangeAdmin,
     handleBlurAdm,

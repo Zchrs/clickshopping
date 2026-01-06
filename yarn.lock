@@ -921,6 +921,18 @@
   resolved "https://registry.yarnpkg.com/@humanwhocodes/object-schema/-/object-schema-2.0.1.tgz#e5211452df060fa8522b55c7b3c0c4d1981cb044"
   integrity sha512-dvuCeX5fC9dXgJn9t+X5atfmgQAzUOWqS1254Gh0m6i8wKd10ebXkfNKiRK+1GWi/yTvvLDHpoxLr0xxxeslWw==
 
+"@imagekit/javascript@^5.1.0":
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/@imagekit/javascript/-/javascript-5.1.0.tgz#3027f3e3a838d883107161d6434fb8f45df39dd9"
+  integrity sha512-P12NaxlO6Qu4GROFagX9qgP5kKde236mCu5jJB1cWJ6mPaVdjyk0Mw3ciGIWdKXST/jP1cFqS2ZoBVRSq1SWow==
+
+"@imagekit/react@^5.0.1":
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/@imagekit/react/-/react-5.0.1.tgz#b5ce3d2f3c36880a2fb12c77de7bc5a950aa4068"
+  integrity sha512-AX1w8ZswnY93QDA/QE1HtoQN2OVc4BsBaxOnL0iZzDnq1xb01Xg2qdLOnIWqMgcK5g/yKxBxZT97hBM2lsmSVQ==
+  dependencies:
+    "@imagekit/javascript" "^5.1.0"
+
 "@jridgewell/gen-mapping@^0.3.0", "@jridgewell/gen-mapping@^0.3.2":
   version "0.3.3"
   resolved "https://registry.yarnpkg.com/@jridgewell/gen-mapping/-/gen-mapping-0.3.3.tgz#7e02e6eb5df901aaedb08514203b096614024098"
@@ -2389,6 +2401,16 @@ ignore@^5.2.0:
   version "5.3.0"
   resolved "https://registry.yarnpkg.com/ignore/-/ignore-5.3.0.tgz#67418ae40d34d6999c95ff56016759c718c82f78"
   integrity sha512-g7dmpshy+gD7mh88OC9NwSGTKoc3kyLAZQRU1mt53Aw/vnvfXnbC+F/7F7QoYVKbV+KNvJx8wArewKy1vXMtlg==
+
+imagekit-javascript@^4.0.1:
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/imagekit-javascript/-/imagekit-javascript-4.0.1.tgz#8e0590443d96f7c112879a004b0d423883ed3d44"
+  integrity sha512-V3eVMz7OW8w8dSNJXPtVcWQMdV0P1wRs+Bftb2B1bKRl8NjOf+NGRWYb/meJlrmSL/HxT68PjM92/XFB+9ZfJA==
+
+imagekit-react@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/imagekit-react/-/imagekit-react-0.1.0.tgz#7e706095e425a895509ce4fa6117741ec24e5c44"
+  integrity sha512-pzDyH2DWdKEhzXiciFVvwfgRBAaMsnSJwgFjhZBDnpPqqxrslrPaJ9ekMEluhHqdMw3/vU+ZoKnPfa4C+1MXyg==
 
 immer@^9.0.21:
   version "9.0.21"
