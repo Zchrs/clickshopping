@@ -14,6 +14,8 @@ export const MultiDropZoneImageKit = ({ id, setImages, name }) => {
   const [errorMessage, setErrorMessage] = useState("");
   const fileInputRef = useRef(null);
 
+  const isProduction = import.meta.env.production;
+
   const MAX_FILE_SIZE = 30 * 1024 * 1024;
   const MAX_FILES = 6;
 
@@ -65,48 +67,70 @@ export const MultiDropZoneImageKit = ({ id, setImages, name }) => {
 
     setDropzoneFiles(files);
     setUploadStatus("idle");
-    uploadToImageKit(files);
+    uploadImages(files);
   };
 
-const uploadToImageKit = async (files) => {
-  try {
-    setUploadStatus("uploading");
-    setUploadProgress(0);
+  const uploadToLocalServer = async (files) => {
+  const formData = new FormData();
 
-    const uploadedUrls = [];
-    let completed = 0;
+  files.forEach(file => {
+    formData.append("img_url", file);
+  });
 
-    for (const file of files) {
-      // 🔑 TOKEN NUEVO PARA CADA ARCHIVO
-      const { token, expire, signature } = await authenticator();
-
-      const result = await upload({
-        file,
-        fileName: `${Date.now()}-${file.name}`,
-        publicKey: import.meta.env.VITE_IMAGEKIT_PUBLIC_KEY,
-        token,
-        expire,
-        signature,
-        folder: "/uploads",
-        onProgress: (evt) => {
-          const percent = Math.round(
-            ((completed + evt.loaded / evt.total) / files.length) * 100
-          );
-          setUploadProgress(percent);
-        },
-      });
-
-      uploadedUrls.push(result.url);
-      completed++;
+  const res = await fetch(
+    import.meta.env.VITE_APP_API_UPLOAD_IMAGES_PRODUCTS_URL,
+    {
+      method: "POST",
+      body: formData,
     }
+  );
 
-    setImages(uploadedUrls);
-    setUploadStatus("success");
-  } catch (err) {
-    console.error(err);
-    setUploadStatus("error");
-    setErrorMessage("Error al subir imágenes");
+  if (!res.ok) throw new Error("Error local upload");
+
+  const data = await res.json();
+  return data.imageUrls;
+};
+
+const uploadToImageKit = async (files) => {
+  const uploadedUrls = [];
+  let completed = 0;
+
+  for (const file of files) {
+    const { token, expire, signature } = await authenticator();
+
+    const result = await upload({
+      file,
+      fileName: `${Date.now()}-${file.name}`,
+      publicKey: import.meta.env.VITE_IMAGEKIT_PUBLIC_KEY,
+      token,
+      expire,
+      signature,
+      folder: "/uploads",
+      onProgress: (evt) => {
+        const percent = Math.round(
+          ((completed + evt.loaded / evt.total) / files.length) * 100
+        );
+        setUploadProgress(percent);
+      },
+    });
+
+    uploadedUrls.push(result.url);
+    completed++;
   }
+
+  return uploadedUrls;
+};
+
+const uploadImages = async (files) => {
+  setUploadStatus("uploading");
+  setUploadProgress(0);
+
+  const urls = isProduction
+    ? await uploadToImageKit(files)
+    : await uploadToLocalServer(files);
+
+  setImages(urls);
+  setUploadStatus("success");
 };
 
   const triggerFileInput = () => {

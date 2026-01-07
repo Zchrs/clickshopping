@@ -22,6 +22,7 @@ export const HomeScreen = () => {
   const [clothingProducts, setClothingProducts] = useState([]);
   const [laptopProducts, setLaptopProducts] = useState([]);
 
+  console.log(laptopProducts)
   
   const ratings = useSelector((state) => state.product.ratings);
   const lang = useSelector((state) => state.langUI.lang);
@@ -157,28 +158,23 @@ export const HomeScreen = () => {
           ) : (
             laptopProducts.map((itemL) => (
               <CardProductsSmall
-                key={itemL.id}
-                productLink={`/products/${itemL.id}`}
-                addToWish={"addwishlist-red"}
-                addTocart={"addcart-red"}
-                img={itemL.images?.[0]?.img_url}
-                sellingsText={true}
-                sellings={t("globals.sellings")}
-                priceText={true}
-                price={itemL.price}
-                productInfo={itemL}
-                onClick={() => handleSetProductClick(itemL)}
-                prodHover={() => handleSetProductClick(itemL)}
-                description={itemL.description}
-                beforePrice={itemL.previousPrice}
-                title={itemL.title}
-                thumbnails={itemL.images}
-                products="portatiles"
-                ratingss={true}
-                ratings={ratings}
-                product_id={itemL.id}
-
-              />
+  key={itemL.id}
+  productLink={`/products/${itemL.id}`}
+  addToWish={"addwishlist-red"}
+  img={itemL.images?.[0]?.img_url}   // ✅ imagen principal
+  images={itemL.images}              // ✅ PASAR EL ARRAY
+  sellingsText
+  sellings={t("globals.sellings")}
+  priceText
+  price={itemL.price}
+  onClick={() => handleSetProductClick(itemL)}
+  prodHover={() => handleSetProductClick(itemL)}
+  description={itemL.description}
+  title={itemL.title}
+  ratingss
+  ratings={ratings}
+  product_id={itemL.id}
+/>
             ))
           )}
         </div>
@@ -235,7 +231,8 @@ export const HomeScreen = () => {
                 prodHover={() => handleSetProductClick(itemCl)}
                 addToWish={"addwishlist-red"}
                 addTocart={"addcart-red"}
-                img={itemCl.images && itemCl.images.length > 0 ? itemCl.images[1].img_url : ''}
+                img={itemCl.images?.[0]?.img_url}
+                thumbnails={itemCl.images} 
                 sellingsText={true}
                 sellings={t("globals.sellings")}
                 priceText={true}

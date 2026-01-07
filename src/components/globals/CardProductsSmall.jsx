@@ -9,6 +9,7 @@ import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setProduct } from "../../actions/productActions";
 
+
 import AddToCart from "./AddToCart";
 import { formatPrice } from "../../../globalActions";
 import styled from "styled-components";
@@ -40,6 +41,7 @@ export const CardProductsSmall = ({
   images,
 }) => {
   const [modal, setModal] = useState(false);
+ 
   const user = useSelector((state) => state.auth.user);
   const scrollTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -103,25 +105,7 @@ export const CardProductsSmall = ({
         )}
         <Link onMouseEnter={prodHover} onClick={onClick} to={productLink}>
           <div className="productcard-contain">
-            {Array.isArray(images) && images.length > 0 && (
-              <picture>
-                {images.map((img, index) => {
-                  const src = img.url || img; // soporta objeto o string
-                  const type = img.format || getImageType(src);
-
-                  return (
-                    <source key={index} srcSet={src} type={`image/${type}`} />
-                  );
-                })}
-
-                {/* fallback obligatorio */}
-                <img
-                  loading="lazy"
-                  src={img}
-                  alt={title}
-                />
-              </picture>
-            )}
+            <img src={img} alt="" />
           </div>
         </Link>
         <div className="productcard-box">

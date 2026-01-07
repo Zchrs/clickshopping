@@ -11,7 +11,8 @@ import Swal from 'sweetalert2';
 import styled from 'styled-components';
 import { useEffect } from 'react';
 import { clearProduct, selectedProduct } from '../../actions/productActions';
-import { initialForm, useForm } from '../../hooks/useForm';
+import { useForm } from '../../hooks/useForm';
+import { useValidations } from "../../hooks/useValidations";
 
 export const DetailProductScreen = ({
   user_id, 
@@ -25,86 +26,53 @@ export const DetailProductScreen = ({
   const productHover = useSelector((state) => state.product.selectedProduct);
   const ratings = useSelector((state) => state.product.ratings);
   const user = useSelector((state) => state.auth.user);
+ const { formRefs, validateForm } = useValidations();
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const initialForm = {
+    user_id: "",
+    product_id: "",
+    price: "",
+    quantity: "",
+  };
 
   // console.log(product)
   useEffect(() => {
     scrollTop();
   }, [])
   
-  const dataFormErrors = (formCart) =>{
-    let user_id = document.getElementById("user_id")
-    let product_id = document.getElementById("product_id")
-    let price = document.getElementById("price")
-    let quantity = document.getElementById("quantity")
 
-    let data = {};
-    let errors = {};
-
-    if (!formCart.user_id && formCart.user_id ==! formCart.user_id) {
-      user_id.style.cssText = "box-shadow: red 1px 1px 2px, red -1px -1px 2px";
-      errors.user_id = "no permitido";
-      return
-    }  
-  
-    if (!formCart.product_id && formCart.product_id ==! formCart.product_id) {
-      product_id.style.cssText = "box-shadow: red 1px 1px 2px, red -1px -1px 2px";
-      errors.product_id = "no permitido";
-    }  else {
-      product_id.style.cssText = "box-shadow: #34B0BE 1px 1px 2px, #34B0BE -1px -1px 2px;";
-    }
-  
-    if (!formCart.price && formCart.price ==! formCart.price) {
-      price.style.cssText = "box-shadow: red 1px 1px 2px, red -1px -1px 2px";
-      errors.price = "no permitido.";
-    } else {
-      price.style.cssText = "box-shadow: #34B0BE 1px 1px 2px, #34B0BE -1px -1px 2px; color: black;";
-    }
-  
-    if (!formCart.quantity) {
-      quantity.style.cssText = "box-shadow: red 1px 1px 2px, red -1px -1px 2px";
-      errors.quantity = "no permitido.";
-    }else {
-      quantity.style.cssText = "box-shadow: #34B0BE 1px 1px 2px, #34B0BE -1px -1px 2px;";
-    }
-  
-
-
-    return errors
-
-  }
   const {
-    formCart,
+    form,
     errors,
     handleChangeProduct,
     handleSubmitAddCart,
     handleSubmitAddWishlist,
-    setFormCart
-  } = useForm(initialForm, dataFormErrors);
+    setForm
+  } = useForm(initialForm, validateForm);
 
+const handleSetProductInfo = () => {
+  if (!user || !productHover) return;
 
-  const handleSetProductInfo = () => {
-    // console.log(productHover, 'producto seteado')
-    if(!user) return
-    
-    dispatch(selectedProduct(productHover));
-    localStorage.setItem("productHover", productHover);
-    setFormCart((prevFormCart) => ({
-      ...prevFormCart,
-      user_id: user.id, // Assuming you want to set the user_id as well
-      product_id: productHover.id,
-      price: productHover.price,
-      quantity: 1, // You can set a default quantity or manage it as needed
-    }));
-  };
+  dispatch(selectedProduct(productHover));
+  localStorage.setItem("productHover", JSON.stringify(productHover));
+
+  setForm({
+    user_id: user.id,
+    product_id: productHover.id,
+    price: productHover.price,
+    quantity: 1,
+  });
+};
 
   const handleCLearProduct = () => {
 
     // console.log(productHover, 'producto quitado')
     dispatch(clearProduct(productHover));
     localStorage.removeItem("productHover", productHover);
-    setFormCart(initialForm);
+    setForm(initialForm);
   };
 
 
@@ -311,19 +279,19 @@ export const DetailProductScreen = ({
             </div>
             <form encType="multipart/form-data">
             <div>
-              <input id="user_id" name="user_id" type="text" value={formCart.user_id} onChange={handleChangeProduct} />
+              <input id="user_id" name="user_id" type="text" value={form.user_id} onChange={handleChangeProduct} />
               {errors.user_id && <p className="warnings-form">{errors.user_id}</p>}
             </div>
             <div>
-              <input id="product_id" name="product_id" type="text" value={formCart.product_id} onChange={handleChangeProduct} />
+              <input id="product_id" name="product_id" type="text" value={form.product_id} onChange={handleChangeProduct} />
               {errors.product_id && <p className="warnings-form">{errors.product_id}</p>}
             </div>
             <div>
-              <input id="price" name="price" type="text" value={formCart.price} onChange={handleChangeProduct} />
+              <input id="price" name="price" type="text" value={form.price} onChange={handleChangeProduct} />
               {errors.price && <p className="warnings-form">{errors.price}</p>}
             </div>
             <div>
-              <input id="quantity" name="quantity" type="text" value={formCart.quantity} onChange={handleChangeProduct} />
+              <input id="quantity" name="quantity" type="text" value={form.quantity} onChange={handleChangeProduct} />
               {errors.quantity && <p className="warnings-form">{errors.quantity}</p>}
             </div>
             
