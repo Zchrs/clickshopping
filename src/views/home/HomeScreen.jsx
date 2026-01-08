@@ -22,36 +22,47 @@ export const HomeScreen = () => {
   const [clothingProducts, setClothingProducts] = useState([]);
   const [laptopProducts, setLaptopProducts] = useState([]);
 
-  console.log(laptopProducts)
-  
+  console.log(laptopProducts);
+
   const ratings = useSelector((state) => state.product.ratings);
   const lang = useSelector((state) => state.langUI.lang);
 
-
-
   const fetchProducts = (category) => async (dispatch) => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_APP_API_GET_PRODUCTS_CATEGORY}?category=${category}`);
-      const productsComplete = await Promise.all(response.data.map(async (productInfo) => {
-        try {
-          const imagesRes = await axios.get(`${import.meta.env.VITE_APP_API_GET_IMAGE_PRODUCTS_URL}/${productInfo.id}`);
-          return {
-            ...productInfo,
-            images: imagesRes.data.images || [],
-          };
-        } catch (error) {
-          console.error(`Error al obtener las imágenes para el producto ${productInfo.id}:`, error);
-          return {
-            ...productInfo,
-            images: [],
-          };
-        }
-      }));
+      const response = await axios.get(
+        `${
+          import.meta.env.VITE_APP_API_GET_PRODUCTS_CATEGORY
+        }?category=${category}`
+      );
+      const productsComplete = await Promise.all(
+        response.data.map(async (productInfo) => {
+          try {
+            const imagesRes = await axios.get(
+              `${import.meta.env.VITE_APP_API_GET_IMAGE_PRODUCTS_URL}/${
+                productInfo.id
+              }`
+            );
+            return {
+              ...productInfo,
+              images: imagesRes.data.images || [],
+            };
+          } catch (error) {
+            console.error(
+              `Error al obtener las imágenes para el producto ${productInfo.id}:`,
+              error
+            );
+            return {
+              ...productInfo,
+              images: [],
+            };
+          }
+        })
+      );
       dispatch(setProduct(productsComplete));
-      
+
       return productsComplete; // Devolvemos los productos aquí
     } catch (error) {
-      console.error('Error al obtener los productos:', error);
+      console.error("Error al obtener los productos:", error);
       dispatch(setProduct([]));
       return []; // Devolvemos un array vacío en caso de error
     }
@@ -80,15 +91,20 @@ export const HomeScreen = () => {
   }, [i18n, lang, dispatch]);
 
   useEffect(() => {
-    dispatch(fetchProducts("Celulares")).then((prods) => setCellphoneProducts(prods));
-    dispatch(fetchProducts("Accesorios")).then((prods) => setClothingProducts(prods));
-    dispatch(fetchProducts("portatiles")).then((prods) => setLaptopProducts(prods));
+    dispatch(fetchProducts("Celulares")).then((prods) =>
+      setCellphoneProducts(prods)
+    );
+    dispatch(fetchProducts("Accesorios")).then((prods) =>
+      setClothingProducts(prods)
+    );
+    dispatch(fetchProducts("portatiles")).then((prods) =>
+      setLaptopProducts(prods)
+    );
   }, [dispatch]);
-  
+
   const handleSetProductClick = (product) => {
     dispatch(selectedProduct(product));
   };
-
 
   return (
     <section className="homescreen">
@@ -101,7 +117,10 @@ export const HomeScreen = () => {
               <p className="homescreen__p2">
                 {t("globals.takeLookTechTextLap")}
                 <strong className="homescreen__strong">
-                  <a className="homescreen-a" href=""> {t("globals.readMore")}</a>
+                  <a className="homescreen-a" href="">
+                    {" "}
+                    {t("globals.readMore")}
+                  </a>
                 </strong>
               </p>
             </div>
@@ -116,7 +135,10 @@ export const HomeScreen = () => {
               <p className="homescreen__p3">
                 {t("globals.takeLookTechText")}
                 <strong className="homescreen__strong">
-                  <a className="homescreen-a" href=""> {t("globals.readMore")}</a>
+                  <a className="homescreen-a" href="">
+                    {" "}
+                    {t("globals.readMore")}
+                  </a>
                 </strong>
               </p>
             </div>
@@ -128,7 +150,10 @@ export const HomeScreen = () => {
               <p className="homescreen__p4">
                 {t("globals.takeLookGrainText")}
                 <strong className="homescreen__strong">
-                  <a className="homescreen-a" href=""> {t("globals.readMore")}</a>
+                  <a className="homescreen-a" href="">
+                    {" "}
+                    {t("globals.readMore")}
+                  </a>
                 </strong>
               </p>
             </div>
@@ -140,7 +165,10 @@ export const HomeScreen = () => {
               <p className="homescreen__p5">
                 {t("globals.takeLookGroceryText")}
                 <strong className="homescreen__strong">
-                  <a className="homescreen-a" href=""> {t("globals.readMore")}</a>
+                  <a className="homescreen-a" href="">
+                    {" "}
+                    {t("globals.readMore")}
+                  </a>
                 </strong>
               </p>
             </div>
@@ -158,23 +186,23 @@ export const HomeScreen = () => {
           ) : (
             laptopProducts.map((itemL) => (
               <CardProductsSmall
-  key={itemL.id}
-  productLink={`/products/${itemL.id}`}
-  addToWish={"addwishlist-red"}
-  img={itemL.images?.[0]?.img_url}   // ✅ imagen principal
-  images={itemL.images}              // ✅ PASAR EL ARRAY
-  sellingsText
-  sellings={t("globals.sellings")}
-  priceText
-  price={itemL.price}
-  onClick={() => handleSetProductClick(itemL)}
-  prodHover={() => handleSetProductClick(itemL)}
-  description={itemL.description}
-  title={itemL.title}
-  ratingss
-  ratings={ratings}
-  product_id={itemL.id}
-/>
+                key={itemL.id}
+                productLink={`/products/${itemL.id}`}
+                addToWish={"addwishlist-red"}
+                img={itemL.images?.[0]?.img_url} // ✅ imagen principal
+                images={itemL.images} // ✅ PASAR EL ARRAY
+                sellingsText
+                sellings={t("globals.sellings")}
+                priceText
+                price={itemL.price}
+                onClick={() => handleSetProductClick(itemL)}
+                prodHover={() => handleSetProductClick(itemL)}
+                description={itemL.description}
+                title={itemL.title}
+                ratingss
+                ratings={ratings}
+                product_id={itemL.id}
+              />
             ))
           )}
         </div>
@@ -232,7 +260,7 @@ export const HomeScreen = () => {
                 addToWish={"addwishlist-red"}
                 addTocart={"addcart-red"}
                 img={itemCl.images?.[0]?.img_url}
-                thumbnails={itemCl.images} 
+                thumbnails={itemCl.images}
                 sellingsText={true}
                 sellings={t("globals.sellings")}
                 priceText={true}

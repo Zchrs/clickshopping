@@ -105,7 +105,11 @@ export const CardProductsSmall = ({
         )}
         <Link onMouseEnter={prodHover} onClick={onClick} to={productLink}>
           <div className="productcard-contain">
-            <img src={img} alt="" />
+            <img 
+            loading="lazy"
+            src={img} 
+            alt="" 
+            />
           </div>
         </Link>
         <div className="productcard-box">

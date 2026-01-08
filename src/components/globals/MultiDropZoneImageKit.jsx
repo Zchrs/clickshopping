@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { upload } from "@imagekit/react";
 import styled from 'styled-components';
 
@@ -14,7 +14,7 @@ export const MultiDropZoneImageKit = ({ id, setImages, name }) => {
   const [errorMessage, setErrorMessage] = useState("");
   const fileInputRef = useRef(null);
 
-  const isProduction = import.meta.env.production;
+  const isProduction = import.meta.env.PROD;
 
   const MAX_FILE_SIZE = 30 * 1024 * 1024;
   const MAX_FILES = 6;
@@ -97,15 +97,19 @@ const uploadToImageKit = async (files) => {
 
   for (const file of files) {
     const { token, expire, signature } = await authenticator();
+    const ext = file.name.split(".").pop();
 
     const result = await upload({
       file,
-      fileName: `${Date.now()}-${file.name}`,
+      fileName: `${Date.now()}.${ext}`,
       publicKey: import.meta.env.VITE_IMAGEKIT_PUBLIC_KEY,
       token,
       expire,
       signature,
       folder: "/uploads",
+
+      isPrivateFile: false, // 🔥 CLAVE ABSOLUTA
+
       onProgress: (evt) => {
         const percent = Math.round(
           ((completed + evt.loaded / evt.total) / files.length) * 100
@@ -120,6 +124,8 @@ const uploadToImageKit = async (files) => {
 
   return uploadedUrls;
 };
+
+
 
 const uploadImages = async (files) => {
   setUploadStatus("uploading");
@@ -189,6 +195,10 @@ const uploadImages = async (files) => {
     </MultiDropzone>
   );
 };
+ 
+
+
+  
   const MultiDropzone = styled.div`
   display: grid;
     .multidropzone {

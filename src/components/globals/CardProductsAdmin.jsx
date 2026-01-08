@@ -51,9 +51,9 @@ export const CardProductsAdmin = ({
       <section className={classs} onClick={selected}>
         <div>
           <div className="productcard-contain">
-            {jpg && (
+            
               <img loading="lazy" src={img} alt="" />
-            )}
+            
           </div>
         </div>
         <div className="productcard-box">
@@ -73,7 +73,7 @@ export const CardProductsAdmin = ({
         </div>
         <div className="productcard-btns">
           <div>
-            {delBtn && (<BaseButton handleClick={onDelete}  classs={'button delete'} textLabel={true} label={"Quitar"} />)}
+            {delBtn && (<BaseButton handleClick={onDelete}  classs={'button delete'} textLabel={true} label={"Eliminar"} />)}
           </div>
           <div>
             {uptBtn && (<BaseButton handleClick={onUpdate} classs={'button update'} textLabel={true} label={"Actualizar"} />)}

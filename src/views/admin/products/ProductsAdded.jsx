@@ -152,8 +152,8 @@ const { formRefs, validateForm } = useValidations();
                                   productInfo={item}
                                   addToWish={"addwishlist-red"}
                                   addTocart={"addcart-red"}
-                                  jpg={true}
-                                  img={item.images.length > 0 ? item.images[2].img_url : ''}
+                                  img={item.images?.[0]?.img_url}   // ✅ imagen principal
+                                  images={item.images}     
                                   description={item.description}
                                   quantity={item.quantity}
                                   title={item.name}
@@ -162,7 +162,7 @@ const { formRefs, validateForm } = useValidations();
                                   discount="10%"
                                   uptBtn={true}
                                   delBtn={true}
-                                  onUpdate={() => handleUpdate(item)}
+                                  onUpdate={() => handleUpdate(item.id)}
                                   onDelete={() => deleteProduct(item.id)}
                                   classs={"productcard background"}
                               />

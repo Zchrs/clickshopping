@@ -70,7 +70,7 @@ export const HomeScreenAdmin = () => {
         <div>
           <Link className="home-a">{t('auth.forgetPass')}</Link>
         </div>
-        <div>
+        <div className="home-btn">
           <BaseButton 
           handleClick={handleLoginAdmin} 
           classs={"button primary"} 
@@ -94,6 +94,12 @@ const AdminHome = styled.section`
     position: relative;
     width: 100%;
 
+    .home-btn{
+        display: grid;
+        width: 70%;
+        margin: auto;
+    }
+
     .home-a{
         margin: auto;
         width: fit-content;
@@ -114,7 +120,7 @@ const AdminHome = styled.section`
 
     form{
         margin: auto;
-        width:16%;
+        width:20%;
         display: grid;
         gap: 10px;
         @media (max-width: 680px) {

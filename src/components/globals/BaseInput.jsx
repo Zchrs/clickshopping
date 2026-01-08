@@ -9,7 +9,7 @@ import React, {
   useState,
 } from "react";
 import PropTypes from "prop-types";
-import { getImg } from "../../../globalActions";
+import { getFile } from "../../../globalActions";
 import styled from "styled-components";
 
 export const BaseInput = forwardRef((props, ref) => {
@@ -217,8 +217,8 @@ export const BaseInput = forwardRef((props, ref) => {
                 <img
                   src={
                     showPassword
-                      ? getImg("svg", "hide-icon", "svg")
-                      : getImg("svg", "show-icon", "svg")
+                      ? getFile("svg", "hide-icon", "svg")
+                      : getFile("svg", "show-icon", "svg")
                   }
                   alt={showPassword ? "Hide" : "Show"}
                   className="eye-icon"

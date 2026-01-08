@@ -122,46 +122,6 @@ export const clearProduct = (productInfo) => {
   };
   
 
-  // export const fetchProductsCategory = (category) => async (dispatch) => {
-  //   try {
-  //     // Obtener los productos por categoría
-  //     const response = await axios.get(`${import.meta.env.VITE_APP_API_GET_PRODUCTS_CATEGORY}?category=${category}`);
-  //     const products = response.data;
-  
-  //     // Obtener imágenes y calificaciones para cada producto
-  //     const productsComplete = await Promise.all(products.map(async (productInfo) => {
-  //       try {
-  //         // Obtener las imágenes del producto
-  //         const imagesRes = await axios.get(`${import.meta.env.VITE_APP_API_GET_IMAGE_PRODUCTS_URL}/${productInfo.id}`);
-          
-  //         // Obtener las calificaciones del producto
-  //         const ratingsRes = await axios.get(`${import.meta.env.VITE_APP_API_GET_PRODUCT_RATINGS_URL}/${productInfo.id}`);
-          
-          
-  //         return {
-  //           ...productInfo,
-  //           images: imagesRes.data.images || [],
-  //           ratings: ratingsRes.data || [], // Asegúrate de que la API devuelva las calificaciones en el formato esperado
-  //         };
-  //       } catch (error) {
-  //         console.error(`Error al obtener las imágenes o calificaciones para el producto ${productInfo.id}:`, error);
-  //         return {
-  //           ...productInfo,
-  //           images: [],
-  //           ratings: [],
-  //         };
-  //       }
-  //     }));
-  //     console.log(productsComplete)
-  //     // Despachar los productos completos con imágenes y calificaciones
-  //     dispatch(setProduct(productsComplete, 'Fetch'));
-  //     console.log('Productos completos con imágenes y calificaciones:', productsComplete);
-  //   } catch (error) {
-  //     console.error('Error al obtener los productos:', error);
-  //     dispatch(setProduct([])); // Despachar un array vacío en caso de error
-  //   }
-  // };
-
   export const fetchProductsById = (id) => async (dispatch) => {
     try {
       // Fetch product details by ID
