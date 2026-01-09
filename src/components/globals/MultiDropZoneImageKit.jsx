@@ -427,7 +427,8 @@ const uploadImages = async (files) => {
 }
 
 .progress-bar {
-  height: 6px;
+  color: white;
+  padding: 5px 0;
   background: #4CAF50;
   transition: width 0.3s ease;
 }

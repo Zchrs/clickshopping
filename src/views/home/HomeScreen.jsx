@@ -279,33 +279,7 @@ export const HomeScreen = () => {
           )}
         </div>
       </div>
-      {/* <div className="homescreen__container">
-        <h2>{t("globals.grains")}</h2>
-        <div className="homescreen__container-contain">
-          {grains.map((itemG) => (
-            <CardProductsSmall
-              key={itemG.id}
-              productLink={`/products/${itemG.id}`}
-              addToWish={"addwishlist-red"}
-              addTocart={"addcart-red"}
-              img3={itemG.img}
-              sellingsText={true}
-              sellings={t("globals.sellings")}
-              priceText={true}
-              price={itemG.price}
-              productInfo={itemG}
-              jpg3="true"
-              description={itemG.description}
-              previousPrice={itemG.previousPrice}
-              title={itemG.title}
-              thumbnails={itemG.thumbnails}
-              ratingss={true}
-              ratings={ratings}
-              product_id={itemG.id}
-            />
-          ))}
-        </div>
-      </div> */}
+
       <div className="homescreen__container">
         <Comments />
       </div>

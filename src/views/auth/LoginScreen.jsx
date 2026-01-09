@@ -3,6 +3,7 @@ import { Link, Navigate } from "react-router-dom"
 import { BaseButton } from "../../components/globals/BaseButton"
 import { BaseInput } from "../../components/globals/BaseInput"
 import { getFile } from "../../reducers/globalReducer"
+import { useValidations } from'../../hooks/useValidations'
 import { useTranslation } from 'react-i18next';
 import { useForm } from "../../hooks/useForm";
 import { useDispatch } from "react-redux";
@@ -14,55 +15,18 @@ import { useEffect } from "react";
 
 
 export const LoginScreen = () => {
+  const { formRefs, validateForm } = useValidations();
   const { t } = useTranslation();
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(startChecking());
   }, [dispatch]);
+
   const initialForm = {
     email: "",
     password: "",
   };
-
-  const validationsLogin = (form) => {
-    let errors = {};
-   let regexEmail = /^(\w+[/./-]?){1,}@[a-z]+[/.]\w{2,}$/;
-    let regexPass = /^@[A-Za-zÑñÁáÉéÍíÓóÚúÜü\s]+$/;
-  
-  const email = document.getElementById("email");
-  const password = document.getElementById("password");
-  
-  if (!form.email) {
-    email.style.cssText = "border: red 1px solid";
-    errors.email = "Field email is required";
-  } else if (!regexEmail.test(form.email.trim())) {
-    errors.email = "Email incorrect";
-  } else {
-    email.style.cssText = "border: #34B0BE 1px solid;";
-  }
-  
-  
-  if (!form.password) {
-    password.style.cssText = "border: red 1px solid";
-    errors.password = "Field Password is required";
-  } 
-  else if (!regexPass.test(form.password.trim())) {
-    errors.password = "Password field have must letters and numbers";
-  } else {
-    password.style.cssText = "border: #34B0BE 1px solid;";
-    console.log('entrando al else');
-  }
-  if (password.value !== '') {
-    password.style.cssText = "border: #34B0BE 1px solid;";
-    errors.password = false
-  }
-  
-  
-   return errors;
-  };
-
-
 
   const {
     form,
@@ -73,13 +37,14 @@ export const LoginScreen = () => {
     loadingActive,
     handleChange,
     handleBlur
-  } = useForm(initialForm, validationsLogin);
+  } = useForm(initialForm, validateForm);
   return (
     <section className="auth">
       <form>
         <div>
           <BaseInput
-          classs={"inputs outline"}
+          inputRef={formRefs.email}
+          classs={"inputs normal"}
           placeholder={t('auth.email')}
           id="email"
           name="email"
@@ -89,11 +54,11 @@ export const LoginScreen = () => {
           
           isEmail
           />
-          {errors.email && <p className="warnings-form">{errors.email}</p>}
         </div>
         <div>
           <BaseInput
-          classs={"inputs outline"}
+          inputRef={formRefs.password}
+          classs={"inputs normal"}
           placeholder={t('auth.yourPass')}
           onChange={handleChange}
           onBlur={handleBlur}
@@ -103,10 +68,18 @@ export const LoginScreen = () => {
           isPassword
           
           />
-          {errors.email && <p className="warnings-form">{errors.password}</p>}
         </div>
         <Link className="a">{t('auth.forgetPass')}</Link>
-        <BaseButton handleClick={handleLogin} classs={"button full-red-bullet"} textLabel={true} label={t('auth.login')}/>
+        <BaseButton 
+              handleClick={handleLogin} 
+              label={t('auth.login')}
+              classs={'button primary'} 
+              colorbtn={"var(--primary)"}
+              colortextbtnprimary={"var(--light)"}
+              colorbtnhoverprimary={"var(--bg-primary-tr)"}
+              colortextbtnhoverprimary={"white"}  
+              textLabel={true}
+        />
       </form>
       <div className="auth-gruop2">
         <h3>{t('auth.sesion')}</h3>

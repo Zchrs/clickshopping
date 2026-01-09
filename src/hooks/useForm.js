@@ -77,14 +77,13 @@ export const useForm = (initialForm, validateForm) => {
     };
   };
 
-  const handleCountryChange = (label, e) => {
-    if (!label) {
-      setSelectedCountry(label); // Llama a la función proporcionada con el país seleccionado
-      setSelected(label);
+  const handleCountryChange = (options) => {
+    if (!options) {
+      setSelectedCountry(options.target.value); // Llama a la función proporcionada con el país seleccionado
     } else {
       setForm({
         ...form,
-        country: label.label,
+        country: options.target.value,
       });
     }
   };
@@ -685,12 +684,12 @@ export const useForm = (initialForm, validateForm) => {
     const finalForm = {
       ...form,
     };
+    if (!finalForm.country) return;
     if (!finalForm.name) return;
     if (!finalForm.lastname) return;
-    if (!finalForm.country) return;
     if (!finalForm.phone) return;
     if (!finalForm.email) return;
-    if (!finalForm.pass) return;
+    if (!finalForm.password) return;
 
     e.preventDefault();
     setErrors(validateForm);
@@ -738,6 +737,21 @@ export const useForm = (initialForm, validateForm) => {
         200
       );
     } catch (error) {
+                  Swal.fire({
+              title: '¡Error!',
+              html: `No se pudo registrar el usuario`,
+              icon: 'warning',
+              cancelButtonText: 'Reintentar',
+              confirmlButtonText: 'Reintentar',
+              background: '#f0f0f0',
+              customClass: {
+                popup: 'custom-popup',
+                title: 'custom-title',
+                content: 'custom-content',
+                confirmButton: 'custom-confirm-button',
+                cancelButton: 'custom-cancel-button',
+              },
+            })
       console.log(error);
       return;
     }

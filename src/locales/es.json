@@ -69,6 +69,7 @@
       "title": "Bienvenido REIM PARTNERS",
       "data": "Ingrese sus datos lo más claro posible para que no haya errores en la digitación.",
       "email": "Correo electrónico",
+      "phone": "Número de teléfono",
       "pass": "Su contraseña",
       "remember": "Recordarme",
       "forgot": "Olvide mi contraseña",

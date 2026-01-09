@@ -1,320 +1,254 @@
-import { CardProducts } from "../../../components/globals/CardProducts"
-import {useLocation} from  'react-router-dom';
+/* eslint-disable no-unused-vars */
+
+import axios from "axios";
+import { selectedProduct, setProduct } from "../../../actions/productActions";
+import { BreadCrumb } from "../../../components/globals/BreadCrumb";
+import { CardProducts } from "../../../components/globals/CardProducts";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { startChecking } from "../../../actions/authActions";
+import { useTranslation } from "react-i18next";
+import io from "socket.io-client";
+import { getFile } from "../../../../globalActions";
+import { Empty } from "../../../components/globals/Empty";
+
 export const AlimentsScreen = () => {
-  const location = useLocation();
+  const [activeTab, setActiveTab] = useState("new");
+  const dispatch = useDispatch();
+  const [laptopProducts, setLaptopProducts] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [products, setProducts] = useState([]);
+  const ratings = useSelector((state) => state.product.ratings);
+  const lang = useSelector((state) => state.langUI.lang);
+  const { t, i18n } = useTranslation();
+
+  const fetchProducts = (category) => async (dispatch) => {
+    try {
+      const response = await axios.get(
+        `${
+          import.meta.env.VITE_APP_API_GET_PRODUCTS_CATEGORY
+        }?category=${category}`
+      );
+      const productsComplete = await Promise.all(
+        response.data.map(async (productInfo) => {
+          try {
+            const imagesRes = await axios.get(
+              `${import.meta.env.VITE_APP_API_GET_IMAGE_PRODUCTS_URL}/${
+                productInfo.id
+              }`
+            );
+            return {
+              ...productInfo,
+              images: imagesRes.data.images || [],
+            };
+          } catch (error) {
+            console.error(
+              `Error al obtener las imágenes para el producto ${productInfo.id}:`,
+              error
+            );
+            return {
+              ...productInfo,
+              images: [],
+            };
+          }
+        })
+      );
+      dispatch(setProduct(productsComplete));
+
+      return productsComplete; // Devolvemos los productos aquí
+    } catch (error) {
+      console.error("Error al obtener los productos:", error);
+      dispatch(setProduct([]));
+      return []; // Devolvemos un array vacío en caso de error
+    }
+  };
+
+  useEffect(() => {
+    dispatch(startChecking());
+    i18n.changeLanguage(lang);
+
+    const socket = io(import.meta.env.VITE_APP_API_WEBSOCKET_URL, {
+      cors: true,
+    });
+
+    socket.on("connect", () => {
+      console.log("Conectado al servidor de WebSocket");
+    });
+
+    socket.on("updateProducts", (updatedProducts) => {
+      console.log("Productos actualizados:", updatedProducts);
+      setProducts(updatedProducts);
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, [i18n, lang, dispatch]);
+
+  useEffect(() => {
+    dispatch(fetchProducts("portatiles")).then((prods) =>
+      setLaptopProducts(prods)
+    );
+  }, [dispatch]);
+
+  const handleSetProductClick = (product) => {
+    dispatch(selectedProduct(product));
+  };
+
   return (
     <section className="productscreen">
-      <h2 className="productscreen-showroute"><span>{`home${location.pathname.replace(/\//g, ' > ')}`}</span></h2>
-        <div className="productscreen-features">
-          <h2>Alimentos</h2>
-          <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. 
-            Eveniet odit similique perferendis maxime consequuntur nobis 
-            laborum! Dolore saepe corrupti iure ut excepturi fuga accusamus 
-            ipsam! Sint laboriosam voluptate cupiditate amet?</p>
-        </div>
-          <div className="productscreen-container">
-            
-            <div className="productscreen-contain">
-              <h2>Legumbres</h2>
-              <div className="productscreen-cards">
+      <div className="productscreen-header">
+        <h2 className="productscreen-showroute">
+          <BreadCrumb />
+        </h2>
+      </div>
+
+      {/* 🔘 TABS */}
+      <div className="productscreen-features">
+        <button
+          className={activeTab === "new" ? "active" : ""}
+          onClick={() => setActiveTab("new")}>
+          Repuestos nuevos
+        </button>
+        <button
+          className={activeTab === "used" ? "active" : ""}
+          onClick={() => setActiveTab("used")}>
+          Repuestos de segunda
+        </button>
+        <button
+          className={activeTab === "parts" ? "active" : ""}
+          onClick={() => setActiveTab("parts")}>
+          Partes y accesorios
+        </button>
+      </div>
+
+      <div className="productscreen-container">
+        {/* 🟢 CONTENIDO 1 */}
+        {activeTab === "new" && (
+          <div className="productscreen-contain">
+            <h2>Repuestos nuevos</h2>
+            <div className="productscreen-cards">
+              {loading ? (
+                <p>{t("globals.emptyProducts")}</p>
+              ) : laptopProducts.length === 0 ? (
+                <Empty message={t("globals.emptyProducts")} />
+              ) : (
+                laptopProducts.map((itemL) => (
+                  <CardProducts
+                    key={itemL.id}
+                    productLink={`/products/${itemL.id}`}
+                    addToWish="addwishlist-red"
+                    addTocart="addcart-red"
+                    jpg
+                    img={itemL.images?.[0]?.img_url} // ✅ imagen principal
+                    images={itemL.images} // ✅ PASAR EL ARRAY
+                    price={itemL.price}
+                    onClick={() => handleSetProductClick(itemL)}
+                    prodHover={() => handleSetProductClick(itemL)}
+                    member="10% de descuento para miembros premium"
+                    previuosPrice={itemL.previousPrice}
+                    description={itemL.description}
+                    title={itemL.title}
+                    ratingss
+                    ratings={ratings}
+                    product_id={itemL.id}
+                    classs="productcard background"
+                    buyCr
+                  />
+                ))
+              )}
               <CardProducts
-          addToWish={"addwishlist-red"}
-          addTocart={"addcart-red"}
-          img="tomates"
-          description="Tomates frescos hidropóndico nacional de la más alta calidad, 100% orgánicos."
-          title="Precio por 1kg"
-          price="Cop $3.990 "
-          previuosPrice="Cop $4.200"
-          discount="5%"
-          member="10% de descuento para miembros premium"
-          jpg="true"
-          classs={"productcard background"}
-          buyCr={true}
-        />
-        <CardProducts
-          addToWish={"addwishlist-red"}
-          addTocart={"addcart-red"}
-          img="cebolla"
-          description="cebolla fresca hidropóndica nacional de la más alta calidad, 100% orgánica."
-          title="Precio por 1kg"
-          price="Cop $1.365"
-          previuosPrice="Cop $1.440"
-          discount="5%"
-          member="10% de descuento para miembros premium"
-          jpg="true"
-          classs={"productcard background"}
-          buyCr={true}
-        />
-        <CardProducts
-          addToWish={"addwishlist-red"}
-          addTocart={"addcart-red"}
-          img="cebolla-larga"
-          description="Cebolla larga hidropóndica nacional fresca de la más alta calidad, 100% orgánica."
-          title="Precio por 1kg"
-          price="Cop $2.850 "
-          previuosPrice="Cop $3.000"
-          discount="5%"
-          member="10% de descuento para miembros premium"
-          jpg="true"
-          classs={"productcard background"}
-          buyCr={true}
-        />
-        <CardProducts
-          addToWish={"addwishlist-red"}
-          addTocart={"addcart-red"}
-          img="ajo"
-          description="Ajo hidropóndico nacional fresco de la más alta calidad, 100% orgánico."
-          title="Precio por 50gr"
-          price="Cop $2.094"
-          previuosPrice="Cop $2.250"
-          discount="5%"
-          member="10% de descuento para miembros premium"
-          jpg="true"
-          classs={"productcard background"}
-          buyCr={true}
-        />
-        <CardProducts
-          addToWish={"addwishlist-red"}
-          addTocart={"addcart-red"}
-          img="pimenton"
-          description="Pimenton rojo hidropóndico nacional fresco de la más alta calidad, 100% orgánico."
-          title="Precio por 1kg"
-          price="Cop $2.280"
-          previuosPrice="Cop $2.400"
-          discount="5%"
-          member="10% de descuento para miembros premium"
-          jpg="true"
-          classs={"productcard background"}
-          buyCr={true}
-        />
-              </div>
-            </div>
-            <div className="productscreen-contain">
-              <h2>Frutas</h2>
-              <div className="productscreen-cards">
-              <CardProducts
-                addToWish={"addwishlist-red"}
-                addTocart={"addcart-red"}
-                img="manzana"
-                description="Manzana roja de la más alta calidad, 100% orgánicas."
+                addToWish="addwishlist-red"
+                addTocart="addcart-red"
+                img={getFile("img/images", `manzana`, "jpg")}
+                description="Manzana roja de la más alta calidad."
                 title="Precio por 1kg"
                 price="Cop $11.384"
                 previuosPrice="Cop $11.984"
                 discount="5%"
                 member="10% de descuento para miembros premium"
-                jpg="true"
-                classs={"productcard background"}
-                buyCr={true}
+                jpg
+                classs="productcard background"
+                buyCr
               />
-      <CardProducts
-      addToWish={"addwishlist-red"}
-addTocart={"addcart-red"}
-        img="banano"
-        description="Bananos nacionales de la más alta calidad, 100% orgánicas."
-        title="Precio por 1kg"
-        price="Cop $2.850"
-        previuosPrice="Cop $3.000"
-        discount="5%"
-        member="10% de descuento para miembros premium"
-        jpg="true"
-        classs={"productcard background"}
-        buyCr={true}
-      />
-      <CardProducts
-      addToWish={"addwishlist-red"}
-addTocart={"addcart-red"}
-        img="mora"
-        description="Mora en bolsa nacional de la más alta calidad, 100% orgánicas."
-        title="Precio por 1kg"
-        price="Cop $12.144"
-        previuosPrice="Cop $12.784"
-        discount="5%"
-        member="10% de descuento para miembros premium"
-        jpg="true"
-        classs={"productcard background"}
-        buyCr={true}
-      />
-      <CardProducts
-      addToWish={"addwishlist-red"}
-addTocart={"addcart-red"}
-        img="uvas"
-        description="Uva nacional de la más alta calidad, 100% orgánicas."
-        title="Precio por 1kg"
-        price="Cop $6.840"
-        previuosPrice="Cop $7.200"
-        discount="5%"
-        member="10% de descuento para miembros premium"
-        jpg="true"
-        classs={"productcard background"}
-        buyCr={true}
-      />
-      <CardProducts
-      addToWish={"addwishlist-red"}
-addTocart={"addcart-red"}
-        img="mango"
-        description="Mango nacional de la más alta calidad, 100% orgánicos."
-        title="Precio por 1kg"
-        price="Cop $3.325"
-        previuosPrice="Cop $3.500"
-        discount="5%"
-        member="10% de descuento para miembros premium"
-        jpg="true"
-        classs={"productcard background"}
-        buyCr={true}
-      />
-              </div>
-            </div>
-            <div className="productscreen-contain">
-              <h2>Granos</h2>
-              <div className="productscreen-cards">
               <CardProducts
-        addToWish={"addwishlist-red"}
-        addTocart={"addcart-red"}
-        img="frijol"
-        description="Frijol rojo nacional de la más alta calidad, 100% orgánicos."
-        title="Precio por 1kg"
-        price="Cop $11.384"
-        previuosPrice="Cop $11.984"
-        discount="5%"
-        member="10% de descuento para miembros premium"
-        jpg="true"
-        classs={"productcard background"}
-        buyCr={true}
-      />
-      <CardProducts
-        addToWish={"addwishlist-red"}
-addTocart={"addcart-red"}
-        img="garbanzo"
-        description="Garbanzo nacionale de la más alta calidad, 100% orgánicos."
-        title="Precio por 1kg"
-        price="Cop $2.850"
-        previuosPrice="Cop $3.000"
-        discount="5%"
-        member="10% de descuento para miembros premium"
-        jpg="true"
-        classs={"productcard background"}
-        buyCr={true}
-      />
-      <CardProducts
-        addToWish={"addwishlist-red"}
-addTocart={"addcart-red"}
-        img="lenteja"
-        description="Lenteja en bolsa nacional de la más alta calidad, 100% orgánicas."
-        title="Precio por 1kg"
-        price="Cop $12.144"
-        previuosPrice="Cop $12.784"
-        discount="5%"
-        member="10% de descuento para miembros premium"
-        jpg="true"
-        classs={"productcard background"}
-        buyCr={true}
-      />
-      <CardProducts
-        addToWish={"addwishlist-red"}
-addTocart={"addcart-red"}
-        img="arveja"
-        description="Arveja nacional de la más alta calidad, 100% orgánica."
-        title="Precio por 1kg"
-        price="Cop $6.840"
-        previuosPrice="Cop $7.200"
-        discount="5%"
-        member="10% de descuento para miembros premium"
-        jpg="true"
-        classs={"productcard background"}
-        buyCr={true}
-      />
-      <CardProducts
-        addToWish={"addwishlist-red"}
-        addTocart={"addcart-red"}
-        img="maiz"
-        description="Maíz nacional de la más alta calidad, 100% orgánicos."
-        title="Precio por 1kg"
-        price="Cop $3.325"
-        previuosPrice="Cop $3.500"
-        discount="5%"
-        member="10% de descuento para miembros premium"
-        jpg="true"
-        classs={"productcard background"}
-        buyCr={true}
-      />
-              </div>
-            </div>
-            <div className="productscreen-contain">
-              <h2>Especias</h2>
-              <div className="productscreen-cards">
+                addToWish="addwishlist-red"
+                addTocart="addcart-red"
+                img={getFile("img/images", `manzana`, "jpg")}
+                description="Manzana roja de la más alta calidad."
+                title="Precio por 1kg"
+                price="Cop $11.384"
+                previuosPrice="Cop $11.984"
+                discount="5%"
+                member="10% de descuento para miembros premium"
+                jpg
+                classs="productcard background"
+                buyCr
+              />
               <CardProducts
-        addToWish={"addwishlist-red"}
-addTocart={"addcart-red"}
-        img1="laurel"
-        description="Laurel fresco nacional hidropóndico de la más alta calidad, 100% orgánico."
-        title="Precio por 1kg"
-        price="Cop $11.384"
-        previuosPrice="Cop $11.984"
-        discount="5%"
-        member="10% de descuento para miembros premium"
-        jpg1="true"
-        classs={"productcard background"}
-        buyCr={true}
-      />
-      <CardProducts
-        addToWish={"addwishlist-red"}
-addTocart={"addcart-red"}
-        img1="oregano"
-        description="Orégano fresco nacional hidropóndico de la más alta calidad, 100% orgánicos."
-        title="Precio por 1kg"
-        price="Cop $2.850"
-        previuosPrice="Cop $3.000"
-        discount="5%"
-        member="10% de descuento para miembros premium"
-        jpg1="true"
-        classs={"productcard background"}
-        buyCr={true}
-      />
-      <CardProducts
-        addToWish={"addwishlist-red"}
-addTocart={"addcart-red"}
-        img1="tomillo"
-        description="Tomillo fresco nacional hidropóndico en bolsa nacional de la más alta calidad, 100% orgánicas."
-        title="Precio por 1kg"
-        price="Cop $12.144"
-        previuosPrice="Cop $12.784"
-        discount="5%"
-        member="10% de descuento para miembros premium"
-        jpg1="true"
-        classs={"productcard background"}
-        buyCr={true}
-      />
-      <CardProducts
-        addToWish={"addwishlist-red"}
-addTocart={"addcart-red"}
-        img1="romero"
-        description="Romero fresco hidropóndico nacional de la más alta calidad, 100% orgánica."
-        title="Precio por 1kg"
-        price="Cop $6.840"
-        previuosPrice="Cop $7.200"
-        discount="5%"
-        member="10% de descuento para miembros premium"
-        jpg1="true"
-        classs={"productcard background"}
-        buyCr={true}
-      />
-      <CardProducts
-        addToWish={"addwishlist-red"}
-        addTocart={"addcart-red"}
-        img1="pimienta-negra"
-        description="Pimienta negra hidropóndica nacional de la más alta calidad, 100% orgánicos."
-        title="Precio por 1kg"
-        price="Cop $3.325"
-        previuosPrice="Cop $3.500"
-        discount="5%"
-        member="10% de descuento para miembros premium"
-        jpg1="true"
-        classs={"productcard background"}
-        buyCr={true}
-      />
-              </div>
+                addToWish="addwishlist-red"
+                addTocart="addcart-red"
+                img={getFile("img/images", `manzana`, "jpg")}
+                description="Manzana roja de la más alta calidad."
+                title="Precio por 1kg"
+                price="Cop $11.384"
+                previuosPrice="Cop $11.984"
+                discount="5%"
+                member="10% de descuento para miembros premium"
+                jpg
+                classs="productcard background"
+                buyCr
+              />
             </div>
           </div>
+        )}
+
+        {/* 🔵 CONTENIDO 2 */}
+        {activeTab === "used" && (
+          <div className="productscreen-contain">
+            <h2>Repuestos de segunda</h2>
+            <div className="productscreen-cards">
+              <CardProducts
+                addToWish="addwishlist-red"
+                addTocart="addcart-red"
+                img={getFile("img/images", `manzana`, "jpg")}
+                description="Manzana roja de la más alta calidad."
+                title="Precio por 1kg"
+                price="Cop $11.384"
+                previuosPrice="Cop $11.984"
+                discount="5%"
+                member="10% de descuento para miembros premium"
+                jpg
+                classs="productcard background"
+                buyCr
+              />
+              {/* resto de cards */}
+            </div>
+          </div>
+        )}
+        {activeTab === "parts" && (
+          <div className="productscreen-contain">
+            <h2>Partes y accesorios</h2>
+            <div className="productscreen-cards">
+              <CardProducts
+                addToWish="addwishlist-red"
+                addTocart="addcart-red"
+                img={getFile("img/images", `maiz`, "jpg")}
+                description="Tomates frescos hidropóndico nacional de la más alta calidad."
+                title="Precio por 1kg"
+                price="Cop $3.990"
+                previuosPrice="Cop $4.200"
+                discount="5%"
+                member="10% de descuento para miembros premium"
+                jpg
+                classs="productcard background"
+                buyCr
+              />
+              {/* resto de cards */}
+            </div>
+          </div>
+        )}
+      </div>
     </section>
-  )
-}
+  );
+};

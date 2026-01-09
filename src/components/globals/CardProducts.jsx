@@ -217,7 +217,7 @@ export const CardProducts = ({
             />
           </div>
           <div className="productcard-contain">
-            {jpg && <img loading="lazy" src={getFile('img/images', `${img}`, 'jpg')} alt="" />}
+            {jpg && <img loading="lazy" src={img} alt="" />}
           </div>
         </div>
         <div className="productcard-box">
@@ -285,7 +285,7 @@ display: grid;
     border-radius: 8px;
     align-content: space-between;
     gap: 2px;
-    padding: 10px 8px;
+    padding: 0;
     transition: all ease 0.9s;
     &:hover {
       transform: scale(1.12);
@@ -326,12 +326,12 @@ display: grid;
     }
 
     &__p {
-      grid-column: 1 / 2;
       font-size: 15px;
       font-weight: 500;
       padding: 0;
       line-height: 1.1;
       padding-bottom: 5px;
+      word-break: break-word;
     }
     &__quantity {
       color: rgb(123, 120, 120);

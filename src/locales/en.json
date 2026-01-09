@@ -70,6 +70,7 @@
     "auth": {
       "title": "Welcome REIM PARTNERS",
       "data": "Enter your data as clearly as possible so that there are no typing errors",
+      "phobe": "Phone number",
       "pass": "Your password",
       "remember": "Remember me",
       "welcome": "Welcome",

@@ -7,17 +7,20 @@
       display: none;
       @media (max-width: 920px) {
         transition: all ease .5s;
-        display: flex;
-        width: 270px;
-        gap: 5px;
+        display: grid;
+        width: fit-content;
+        height: fit-content;
+        gap: 3px;
         position: absolute;
+        right: 0px;
         
-        left: 235px;
         &-div{
           display: flex;
           gap: 8px;
           margin: 0;
           padding: 0;
+          align-items: center;
+          height: 100%;
           &-avatar{
             position: absolute;
             right: 15px;
@@ -28,10 +31,7 @@
         transition: all ease .5s;
         align-items: center;
         display: flex;
-        width: 215px;
-        gap: 5px;
-        position: absolute;
-        left: 200px;
+        gap: 2px;
       }
       @media (max-width: 380px) {
         transition: all ease .5s;
@@ -98,7 +98,7 @@
         z-index: 9999;
         
         
-        @media (max-width: 600px) {
+        @media (max-width: 920px) {
           position: fixed;
           display: none;
           justify-content: center;
@@ -176,7 +176,7 @@
 
       
   
-      @media (max-width: 600px) {
+      @media (max-width: 920px) {
         position: fixed;
         top: 0;
         z-index: 999;
@@ -197,7 +197,7 @@
         z-index: 9999;
         
         
-        @media (max-width: 600px) {
+        @media (max-width: 920px) {
           position: fixed;
           display: none;
           justify-content: center;
@@ -259,7 +259,7 @@
         height: 50px;
   
         @media (max-width: 600px) {
-          height: 35px;
+          height: 45px;
         }
   
         @media (max-width: 399px) {
@@ -344,7 +344,7 @@
           position: absolute;
           color: #f9f2f2;
           top: 90px;
-          @media (min-width: 720px) {
+          @media (min-width: 920px) {
             display: none;
           }
         }

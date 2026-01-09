@@ -41,6 +41,11 @@ export const BaseButton = ({
   outline,
   filterprimary,
   filterhover,
+  colorbtnsmall,
+colorbtntextsmall,
+colorbtnhoversmall,
+colortextbtnhoversmall
+  
 }) => {
   return (
     <ButtonBase 
@@ -64,6 +69,10 @@ export const BaseButton = ({
     hovercolorbtnoutline={hovercolorbtnoutline}
     filterprimary={filterprimary}
     filterprimaryhover={filterprimaryhover}
+    colorbtnsmall={colorbtnsmall}
+    colorbtntextsmall={colorbtntextsmall}
+    colorbtnhoversmall={colorbtnhoversmall}
+    colortextbtnhoversmall={colortextbtnhoversmall}
     >
       <button
         disabled={disabled}
@@ -240,7 +249,6 @@ const ButtonBase = styled.div`
       }
     }
 
-
     &.full-bullet {
       display: grid;
       width: 100%;
@@ -293,6 +301,65 @@ const ButtonBase = styled.div`
 
         &:hover {
           background: #007a5a;
+        }
+      }
+    }
+
+    &.small {
+      display: grid;
+      width: fit-content;
+      height: fit-content;
+      overflow: hidden;
+
+      &.disabled {
+        cursor: default;
+        z-index: 50;
+        opacity: 0.6;
+        transition: all ease 0.4s;
+
+        a {
+          cursor: not-allowed;
+          background: gray;
+        }
+
+        &:hover {
+          a {
+            background: gray;
+          }
+        }
+      }
+      a {
+        position: relative;
+        overflow: hidden;
+        text-decoration: none;
+        margin: 0 auto;
+        display: grid;
+        justify-content: center;
+        width: fit-content;
+        height: fit-content;
+        background: ${props => props.colorbtnsmall || "transparent"};
+        color: ${props => props.colorbtntextsmall || "var(--text-secondary)"};
+        border-radius: 50px;
+        color: white;
+        padding: 5px 9px;
+        font-weight: 600;
+        font-size: 17px;
+        line-height: 120%;
+        transition: all ease 0.3s;
+
+        @media (max-width: 550px) {
+          font-size: 13px;
+          font-weight: 400;
+        }
+
+        img {
+          filter: brightness(500%);
+          width: 18%;
+        }
+
+        &:hover {
+          background: ${props => props.colorbtnhoversmall || "transparent"};
+          color: ${props => props.colortextbtnhoversmall || "var(--dark)"};
         }
       }
     }

@@ -40,9 +40,9 @@
         
         
         
-        @media (max-width: 550px) {
+        @media (max-width: 720px) {
             grid-row: 2 / 3;
-            padding: 25 12px;
+            padding: 12px;
             
         }
         
@@ -105,7 +105,11 @@
     align-self: baseline;
     // border: var(--primary) 1px solid;
 
-    @media (max-width: 550px) {
+    @media (max-width: 720px) {
+        padding: 13px 0;
+        width: 80%;
+    }
+    @media (max-width: 420px) {
         width: 100%;
     }
     @media (max-width: 300px) {

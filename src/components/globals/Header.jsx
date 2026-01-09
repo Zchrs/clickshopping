@@ -29,8 +29,8 @@ export const Header = () => {
       text: t('globals.home'),
     },
     {
-      name: 'aliments',
-      route: 'categories/aliments',
+      name: 'spare sparts',
+      route: 'categories/spare-parts',
       text: t('globals.foods'),
     },
     {
@@ -78,8 +78,28 @@ export const Header = () => {
         <div className="head-btns">
             {!user ?
             <div className="head-btns-div">
-              <BaseButton label={t('auth.login')} classs="button small-red" link={"auth/login"} />
-              <BaseButton label={t('auth.register')} classs="button small-outline-red" link={"auth/register"} />
+              <BaseButton 
+              label={t('auth.login')} 
+              link={"auth/login"} 
+              classs={'button small'} 
+              colorbtnsmall={"var(--secondary)"}
+              colortextbtnsmall={"var(--light)"}
+              colorbtnhoversmall={"var(--bg-primary-tr)"}
+              colortextbtnhoversmall={"white"} 
+              />
+              <BaseButton 
+              label={t('auth.register')} 
+              link={"auth/register"} 
+              classs={'button small'} 
+              colorbtnsmall={"var(--primary)"}
+              colortextbtnsmall={"var(--dark)"}
+              colorbtnhoversmall={"var(--bg-secondary-tr)"}
+              colortextbtnhoversmall={"white"}  
+              width={"fit-content"}
+              />
+                      <div>
+          <Lang />
+        </div>
             </div>
               : <div className="head-btns-div-avatar">
                 <Avatar dropData={true} img={"default-avatar"} avtsmall={true} clas={"avatar tumb"} />
@@ -158,9 +178,7 @@ export const Header = () => {
 
       <div className="head-menu">
         <div className="head-menu__container">
-        <div className="head-menu__container-lang">
-          <Lang />
-        </div>
+
           <div>
             <InputSearch clas="inputSearch large" />
           </div>
