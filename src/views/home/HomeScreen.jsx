@@ -11,7 +11,7 @@ import { getFile } from "../../reducers/globalReducer";
 import { startChecking } from "../../actions/authActions";
 import io from "socket.io-client";
 import "../home/home.scss";
-import { selectedProduct, setProduct } from "../../actions/productActions";
+import { fetchProductsCategory, selectedProduct, setProduct } from "../../actions/productActions";
 
 export const HomeScreen = () => {
   const dispatch = useDispatch();
@@ -21,52 +21,8 @@ export const HomeScreen = () => {
   const [cellphoneProducts, setCellphoneProducts] = useState([]);
   const [clothingProducts, setClothingProducts] = useState([]);
   const [laptopProducts, setLaptopProducts] = useState([]);
-
-  console.log(laptopProducts);
-
   const ratings = useSelector((state) => state.product.ratings);
   const lang = useSelector((state) => state.langUI.lang);
-
-  const fetchProducts = (category) => async (dispatch) => {
-    try {
-      const response = await axios.get(
-        `${
-          import.meta.env.VITE_APP_API_GET_PRODUCTS_CATEGORY
-        }?category=${category}`
-      );
-      const productsComplete = await Promise.all(
-        response.data.map(async (productInfo) => {
-          try {
-            const imagesRes = await axios.get(
-              `${import.meta.env.VITE_APP_API_GET_IMAGE_PRODUCTS_URL}/${
-                productInfo.id
-              }`
-            );
-            return {
-              ...productInfo,
-              images: imagesRes.data.images || [],
-            };
-          } catch (error) {
-            console.error(
-              `Error al obtener las imágenes para el producto ${productInfo.id}:`,
-              error
-            );
-            return {
-              ...productInfo,
-              images: [],
-            };
-          }
-        })
-      );
-      dispatch(setProduct(productsComplete));
-
-      return productsComplete; // Devolvemos los productos aquí
-    } catch (error) {
-      console.error("Error al obtener los productos:", error);
-      dispatch(setProduct([]));
-      return []; // Devolvemos un array vacío en caso de error
-    }
-  };
 
   useEffect(() => {
     dispatch(startChecking());
@@ -90,17 +46,16 @@ export const HomeScreen = () => {
     };
   }, [i18n, lang, dispatch]);
 
-  useEffect(() => {
-    dispatch(fetchProducts("Celulares")).then((prods) =>
-      setCellphoneProducts(prods)
-    );
-    dispatch(fetchProducts("Accesorios")).then((prods) =>
-      setClothingProducts(prods)
-    );
-    dispatch(fetchProducts("portatiles")).then((prods) =>
-      setLaptopProducts(prods)
-    );
-  }, [dispatch]);
+useEffect(() => {
+  dispatch(fetchProductsCategory("Celulares"))
+    .then(setCellphoneProducts);
+
+  dispatch(fetchProductsCategory("Accesorios"))
+    .then(setClothingProducts);
+
+  dispatch(fetchProductsCategory("portatiles"))
+    .then(setLaptopProducts);
+}, [dispatch]);
 
   const handleSetProductClick = (product) => {
     dispatch(selectedProduct(product));

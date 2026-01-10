@@ -96,30 +96,40 @@ export const clearProduct = (productInfo) => {
     };
   };
   
-  export const fetchProductsCategory = (category) => async (dispatch) => {
-    try {
-      const response = await axios.get(`${import.meta.env.VITE_APP_API_GET_PRODUCTS_CATEGORY}?category=${category}`);
-      const productsComplete = await Promise.all(response.data.map(async (productInfo) => {
+export const fetchProductsCategory = (category) => async (dispatch) => {
+  try {
+    const response = await axios.get(
+      `${import.meta.env.VITE_APP_API_GET_PRODUCTS_CATEGORY}?category=${category}`
+    );
+
+    const productsComplete = await Promise.all(
+      response.data.map(async (productInfo) => {
         try {
-          const imagesRes = await axios.get(`${import.meta.env.VITE_APP_API_GET_IMAGE_PRODUCTS_URL}/${productInfo.id}`);
+          const imagesRes = await axios.get(
+            `${import.meta.env.VITE_APP_API_GET_IMAGE_PRODUCTS_URL}/${productInfo.id}`
+          );
           return {
             ...productInfo,
             images: imagesRes.data.images || [],
           };
         } catch (error) {
-          console.error(`Error al obtener las imágenes para el producto ${productInfo.id}:`, error);
-          return {
-            ...productInfo,
-            images: [],
-          };
+          return { ...productInfo, images: [] };
         }
-      }));
-      dispatch(setProduct(productsComplete));
-    } catch (error) {
-      console.error('Error al obtener los productos:', error);
-      dispatch(setProduct([])); // Asegurarse de despachar un array vacío en caso de error
-    }
-  };
+      })
+    );
+
+    dispatch(setProduct(productsComplete));
+
+    // 👇 RETORNAR LOS PRODUCTOS
+    return productsComplete;
+
+  } catch (error) {
+    console.error(error);
+    dispatch(setProduct([]));
+    return [];
+  }
+};
+
   
 
   export const fetchProductsById = (id) => async (dispatch) => {

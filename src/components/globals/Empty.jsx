@@ -1,12 +1,12 @@
 import styled from "styled-components"
-import { getImg } from "../../../globalActions"
+import { getFile } from "../../../globalActions"
 import PropTypes from "prop-types"
 
 export const Empty = ({message}) => {
   return (
     <EmPty>
     <div>
-        <img src={getImg('svg', 'empty', 'svg')} alt="" />
+        <img src={getFile('svg', 'empty-cart', 'svg')} alt="" />
         <h2>{message}</h2>
     </div>
     </EmPty>
@@ -17,18 +17,20 @@ const EmPty = styled.div`
   display: grid;
   width: fit-content;
   height: fit-content;
-  margin: auto;
+  text-align: center;
+  gap: 10px;
 
   img{
       width: 300px;
       filter: invert(80%);
+      opacity: 0.5;
 
       @media (max-width: 780px) {
         width: 100%;
       }
   }
   h2{
-    color: #00000022;
+    color: #0000004d;
   }
   div{
     display: grid;
