@@ -5,14 +5,12 @@ import { BoxInfo } from "./BoxInfo";
 import { InputSearch } from "./InputSearch";
 import { BaseButton } from "./BaseButton";
 import { useEffect, useState } from "react";
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 import { startChecking } from "../../actions/authActions";
 import { useDispatch, useSelector } from "react-redux";
 import { Lang } from "./Lang";
 import { Avatar } from "./Avatar";
 import styled from "styled-components";
-
- 
 
 export const Header = () => {
   const user = useSelector((state) => state.auth.user);
@@ -21,31 +19,30 @@ export const Header = () => {
 
   const buttonsList = [
     {
-      name: 'home',
-      route: 'home',
-      text: t('globals.home'),
+      name: "home",
+      route: "home",
+      text: t("globals.home"),
     },
     {
-      name: 'spare sparts',
-      route: 'categories/spare-parts',
-      text: t('globals.foods'),
+      name: "spare sparts",
+      route: "categories/spare-parts",
+      text: t("globals.foods"),
     },
     {
-      name: 'technology',
-      route: 'categories/technology',
-      text: t('globals.technology'),
+      name: "technology",
+      route: "categories/technology",
+      text: t("globals.technology"),
     },
     {
-      name: 'clothing',
-      route: 'categories/services',
-      text: t('globals.clothing'),
+      name: "clothing",
+      route: "categories/services",
+      text: t("globals.clothing"),
     },
   ];
   // const { menuList, buttonsList } = props;
-  const [ menuFixed, UseMenuFixed ] = useState(false)
-  
-   
-// Montaje/ejecución del componente
+  const [menuFixed, UseMenuFixed] = useState(false);
+
+  // Montaje/ejecución del componente
   useEffect(() => {
     const handleScroll = () => {
       const offset = window.scrollY;
@@ -58,117 +55,140 @@ export const Header = () => {
       dispatch(startChecking());
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
 
-// quitando el listener en el desmontaje/cambio de pantalla 
+    // quitando el listener en el desmontaje/cambio de pantalla
     return () => {
-      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener("scroll", handleScroll);
     };
   }, []);
-  
+
   return (
     <HeaDer>
       <div className="head">
-        <div className={menuFixed ? 'head-top' : 'head-hidden'} >
+        <div className={menuFixed ? "head-top" : "head-hidden"}>
           <div className="head-logo">
-            <img src={getFile('svg', 'logo', 'svg')} alt="Logo" />
+            <img src={getFile("svg", "logo", "svg")} alt="Logo" />
           </div>
           <div className="head-btns">
-              {!user ?
+            {!user ? (
               <div className="head-btns-div">
                 <BaseButton
-                label={t('auth.login')}
-                link={"auth/login"}
-                classs={'button small'}
-                colorbtnsmall={"var(--secondary)"}
-                colortextbtnsmall={"var(--light)"}
-                colorbtnhoversmall={"var(--bg-primary-tr)"}
-                colortextbtnhoversmall={"white"}
+                  label={t("auth.login")}
+                  link={"auth/login"}
+                  classs={"button small"}
+                  colorbtnsmall={"var(--secondary)"}
+                  colortextbtnsmall={"var(--light)"}
+                  colorbtnhoversmall={"var(--bg-primary-tr)"}
+                  colortextbtnhoversmall={"white"}
                 />
                 <BaseButton
-                label={t('auth.register')}
-                link={"auth/register"}
-                classs={'button small'}
-                colorbtnsmall={"var(--primary)"}
-                colortextbtnsmall={"var(--dark)"}
-                colorbtnhoversmall={"var(--bg-secondary-tr)"}
-                colortextbtnhoversmall={"white"}
-                width={"fit-content"}
+                  label={t("auth.register")}
+                  link={"auth/register"}
+                  classs={"button small"}
+                  colorbtnsmall={"var(--primary)"}
+                  colortextbtnsmall={"var(--dark)"}
+                  colorbtnhoversmall={"var(--bg-secondary-tr)"}
+                  colortextbtnhoversmall={"white"}
+                  width={"fit-content"}
                 />
-                        <div>
-            <Lang />
-          </div>
-              </div>
-                : <div className="head-btns-div-avatar">
-                  <Avatar dropData={true} img={"default-avatar"} avtsmall={true} clas={"avatar tumb"} />
+                <div>
+                  <Lang />
                 </div>
-              }
+              </div>
+            ) : (
+              <div className="head-btns-div-avatar">
+                <Avatar
+                  dropData={true}
+                  img={"default-avatar"}
+                  avtsmall={true}
+                  clas={"avatar tumb"}
+                />
+              </div>
+            )}
           </div>
           <div className="head-top__menu">
             <ul>
-              {!user ? <BoxInfo
-                arrow={true}
-                icon="user-red"
-                btns={true}
-                title={t('auth.welcome')}
-                social={true}
-              /> : false }
-              {!user ? <BoxInfo
-                arrow={true}
-                icon="cart-red"
-                title={t('cart.empty')}
-                text={t('auth.login')}
-                textA="o"
-                textB={t('auth.register')}
-                emptyCart={true}
-                img="empty-cart"
-                texts={true}
-              />
-              :
+              {!user ? (
                 <BoxInfo
-                arrow={true}
-                icon="cart-red"
-                title={t('cart.empty')}
-                newUser={true}
-                textU={t('cart.dare')}
-                emptyCart={true}
-                textT={true}
-                img="empty-cart"
-              />
-              }
-              { !user ?
+                  arrow={true}
+                  icon="user-red"
+                  btns={true}
+                  title={t("auth.welcome")}
+                  social={true}
+                />
+              ) : (
+                false
+              )}
+              {!user ? (
                 <BoxInfo
-                arrow={true}
-                icon="letter"
-                texts={true}
-                titleA={t('comunications.noMessage')}
-                textC={t('globals.messages')}
-                btnlogin={true}
-                newUser={true}
-                textD={t('globals.newCustomer')}
-                img="no-message"
-              />
-              :
-              <BoxInfo
-              arrow={true}
-              icon="letter"
-              texts={true}
-              titleA={t('comunications.noMessage')}
-              newUser={true}
-              img="no-message"
-            />
-              }
-              <Lang /><ul>
-      
-                { !user ?
+                  arrow={true}
+                  icon="cart-red"
+                  title={t("cart.empty")}
+                  text={t("auth.login")}
+                  textA="o"
+                  textB={t("auth.register")}
+                  emptyCart={true}
+                  img="empty-cart"
+                  texts={true}
+                />
+              ) : (
+                <BoxInfo
+                  arrow={true}
+                  icon="cart-red"
+                  title={t("cart.empty")}
+                  newUser={true}
+                  textU={t("cart.dare")}
+                  emptyCart={true}
+                  textT={true}
+                  img="empty-cart"
+                />
+              )}
+              {!user ? (
+                <BoxInfo
+                  arrow={true}
+                  icon="letter"
+                  texts={true}
+                  titleA={t("comunications.noMessage")}
+                  textC={t("globals.messages")}
+                  btnlogin={true}
+                  newUser={true}
+                  textD={t("globals.newCustomer")}
+                  img="no-message"
+                />
+              ) : (
+                <BoxInfo
+                  arrow={true}
+                  icon="letter"
+                  texts={true}
+                  titleA={t("comunications.noMessage")}
+                  newUser={true}
+                  img="no-message"
+                />
+              )}
+              <Lang />
+              <ul>
+                {!user ? (
                   <NavLink className="head-top-a" to="/auth/register">
-                    <li>{t('auth.newAccount')}</li>
+                    <li>{t("auth.newAccount")}</li>
                   </NavLink>
-                  : false
-                }
-                <NavLink><li>{t('globals.help')}</li></NavLink>
+                ) : (
+                  false
+                )}
+                <NavLink>
+                  <li>{t("globals.help")}</li>
+                </NavLink>
               </ul>
-              {user ? <Avatar dropData={true} img={"default-avatar"} avtsmall={true} clas={"avatar tumb"} /> : false}
+              {user ? (
+                <Avatar
+                  dropData={true}
+                  img={"default-avatar"}
+                  avtsmall={true}
+                  clas={"avatar tumb"}
+                />
+              ) : (
+                false
+              )}
             </ul>
           </div>
         </div>
@@ -177,10 +197,12 @@ export const Header = () => {
             <div>
               <InputSearch clas="inputSearch large" />
             </div>
-            <ul>
+            <ul className="ul">
               {buttonsList.map((item, index) => (
-      
-                <NavLink to={item.route} key={index}>
+                <NavLink
+                  key={index}
+                  to={item.route}
+                  className={({ isActive }) => (isActive ? "isactive" : "li")}>
                   <li>{item.text}</li>
                 </NavLink>
               ))}
@@ -190,46 +212,46 @@ export const Header = () => {
       </div>
     </HeaDer>
   );
-}
+};
 
 const HeaDer = styled.div`
-.head {
+  .head {
     display: grid;
     width: 100%;
     align-items: center;
-  
-    &-btns{
+
+    &-btns {
       display: none;
       @media (max-width: 920px) {
-        transition: all ease .5s;
+        transition: all ease 0.5s;
         display: grid;
         width: fit-content;
         height: fit-content;
         gap: 3px;
         position: absolute;
         right: 0px;
-        
-        &-div{
+
+        &-div {
           display: flex;
           gap: 8px;
           margin: 0;
           padding: 0;
           align-items: center;
           height: 100%;
-          &-avatar{
+          &-avatar {
             position: absolute;
             right: 15px;
           }
         }
       }
       @media (max-width: 420px) {
-        transition: all ease .5s;
+        transition: all ease 0.5s;
         align-items: center;
         display: flex;
         gap: 2px;
       }
       @media (max-width: 380px) {
-        transition: all ease .5s;
+        transition: all ease 0.5s;
         align-items: center;
         display: flex;
         width: 230px;
@@ -238,7 +260,7 @@ const HeaDer = styled.div`
         left: 185px;
       }
       @media (max-width: 320px) {
-        transition: all ease .5s;
+        transition: all ease 0.5s;
         align-items: center;
         display: flex;
         width: 180px;
@@ -258,20 +280,18 @@ const HeaDer = styled.div`
       z-index: 999;
       position: fixed;
       box-shadow: var(--primary) 1px 1px 3px;
-      transition: all ease .5s;
+      transition: all ease 0.5s;
       top: 0;
-      
-      &-a{
-        color: black;
-        transition: all ease .3s;
 
-        &:hover{
+      &-a {
+        color: black;
+        transition: all ease 0.3s;
+
+        &:hover {
           color: #00a9ff;
         }
       }
 
-      
-  
       @media (max-width: 600px) {
         position: fixed;
         top: 0;
@@ -281,7 +301,7 @@ const HeaDer = styled.div`
         height: 70px;
         border-bottom: rgba(0, 0, 0, 0.559) 1px solid;
       }
-  
+
       &__menu {
         height: 100%;
         position: relative;
@@ -291,8 +311,7 @@ const HeaDer = styled.div`
         background: transparent;
         // border: #00a9ff 1px solid;
         z-index: 9999;
-        
-        
+
         @media (max-width: 920px) {
           position: fixed;
           display: none;
@@ -304,7 +323,7 @@ const HeaDer = styled.div`
           width: 100%;
           height: 50px;
         }
-        
+
         ul {
           display: grid;
           align-items: center;
@@ -314,7 +333,7 @@ const HeaDer = styled.div`
           list-style: none;
           display: flex;
           gap: 20px;
-  
+
           li {
             height: 100%;
             align-items: center;
@@ -324,53 +343,50 @@ const HeaDer = styled.div`
             cursor: pointer;
             color: black;
             font-weight: 500;
-            transition: all ease .3s;
-  
+            transition: all ease 0.3s;
+
             img {
               display: block;
               height: 6px;
-              transition: all ease .3s;
+              transition: all ease 0.3s;
               filter: grayscale(100%);
             }
-  
+
             &:hover {
               color: #00a9ff;
-              transition: all ease .3s;
-  
+              transition: all ease 0.3s;
+
               img {
                 transform: rotateZ(180deg);
-                transition: all ease .3s;
+                transition: all ease 0.3s;
                 filter: grayscale(0%);
               }
             }
           }
         }
-  
       }
     }
-    &-hidden{
+    &-hidden {
       padding: 10px;
       display: flex;
       justify-content: space-between;
-      transition: all ease .5s;
+      transition: all ease 0.5s;
       align-items: center;
       background: white;
       width: 100%;
       z-index: 999;
       position: relative;
       border-bottom: none;
-      
-      &-a{
-        color: black;
-        transition: all ease .3s;
 
-        &:hover{
+      &-a {
+        color: black;
+        transition: all ease 0.3s;
+
+        &:hover {
           color: #00a9ff;
         }
       }
 
-      
-  
       @media (max-width: 920px) {
         position: fixed;
         top: 0;
@@ -380,7 +396,7 @@ const HeaDer = styled.div`
         height: 70px;
         border-bottom: rgba(0, 0, 0, 0.559) 1px solid;
       }
-  
+
       &__menu {
         height: 100%;
         position: relative;
@@ -390,8 +406,7 @@ const HeaDer = styled.div`
         background: transparent;
         // border: #00a9ff 1px solid;
         z-index: 9999;
-        
-        
+
         @media (max-width: 920px) {
           position: fixed;
           display: none;
@@ -403,7 +418,7 @@ const HeaDer = styled.div`
           width: 100%;
           height: 50px;
         }
-        
+
         ul {
           display: grid;
           align-items: center;
@@ -413,7 +428,7 @@ const HeaDer = styled.div`
           list-style: none;
           display: flex;
           gap: 20px;
-  
+
           li {
             height: 100%;
             align-items: center;
@@ -423,46 +438,45 @@ const HeaDer = styled.div`
             cursor: pointer;
             color: black;
             font-weight: 500;
-            transition: all ease .3s;
-  
+            transition: all ease 0.3s;
+
             img {
               display: block;
               height: 6px;
-              transition: all ease .3s;
+              transition: all ease 0.3s;
               filter: grayscale(100%);
             }
-  
+
             &:hover {
               color: #00a9ff;
-              transition: all ease .3s;
-  
+              transition: all ease 0.3s;
+
               img {
                 transform: rotateZ(180deg);
-                transition: all ease .3s;
+                transition: all ease 0.3s;
                 filter: grayscale(0%);
               }
             }
           }
         }
-  
       }
     }
     &-logo {
       cursor: pointer;
-  
+
       img {
         height: 50px;
-  
+
         @media (max-width: 600px) {
           height: 45px;
         }
-  
+
         @media (max-width: 399px) {
           height: 30px;
         }
       }
     }
-  
+
     &-menu {
       display: grid;
       width: 100%;
@@ -472,24 +486,21 @@ const HeaDer = styled.div`
       height: 250px;
       place-items: center;
       padding: 0;
-  
+
       @media (max-width: 700px) {
         margin-top: 70px;
       }
-            // font-size: 1.6rem;
-            a{
-              color: white;
-              width: 100%;
-              height: 100%;
-              &:hover{
-                
-            
-              color: #f9f2f2;
-            
-              }
-            }
-  
-      ul {
+      // font-size: 1.6rem;
+      a {
+        color: white;
+        width: 100%;
+        height: 100%;
+        &:hover {
+          color: #f9f2f2;
+        }
+      }
+
+      .ul {
         margin-top: 0px;
         padding: 0;
         display: flex;
@@ -497,13 +508,13 @@ const HeaDer = styled.div`
         gap: 20px;
         margin: 0 auto;
         justify-content: center;
-  
+
         @media (max-width: 700px) {
           width: 80%;
           gap: 5px;
         }
-  
-        li {
+
+        .li {
           display: grid;
           padding: 8px 38px;
           height: 40px;
@@ -512,16 +523,15 @@ const HeaDer = styled.div`
           place-items: center;
           background: #00a9ff;
 
-          &:hover{
+          &:hover {
             background: #054986;
-
           }
-  
+
           @media (max-width: 700px) {
             padding: 6px 8px;
             // font-size: 1.4rem;
           }
-  
+
           @media (max-width: 399px) {
             padding: 4px 8px;
             // font-size: 1.1rem;
@@ -529,13 +539,13 @@ const HeaDer = styled.div`
           }
         }
       }
-  
+
       &__container {
         display: grid;
         width: 100%;
         gap: 10px;
         margin-top: 55px;
-        &-lang{
+        &-lang {
           position: absolute;
           color: #f9f2f2;
           top: 90px;
@@ -546,8 +556,25 @@ const HeaDer = styled.div`
       }
     }
   }
-  
+
   .isactive {
-    display: none;
+    transition: all 0.3s ease-in-out;
+    place-items: center;
+    background: #054986;
+    display: grid;
+    padding: 8px 38px;
+    height: 40px;
+    border-radius: 10px 10px 0px 0px;
+
+    @media (max-width: 700px) {
+      padding: 6px 8px;
+      // font-size: 1.4rem;
+    }
+
+    @media (max-width: 399px) {
+      padding: 4px 8px;
+      height: 35px;
+      // font-size: 1.1rem;
+    }
   }
-`
+`;

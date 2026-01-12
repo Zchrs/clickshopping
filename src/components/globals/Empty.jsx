@@ -2,11 +2,11 @@ import styled from "styled-components"
 import { getFile } from "../../../globalActions"
 import PropTypes from "prop-types"
 
-export const Empty = ({message}) => {
+export const Empty = ({message, img}) => {
   return (
     <EmPty>
     <div>
-        <img src={getFile('svg', 'empty-cart', 'svg')} alt="" />
+        <img src={getFile('svg', `${img}`, 'svg')} alt="" />
         <h2>{message}</h2>
     </div>
     </EmPty>
@@ -43,4 +43,5 @@ const EmPty = styled.div`
 
 Empty.propTypes = {
   message: PropTypes.string.isRequired,
+  img: PropTypes.string.isRequired,
 } 

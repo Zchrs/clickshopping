@@ -337,11 +337,11 @@ $font-secondary: 'Playfair Display', serif;
 //H2
 
 .h2-light {
-  font-size: 4.2rem;
+  font-size: 2rem;
   font-weight: 300;
   line-height: 5.9rem;
-  color: $text-primary;
-  font-family: $font-secondary;
+  color: $text-secondary;
+  // font-family: $font-Primary;
 }
 
 .h2-regular {

@@ -18,6 +18,7 @@ export const BreadCrumb = () => {
     technology: t("globals.technology"),
     clothing: t("globals.clothing"),
     products: t("globals.products"),
+    services: t("globals.services"),
   };
 
   return (

@@ -3,6 +3,7 @@
       "home": "Inicio",
       "help": "Ayuda",
       "select": "Seleccionar",
+      "services": "Servicios",
       "back": "Regresar",
       "backHome": "Volver al inicio",
       "history": "Historial",
@@ -524,7 +525,7 @@
       "backTop": "Volver arriba",
       "writeEmail": "Escribe tu correo",
       "subscribe": "Subscribe",
-      "newsletterTitle": "Subscribe to our newsletter",
+      "newsletterTitle": "Suscríbete a nuestro boletín",
       "newsletterText": "Entérate de nuestras ofertas y lanzamientos exclusivos",
       "newsletterTextFull": "Acepto términos y condiciones, términos y condiciones marketplace y autorizo el tratamiento de mis datos personales con las siguientes condiciones.",
       "requestReversal": "Solicitud de reversiones"
