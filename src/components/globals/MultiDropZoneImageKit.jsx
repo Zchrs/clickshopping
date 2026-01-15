@@ -1,37 +1,24 @@
-/* eslint-disable no-unused-vars */
+
 /* eslint-disable react/prop-types */
-import { useEffect, useRef, useState } from 'react';
-import { upload } from "@imagekit/react";
-import styled from 'styled-components';
-
-
+import { useRef, useState } from "react";
+import styled from "styled-components";
+import { IKUpload } from "imagekitio-react";
 
 export const MultiDropZoneImageKit = ({ id, setImages, name }) => {
   const [active, setActive] = useState(false);
-  const [dropzoneFiles, setDropzoneFiles] = useState([]);
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [uploadStatus, setUploadStatus] = useState("idle");
-  const [errorMessage, setErrorMessage] = useState("");
-  const fileInputRef = useRef(null);
+  const [files, setFiles] = useState([]);
+  const [progress, setProgress] = useState(0);
+  const [status, setStatus] = useState("idle");
+  const [error, setError] = useState("");
 
+  const fileInputRef = useRef(null);
   const isProduction = import.meta.env.PROD;
 
-  const MAX_FILE_SIZE = 30 * 1024 * 1024;
   const MAX_FILES = 6;
+  const MAX_FILE_SIZE = 30 * 1024 * 1024;
 
-  const authenticator = async () => {
-  const res = await fetch(
-    import.meta.env.VITE_IMAGEKIT_AUTH_ENDPOINT
-  );
-
-  if (!res.ok) {
-    throw new Error("Auth failed");
-  }
-
-  return res.json(); // { token, expire, signature }
-};
-
-  const handleDragEvents = (e) => {
+  /* ─────────────── Drag & Drop ─────────────── */
+  const handleDrag = (e) => {
     e.preventDefault();
     e.stopPropagation();
     setActive(e.type === "dragenter" || e.type === "dragover");
@@ -40,161 +27,133 @@ export const MultiDropZoneImageKit = ({ id, setImages, name }) => {
   const handleDrop = (e) => {
     e.preventDefault();
     setActive(false);
-    const files = Array.from(e.dataTransfer.files).slice(0, MAX_FILES);
-    validateAndSetFiles(files);
+    validateFiles(Array.from(e.dataTransfer.files));
   };
 
-  const handleFileChange = (e) => {
-    const files = Array.from(e.target.files).slice(0, MAX_FILES);
-    validateAndSetFiles(files);
+  const handleChange = (e) => {
+    validateFiles(Array.from(e.target.files));
   };
 
-  const validateAndSetFiles = (files) => {
-    const validTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
-
-    const invalidFiles = files.filter(
-      (file) =>
-        !validTypes.includes(file.type) || file.size > MAX_FILE_SIZE
-    );
-
-    if (invalidFiles.length > 0) {
-      setUploadStatus("error");
-      setErrorMessage(
-        "Formato o tamaño inválido (JPEG, PNG, GIF, WEBP hasta 30MB)"
+  /* ─────────────── Validación ─────────────── */
+  const validateFiles = (files) => {
+    const valid = files
+      .slice(0, MAX_FILES)
+      .filter(
+        f =>
+          f.type.startsWith("image/") &&
+          f.size <= MAX_FILE_SIZE
       );
+
+    if (!valid.length) {
+      setError("Imágenes inválidas (máx 30MB)");
       return;
     }
 
-    setDropzoneFiles(files);
-    setUploadStatus("idle");
-    uploadImages(files);
+    setError("");
+    setFiles(valid);
+    setStatus("uploading");
+
+    if (!isProduction) {
+      uploadLocal(valid);
+    }
   };
 
-  const uploadToLocalServer = async (files) => {
-  const formData = new FormData();
+  /* ─────────────── LOCAL UPLOAD ─────────────── */
+  const uploadLocal = async (files) => {
+    const formData = new FormData();
+    files.forEach(f => formData.append("img_url", f));
 
-  files.forEach(file => {
-    formData.append("img_url", file);
-  });
+    const res = await fetch(
+      import.meta.env.VITE_APP_API_UPLOAD_IMAGES_PRODUCTS_URL,
+      { method: "POST", body: formData }
+    );
 
-  const res = await fetch(
-    import.meta.env.VITE_APP_API_UPLOAD_IMAGES_PRODUCTS_URL,
-    {
-      method: "POST",
-      body: formData,
-    }
-  );
+    const data = await res.json();
+    setImages(data.imageUrls);
+    setStatus("success");
+  };
 
-  if (!res.ok) throw new Error("Error local upload");
+  /* ─────────────── ImageKit SUCCESS ─────────────── */
+  const handleSuccess = (res) => {
+    setImages(prev => [...(prev || []), res.url]);
+    setStatus("success");
+  };
 
-  const data = await res.json();
-  return data.imageUrls;
-};
-
-const uploadToImageKit = async (files) => {
-  const uploadedUrls = [];
-  let completed = 0;
-
-  for (const file of files) {
-    const { token, expire, signature } = await authenticator();
-    const ext = file.name.split(".").pop();
-
-    const result = await upload({
-      file,
-      fileName: `${Date.now()}.${ext}`,
-      publicKey: import.meta.env.VITE_IMAGEKIT_PUBLIC_KEY,
-      token,
-      expire,
-      signature,
-      folder: "/uploads",
-
-      isPrivateFile: false, // 🔥 CLAVE ABSOLUTA
-
-      onProgress: (evt) => {
-        const percent = Math.round(
-          ((completed + evt.loaded / evt.total) / files.length) * 100
-        );
-        setUploadProgress(percent);
-      },
-    });
-
-    uploadedUrls.push(result.url);
-    completed++;
-  }
-
-  return uploadedUrls;
-};
-
-
-
-const uploadImages = async (files) => {
-  setUploadStatus("uploading");
-  setUploadProgress(0);
-
-  const urls = isProduction
-    ? await uploadToImageKit(files)
-    : await uploadToLocalServer(files);
-
-  setImages(urls);
-  setUploadStatus("success");
-};
-
-  const triggerFileInput = () => {
-    fileInputRef.current?.click();
+  const handleError = () => {
+    setError("Error subiendo imagen");
+    setStatus("error");
   };
 
   return (
     <MultiDropzone>
-      <div className={`multi-dropzone-container ${active ? "active" : ""}`}>
-        <div
-          className="multi-dropzone-area"
-          onDragEnter={handleDragEvents}
-          onDragLeave={handleDragEvents}
-          onDragOver={handleDragEvents}
-          onDrop={handleDrop}
-          onClick={triggerFileInput}
-        >
-          <input
-            ref={fileInputRef}
-            type="file"
-            id={id}
-            name={name}
-            className="file-input"
-            accept="image/*"
-            multiple
-            hidden
-            onChange={handleFileChange}
-          />
-          {dropzoneFiles.length === 0 ? (
-            <p>Arrastra hasta {MAX_FILES} imágenes o haz clic</p>
-          ) : (
-            <div className="preview-grid">
-              {dropzoneFiles.map((file, index) => (
-                <img
-                  key={index}
-                  src={URL.createObjectURL(file)}
-                  alt="preview"
-                  className="preview-image"
-                />
-              ))}
-            </div>
-          )}
-          {uploadStatus === "uploading" && (
-            <div className="progress-bar">
-              Subiendo... {uploadProgress}%
-            </div>
-          )}
-          {uploadStatus === "error" && (
-            <div className="error">{errorMessage}</div>
-          )}
-          {uploadStatus === "success" && (
-            <div className="success">¡Imágenes subidas correctamente!</div>
-          )}
-        </div>
+      <div
+        className={`multi-dropzone-area ${active ? "active" : ""}`}
+        onDragEnter={handleDrag}
+        onDragLeave={handleDrag}
+        onDragOver={handleDrag}
+        onDrop={handleDrop}
+        onClick={() => fileInputRef.current.click()}
+      >
+        <input
+          ref={fileInputRef}
+          type="file"
+          hidden
+          multiple
+          accept="image/*"
+          id={id}
+          name={name}
+          onChange={handleChange}
+        />
+
+        {files.length === 0 ? (
+          <p>Arrastra hasta {MAX_FILES} imágenes o haz clic</p>
+        ) : (
+          <div className="preview-grid">
+            {files.map((f, i) => (
+              <img
+                key={i}
+                src={URL.createObjectURL(f)}
+                alt="preview"
+                className="preview-image"
+              />
+            ))}
+          </div>
+        )}
+
+        {status === "uploading" && (
+          <div className="progress-bar">
+            Subiendo… {progress}%
+          </div>
+        )}
+
+        {status === "success" && (
+          <div className="success">✔ Imágenes subidas</div>
+        )}
+
+        {error && <div className="error">{error}</div>}
+
+        {/* ───── ImageKit Uploads ───── */}
+        {isProduction &&
+          files.map((file, i) => (
+            <IKUpload
+              key={i}
+              file={file}
+              fileName={`${Date.now()}-${file.name}`}
+              folder="/uploads"
+              useUniqueFileName
+              isPrivateFile={false}
+              onSuccess={handleSuccess}
+              onError={handleError}
+              onUploadProgress={(p) =>
+                setProgress(Math.round((p.loaded / p.total) * 100))
+              }
+            />
+          ))}
       </div>
     </MultiDropzone>
   );
 };
+
  
 
 

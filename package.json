@@ -30,6 +30,7 @@
     "i18next-http-backend": "^2.4.2",
     "imagekit-javascript": "^4.0.1",
     "imagekit-react": "^0.1.0",
+    "imagekitio-react": "^4.3.0",
     "moment": "^2.29.4",
     "react": "^18.2.0",
     "react-apexcharts": "^1.4.1",

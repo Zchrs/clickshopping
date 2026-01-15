@@ -72,7 +72,7 @@ const CommentForm = ({ addComment, productId, names }) => {
   );
 };
 
-const Comments = () => {
+export const Comments = () => {
   const [comments, setComments] = useState([]);
   const { t } = useTranslation(); 
   const addComment = (comment) => {
@@ -92,4 +92,3 @@ const Comments = () => {
   );
 };
 
-export default Comments;

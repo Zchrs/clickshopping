@@ -5,8 +5,11 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useTranslation } from "react-i18next";
-import { CardProductsSmall } from "../../components/globals/CardProductsSmall";
-import Comments from "../../components/globals/Comments";
+import {
+  Comments, 
+  Pagination, 
+  CardProductsSmall
+} from "../../../index";
 import { getFile } from "../../reducers/globalReducer";
 import { startChecking } from "../../actions/authActions";
 import io from "socket.io-client";
@@ -17,12 +20,51 @@ export const HomeScreen = () => {
   const dispatch = useDispatch();
   const { t, i18n } = useTranslation();
   const [loading, setLoading] = useState(false);
-  const [products, setProducts] = useState([]);
-  const [cellphoneProducts, setCellphoneProducts] = useState([]);
-  const [clothingProducts, setClothingProducts] = useState([]);
-  const [laptopProducts, setLaptopProducts] = useState([]);
-  const ratings = useSelector((state) => state.product.ratings);
   const lang = useSelector((state) => state.langUI.lang);
+  const ratings = useSelector((state) => state.product.ratings);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [products, setProducts] = useState([]);
+
+  const allProducts = useSelector((state) => state.product.productInfo);
+  const rams = allProducts.filter(p => p.category === "memorias ram");
+  const hardDisks = allProducts.filter(p => p.category === "discos duros");
+  const motherBoards = allProducts.filter(p => p.category === "motherboards");
+const [laptopsImage, setLaptopsImage] = useState(null);
+const [othersImage, setOthersImage] = useState(null);
+
+
+      const itemsPerPage = 16;
+    const totalPages = Math.ceil(rams.length / itemsPerPage || hardDisks.lenght / itemsPerPage || motherBoards.length / itemsPerPage);  
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const paginatedRams = rams.slice(startIndex, startIndex + itemsPerPage);
+    const paginatedHardDisks = hardDisks.slice(startIndex, startIndex + itemsPerPage);
+    const paginatedMotherboards = motherBoards.slice(startIndex, startIndex + itemsPerPage);
+
+
+useEffect(() => {
+  if (!Array.isArray(allProducts) || allProducts.length === 0) return;
+
+  setLaptopsImage(prev => {
+    if (prev) return prev; // 🔒 ya existe, no la sobrescribas
+
+    const laptop = allProducts.find(
+      p => p.category?.toLowerCase() === "portatiles"
+    );
+
+    return laptop?.images?.[0]?.img_url || null;
+  });
+
+  setOthersImage(prev => {
+    if (prev) return prev; // 🔒 ya existe, no la sobrescribas
+
+    const other = allProducts.find(
+      p => p.category?.toLowerCase() === "variados"
+    );
+
+    return other?.images?.[0]?.img_url || null;
+  });
+
+}, [allProducts]);
 
   useEffect(() => {
     dispatch(startChecking());
@@ -47,14 +89,15 @@ export const HomeScreen = () => {
   }, [i18n, lang, dispatch]);
 
 useEffect(() => {
-  dispatch(fetchProductsCategory("Celulares"))
-    .then(setCellphoneProducts);
-
-  dispatch(fetchProductsCategory("Accesorios"))
-    .then(setClothingProducts);
-
   dispatch(fetchProductsCategory("portatiles"))
-    .then(setLaptopProducts);
+
+  dispatch(fetchProductsCategory("memorias ram"))
+
+  dispatch(fetchProductsCategory("discos duros"))
+
+  dispatch(fetchProductsCategory("motherboards"))
+
+  dispatch(fetchProductsCategory("variados"))
 }, [dispatch]);
 
   const handleSetProductClick = (product) => {
@@ -66,7 +109,7 @@ useEffect(() => {
       <header className="homescreen-header">
         <div className="homescreen-header__contain">
           <div className="homescreen-header__contain-item">
-            <img src={getFile("jpg", "laptop-gaming-rog", "jpg")} alt="" />
+            <img src={laptopsImage} alt="" />
             <div className="homescreen-titles">
               <h2 className="homescreen__h2">{t("globals.takeLookLaptop")}</h2>
               <p className="homescreen__p2">
@@ -99,7 +142,7 @@ useEffect(() => {
             </div>
           </div>
           <div className="homescreen-header__contain-item2">
-            <img src={getFile("img/images", `granos`, "jpg")} alt="" />
+            <img src={othersImage} alt="" />
             <div className="homescreen-titles-b">
               <h2 className="homescreen__h4">{t("globals.takeLookGrain")}</h2>
               <p className="homescreen__p4">
@@ -132,14 +175,14 @@ useEffect(() => {
       </header>
       <div className="homescreen__container top">
         <h1 className="homescreen__h1">{t("globals.buyCategory")}</h1>
-        <h2>{t("products.laptops")}</h2>
+        <h2>{t("products.ramMemory")}</h2>
         <div className="homescreen__container-contain">
           {loading ? (
             <p>{t("globals.emptyProducts")}</p>
-          ) : laptopProducts.length === 0 ? (
+          ) : rams.length === 0 ? (
             <p>{t("globals.emptyProducts")}</p>
           ) : (
-            laptopProducts.map((itemL) => (
+            paginatedRams.map((itemL) => (
               <CardProductsSmall
                 key={itemL.id}
                 productLink={`/products/${itemL.id}`}
@@ -161,16 +204,28 @@ useEffect(() => {
             ))
           )}
         </div>
+                    {totalPages.length > itemsPerPage && (
+                    <div>
+                      <Pagination
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onPageChange={setCurrentPage}
+                        colorText="dark"
+                        arrowPrev="button dark"
+                        arrowNext="button dark"
+                      />
+                    </div>
+                   )}
       </div>
       <div className="homescreen__container">
-        <h2>{t("globals.childrenSet")}</h2>
+        <h2>{t("products.hardDisks")}</h2>
         <div className="homescreen__container-contain">
           {loading ? (
             <p>{t("globals.emptyProducts")}</p>
-          ) : clothingProducts.length === 0 ? (
+          ) : hardDisks.length === 0 ? (
             <p>{t("globals.emptyProducts")}</p>
           ) : (
-            clothingProducts.map((itemC) => (
+            paginatedHardDisks.map((itemC) => (
               <CardProductsSmall
                 key={itemC.id}
                 productLink={`/products/${itemC.id}`}
@@ -197,16 +252,28 @@ useEffect(() => {
             ))
           )}
         </div>
+                    {totalPages.length > itemsPerPage && (
+                    <div>
+                      <Pagination
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onPageChange={setCurrentPage}
+                        colorText="dark"
+                        arrowPrev="button dark"
+                        arrowNext="button dark"
+                      />
+                    </div>
+                   )}
       </div>
       <div className="homescreen__container">
-        <h2>{t("globals.smartphones")}</h2>
+        <h2>{t("products.motherBoards")}</h2>
         <div className="homescreen__container-contain">
           {loading ? (
             <p>{t("globals.emptyProducts")}</p>
-          ) : cellphoneProducts.length === 0 ? (
+          ) : motherBoards.length === 0 ? (
             <p>{t("globals.emptyProducts")}</p>
           ) : (
-            cellphoneProducts.map((itemCl) => (
+            paginatedMotherboards.map((itemCl) => (
               <CardProductsSmall
                 key={itemCl.id}
                 productLink={`/products/${itemCl.id}`}
@@ -233,6 +300,18 @@ useEffect(() => {
             ))
           )}
         </div>
+                    {totalPages.length > itemsPerPage && (
+                    <div>
+                      <Pagination
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onPageChange={setCurrentPage}
+                        colorText="dark"
+                        arrowPrev="button dark"
+                        arrowNext="button dark"
+                      />
+                    </div>
+                   )}
       </div>
 
       <div className="homescreen__container">

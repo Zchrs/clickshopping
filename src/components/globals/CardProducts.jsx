@@ -14,6 +14,7 @@ import { useForm, initialForm } from "../../hooks/useForm";
 
 
 import { Rating } from "./Rating";
+import { Image } from "@imagekit/react";
 
 export const CardProducts = ({
   name,
@@ -40,7 +41,7 @@ export const CardProducts = ({
 }) => {
   const user = useSelector((state) => state.auth.user);
   const productHover = useSelector((state) => state.product.selectedProduct);
-  
+  const isProduction = import.meta.env.MODE === "production";
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -217,7 +218,24 @@ export const CardProducts = ({
             />
           </div>
           <div className="productcard-contain">
-            {jpg && <img loading="lazy" src={img} alt="" />}
+             {!isProduction ? (
+    // 🧪 DESARROLLO → imagen local
+    <img
+      loading="lazy"
+      src={img}
+      alt={name}
+    />
+  ) : (
+    // 🚀 PRODUCCIÓN → ImageKit
+    <Image
+      path={img}
+      transformation={[
+        { width: 400, height: 300 }
+      ]}
+      loading="lazy"
+      alt={name}
+    />
+  )}
           </div>
         </div>
         <div className="productcard-box">

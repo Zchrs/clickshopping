@@ -26,7 +26,7 @@ export const TechnologyScreen = () => {
   const laptops = allProducts.filter(p => p.category === "portatiles");
   const phones = allProducts.filter(p => p.category === "celulares");
   const speakers = allProducts.filter(p => p.category === "speakers");
-  const others = allProducts.filter(p => p.category === "variado");
+  const others = allProducts.filter(p => p.category === "variados");
 
     // Configuración de paginación
     const { t, i18n } = useTranslation();
@@ -66,7 +66,7 @@ export const TechnologyScreen = () => {
     dispatch(fetchProductsCategory("portatiles"))
     dispatch(fetchProductsCategory("celulares"))
     dispatch(fetchProductsCategory("speakers"))
-    dispatch(fetchProductsCategory("variado"))
+    dispatch(fetchProductsCategory("variados"))
     }, [dispatch]);
 
       useEffect(() => {

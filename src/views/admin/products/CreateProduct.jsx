@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { initialForm, useForm } from "../../../hooks/useForm";
 import { useTranslation } from "react-i18next";
 import { useState, useEffect } from "react";
-import { BaseButton, BaseInput } from "../../../../index";
+import { BaseButton, BaseInput, MultiDropZone } from "../../../../index";
 import { MultiDropZoneImageKit } from "../../../components/globals/MultiDropZoneImageKit";
 import { useValidations } from "../../../hooks/useValidations";
 
@@ -132,7 +132,7 @@ export const CreateProduct = () => {
           />
         </div>
         <div>
-          <MultiDropZoneImageKit
+          <MultiDropZone
             id="images"
             name="img_url"
             type="file"
