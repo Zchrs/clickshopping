@@ -116,7 +116,7 @@ export const CardProductsSmall = ({
           {descriptionText && <p className="productcard__p"> {description} </p>}
           {tittleText && <p className="productcard__p"> {title} </p>}
           {priceText && (
-            <h2 className="productcard__h2"> ${formatPrice(price)} </h2>
+            <h2 className="productcard__h2"> ${formatPrice(previousPrice)} </h2>
           )}
           {sellingsText && (
             <p className="productcard__p productcard__selltext">
@@ -127,7 +127,7 @@ export const CardProductsSmall = ({
           {groupBox && (
             <div className="productcard-group">
               <p className="product__p2">
-                {previousPrice}
+                {price}
                 <span style={{ color: "#EC3337" }}> {discount} </span>
               </p>
             </div>

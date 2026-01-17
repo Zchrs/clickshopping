@@ -4,7 +4,7 @@ import { useRef, useState } from 'react';
 import axios from "axios";
 import styled from 'styled-components';
 
-export const MultiDropZone = ({ id, setImages, name, type }) => {
+export const MultiDropZoneCloudinary = ({ id, setImages, name, type }) => {
   const [active, setActive] = useState(false);
   const [dropzoneFiles, setDropzoneFiles] = useState([]);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -63,7 +63,7 @@ export const MultiDropZone = ({ id, setImages, name, type }) => {
     setDropzoneFiles(files);
     setUploadStatus('idle');
     setErrorMessage('');
-    uploadToHostinger(files);
+    uploadToCloudinary(files);
   };
 
  
@@ -73,54 +73,77 @@ export const MultiDropZone = ({ id, setImages, name, type }) => {
     setImages(updatedFiles.map(file => URL.createObjectURL(file)));
   };
 
-  const uploadToHostinger = async (files) => {
-  // Detectar entorno
-  const isProduction = import.meta.env.MODE === 'production';
+const uploadToCloudinary = async (files) => {
+  const isProduction = import.meta.env.MODE === "production";
 
-  // URLs según entorno
-  const UPLOAD_URL = isProduction
-    ? import.meta.env.VITE_APP_API_HOSTINGER_UPLOAD_URL // producción
-    : import.meta.env.VITE_APP_API_UPLOAD_IMAGES_PROPERTIES_URL; // desarrollo
-
-  const formData = new FormData();
-  files.forEach((file, index) => {
-    formData.append(`img_url`, file);
-  });
+  setUploadStatus("uploading");
+  setUploadProgress(0);
 
   try {
-    setUploadStatus('uploading');
-    setUploadProgress(0);
+    let uploadedUrls = [];
 
-    const response = await axios.post(UPLOAD_URL, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-      onUploadProgress: (progressEvent) => {
-        const percentCompleted = Math.round(
-          (progressEvent.loaded * 100) / progressEvent.total
+    if (isProduction) {
+      /* ☁️ CLOUDINARY */
+      let completed = 0;
+
+      for (const file of files) {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append(
+          "upload_preset",
+          import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET
         );
-        setUploadProgress(percentCompleted);
-      },
-    });
 
-    if (response.data?.success && response.data?.imageUrls) {
-      setImages(response.data.imageUrls);
-      setUploadStatus('success');
-      console.log('Imágenes subidas:', response.data.imageUrls);
+        const res = await axios.post(
+          `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload`,
+          formData,
+          {
+            onUploadProgress: (e) => {
+              const percent = Math.round(
+                ((completed + e.loaded / e.total) / files.length) * 100
+              );
+              setUploadProgress(percent);
+            },
+          }
+        );
+
+        uploadedUrls.push({
+  url: res.data.secure_url,
+  public_id: res.data.public_id,
+});
+        completed++;
+      }
     } else {
-      throw new Error(response.data.error || 'Error en la subida');
+      /* 🖥️ LOCAL / BACKEND */
+      const formData = new FormData();
+      files.forEach((file) => {
+        formData.append("img_url", file);
+      });
+
+      const res = await axios.post(
+        import.meta.env.VITE_APP_API_UPLOAD_IMAGES_PRODUCTS_URL,
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+          onUploadProgress: (e) => {
+            const percent = Math.round((e.loaded * 100) / e.total);
+            setUploadProgress(percent);
+          },
+        }
+      );
+
+      uploadedUrls = res.data.imageUrls;
     }
+
+    setImages(uploadedUrls);
+    setUploadStatus("success");
   } catch (error) {
-    console.error('Error al subir las imágenes:', error);
-    setUploadStatus('error');
-    setErrorMessage(
-      error.response?.data?.error ||
-        error.message ||
-        'Error al subir las imágenes'
-    );
-    setDropzoneFiles([]);
+    console.error(error);
+    setUploadStatus("error");
+    setErrorMessage("Error al subir imágenes");
   }
 };
+
 
   const triggerFileInput = () => {
     fileInputRef.current?.click();

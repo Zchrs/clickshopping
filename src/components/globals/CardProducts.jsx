@@ -14,7 +14,7 @@ import { useForm, initialForm } from "../../hooks/useForm";
 
 
 import { Rating } from "./Rating";
-import { Image } from "@imagekit/react";
+// import { Image } from "@imagekit/react";
 
 export const CardProducts = ({
   name,
@@ -227,14 +227,22 @@ export const CardProducts = ({
     />
   ) : (
     // 🚀 PRODUCCIÓN → ImageKit
-    <Image
-      path={img}
-      transformation={[
-        { width: 400, height: 300 }
-      ]}
-      loading="lazy"
-      alt={name}
-    />
+    // <Image
+    //   path={img}
+    //   transformation={[
+    //     { width: 400, height: 300 }
+    //   ]}
+    //   loading="lazy"
+    //   alt={name}
+    // />
+      <img
+    loading="lazy"
+    src={img}
+    alt={name}
+    onError={(e) => {
+      e.target.src = "/img/no-image.png";
+    }}
+  />
   )}
           </div>
         </div>
@@ -268,10 +276,10 @@ export const CardProducts = ({
           <p className="productcard__quantity"> {name} </p>
           <p className="productcard__quantity"> {quantity} Disponibles</p>
           <h2 className="productcard__h2">
-            {formatPrice(price)} <span className="productcard-span"> {discount} </span>
+            {formatPrice(previousPrice)} <span className="productcard-span"> {discount} </span>
           </h2>
           <div className="productcard-group">
-            <p className="productcard__p2">{formatPrice(previousPrice)}</p>
+            <p className="productcard__p2">{formatPrice(price)}</p>
           </div>
           <p className="productcard__p3"> {member} </p>
           {ratingss && <Rating ratings={ratings} productID={product_id} userID={user ? user.id : null} />}

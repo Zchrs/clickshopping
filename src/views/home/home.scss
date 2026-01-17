@@ -364,7 +364,7 @@
         img {
           position: absolute;
           width: 100%;
-          object-fit: fill;
+          object-fit: cover;
           // left: -30px;
           // transform: skewX(15deg);
 
@@ -432,9 +432,9 @@
 
         img {
           position: absolute;
-          width: 125%;
-          height: 100%;
-          left: -30px;
+          width: 100%;
+          object-fit: cover;
+          left: 0;
           // transform: skewX(15deg);
 
           @media (max-width: 920px) {

@@ -76,6 +76,7 @@ export * from './src/views/admin/users/UserVerifications'
  export * from './src/components/globals/Loader'
  export * from './src/components/globals/ScreenResolution'
  export * from './src/components/globals/ImageKitProvider'
+ export * from './src/components/globals/MultiDropZoneCloudinary'
 
  
 

@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 
 import axios from "axios";
-import { fetchProductsCategory, selectedProduct, setProduct } from "../../../actions/productActions";
+import { fetchProducts, fetchProductsCategory, selectedProduct, setProduct } from "../../../actions/productActions";
 import { BreadCrumb } from "../../../components/globals/BreadCrumb";
 import { CardProducts } from "../../../components/globals/CardProducts";
 import { useEffect, useState } from "react";
@@ -61,9 +61,7 @@ export const AlimentsScreen = () => {
   }, [i18n, lang, dispatch]);
 
 useEffect(() => {
-  dispatch(fetchProductsCategory("repuestos nuevos"));
-  dispatch(fetchProductsCategory("repuestos usados"));
-  dispatch(fetchProductsCategory("partes y accesorios"));
+  dispatch(fetchProducts());
 }, [dispatch]);
 
 useEffect(() => {
@@ -131,7 +129,8 @@ useEffect(() => {
                     jpg
                     img={itemL.images?.[0]?.img_url} // ✅ imagen principal
                     images={itemL.images} // ✅ PASAR EL ARRAY
-                    price={itemL.price}
+                    previousPrice={itemL.previousPrice}
+                    price={itemL.p0rice}
                     onClick={() => handleSetProductClick(itemL)}
                     prodHover={() => handleSetProductClick(itemL)}
                     member="10% de descuento para miembros premium"

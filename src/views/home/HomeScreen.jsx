@@ -14,7 +14,7 @@ import { getFile } from "../../reducers/globalReducer";
 import { startChecking } from "../../actions/authActions";
 import io from "socket.io-client";
 import "../home/home.scss";
-import { fetchProductsCategory, selectedProduct, setProduct } from "../../actions/productActions";
+import { fetchProducts, selectedProduct, setProduct } from "../../actions/productActions";
 
 export const HomeScreen = () => {
   const dispatch = useDispatch();
@@ -27,6 +27,7 @@ export const HomeScreen = () => {
 
   const allProducts = useSelector((state) => state.product.productInfo);
   const rams = allProducts.filter(p => p.category === "memorias ram");
+  console.log(rams?.[0]?.previousPrice)
   const hardDisks = allProducts.filter(p => p.category === "discos duros");
   const motherBoards = allProducts.filter(p => p.category === "motherboards");
 const [laptopsImage, setLaptopsImage] = useState(null);
@@ -88,17 +89,9 @@ useEffect(() => {
     };
   }, [i18n, lang, dispatch]);
 
-useEffect(() => {
-  dispatch(fetchProductsCategory("portatiles"))
-
-  dispatch(fetchProductsCategory("memorias ram"))
-
-  dispatch(fetchProductsCategory("discos duros"))
-
-  dispatch(fetchProductsCategory("motherboards"))
-
-  dispatch(fetchProductsCategory("variados"))
-}, [dispatch]);
+  useEffect(() => {
+    dispatch(fetchProducts()); // 👈 IMPORTANTE
+  }, [dispatch]);
 
   const handleSetProductClick = (product) => {
     dispatch(selectedProduct(product));
@@ -192,7 +185,7 @@ useEffect(() => {
                 sellingsText
                 sellings={t("globals.sellings")}
                 priceText
-                price={itemL.price}
+                previousPrice={itemL.previousPrice}
                 onClick={() => handleSetProductClick(itemL)}
                 prodHover={() => handleSetProductClick(itemL)}
                 description={itemL.description}

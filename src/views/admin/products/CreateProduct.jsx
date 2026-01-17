@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { initialForm, useForm } from "../../../hooks/useForm";
 import { useTranslation } from "react-i18next";
 import { useState, useEffect } from "react";
-import { BaseButton, BaseInput, MultiDropZone } from "../../../../index";
+import { BaseButton, BaseInput, MultiDropZone, MultiDropZoneCloudinary } from "../../../../index";
 import { MultiDropZoneImageKit } from "../../../components/globals/MultiDropZoneImageKit";
 import { useValidations } from "../../../hooks/useValidations";
 
@@ -29,6 +29,7 @@ export const CreateProduct = () => {
     loading,
     response,
     modal,
+    setForm,
     handleChange,
     handleBlur,
     handleSubmitProduct,
@@ -44,6 +45,22 @@ export const CreateProduct = () => {
     setIsFormComplete(isFormFilled);
     
   }, [form]);
+
+  const applyDiscount10 = (value) => {
+  const num = Number(value);
+  if (isNaN(num)) return "";
+  return Math.round(num * 0.9);
+};
+
+  const handlePriceChange = (e) => {
+  const { value } = e.target;
+  
+  setForm((prev) => ({
+    ...prev,
+    price: value,
+    previousPrice: applyDiscount10(value),
+  }));
+};
 
   return (
     <ProductUpload className="uploadproducts" encType="multipart/form-data">
@@ -71,7 +88,7 @@ export const CreateProduct = () => {
             inputRef={formRefs.price}
             value={form.price}
             onBlur={handleBlur}
-            onChange={handleChange}
+            onChange={handlePriceChange}
             isNumber={true}
             required
           />
@@ -88,6 +105,7 @@ export const CreateProduct = () => {
             onChange={handleChange}
             isNumber={true}
             required
+            readOnly
           />
         </div>
         <div>
@@ -132,7 +150,7 @@ export const CreateProduct = () => {
           />
         </div>
         <div>
-          <MultiDropZone
+          <MultiDropZoneCloudinary
             id="images"
             name="img_url"
             type="file"

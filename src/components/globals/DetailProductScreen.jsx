@@ -186,14 +186,20 @@ const handleSetProductInfo = () => {
           <div className="detailproduct-contain scroll">
             <div className="detailproduct-contain-box">
       
-            <h2>${ formatPrice(product.price) }</h2>
-              <h3 className='detailproduct__prevprice'>${ formatPrice(product.previousPrice) }</h3>
+            <h2>${ formatPrice(product.previousPrice) }</h2>
+              <h3 className='detailproduct__prevprice'>${ formatPrice(product.price) }</h3>
             </div>
             <div className="detailproduct-contain-box">
               <h2>{ product.name }</h2>
               <div className="detailproduct-contain-info">
               <Rating ratings={ratings} productID={product.id} userID={user ? user.id : null} />
               </div>
+                          <div className="detailproduct-contain-box">
+              <h2>Descripción</h2>
+              <p>
+              { product.description }
+              </p>
+            </div>
             <div className="detailproduct-contain-box">
               <h2>Product testimonials</h2>
               <p>
@@ -201,12 +207,6 @@ const handleSetProductInfo = () => {
               Inventore id voluptate totam asperiores! Voluptas, eos recusandae.
                Alias, tenetur blanditiis. Voluptatum, possimus cumque aperiam aut
                velit odit labore laboriosam iste officiis.
-              </p>
-            </div>
-            <div className="detailproduct-contain-box">
-              <h2>Descripción</h2>
-              <p>
-              { product.description }
               </p>
             </div>
             </div>

@@ -32,6 +32,7 @@ export const BaseInput = forwardRef((props, ref) => {
     options = [],
     isDate,
     error,
+    readOnly,
     onFocus,
     inputRef, // 👈 este es el ref real que viene de useValidations
   } = props;
@@ -118,6 +119,7 @@ export const BaseInput = forwardRef((props, ref) => {
               onFocus={handleFocus}
               onBlur={handleBlurInternal}
               placeholder={placeholder || "Buscar..."}
+              readOnly={readOnly}
             />
             {showOptions && (
               <div className="options-dropdown" ref={dropdownRef}>
