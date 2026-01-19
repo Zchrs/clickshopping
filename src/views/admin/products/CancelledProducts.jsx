@@ -1,6 +1,6 @@
 export const CancelledProducts = () => {
     return (
-      <section>
+      <section className="sections">
           <h2>Productos cancelados</h2>
       </section>
     )

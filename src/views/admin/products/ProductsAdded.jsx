@@ -135,7 +135,7 @@ const { formRefs, validateForm } = useValidations();
   };
 
   return (
-      <ProductAdded>
+      <ProductAdded className='sections'>
           <div className="productsadded">
               <div id='card-products' className="productsadded-container">
                   <h1 className='productsadded-h2'>Productos agregados</h1>
@@ -295,6 +295,7 @@ display: grid;
   position: relative;
   align-items: start;
   display: grid;
+  padding: 25px 0;
  
   min-height: 100vh;
   overflow: hidden;

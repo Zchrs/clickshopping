@@ -153,16 +153,6 @@ export const useRoutesDashAdmin = () => {
       text: "Reportes",
     },
     {
-      name: "pending",
-      route: "orders/pending",
-      text: "Pedidos pendientes",
-    },
-    {
-      name: "complete",
-      route: "orders/complete",
-      text: "Pedidos completados",
-    },
-    {
       name: "orders",
       route: "orders",
       text: "Pedidos",

@@ -8,7 +8,7 @@ export const ClothingScreen = () => {
   
 
   return (
-    <section className="containers">
+    <section className="containers sections">
       <div className="productscreen-header">
         <h2 className="productscreen-showroute">
           <BreadCrumb />

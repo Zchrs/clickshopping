@@ -57,15 +57,22 @@ export const CardProductsAdmin = ({
           </div>
         </div>
         <div className="productcard-box">
-          {buy && (<div className="productcard-btn">
-            <BaseButton img={true} icon={"wallet"} classs={"button full-outline"} textLabel={true} label={"Comprar"} />
-          </div>)}
+          {buy && (
+          <div className="productcard-btn">
+            <BaseButton 
+              img={true} 
+            icon={"wallet"} 
+            classs={"button full-outline"} 
+            textLabel={true} 
+            label={"Comprar"} />
+          </div>
+        )}
           <p className="productcard__p"> {description} </p>
           <p className="productcard__title"> {title} </p>
           <p className="productcard__quantity"> {quantity} Disponibles</p>
-          <h2 className="productcard__h2">${formatPrice(price)} </h2>
+          <h2 className="productcard__h2">${formatPrice(previousPrice)} </h2>
           <div className="productcard-group">
-            <p className="productcard__p2">${formatPrice(previousPrice)}
+            <p className="productcard__p2">${formatPrice(price)}
               <span style={{ color: '#EC3337' }}> {discount} </span>
             </p>
           </div>
@@ -73,10 +80,21 @@ export const CardProductsAdmin = ({
         </div>
         <div className="productcard-btns">
           <div>
-            {delBtn && (<BaseButton handleClick={onDelete}  classs={'button delete'} textLabel={true} label={"Eliminar"} />)}
+            {delBtn && (
+            <BaseButton 
+            handleClick={onDelete}  
+            classs={'button delete'} 
+            textLabel={true} 
+            label={"Eliminar"} 
+            />)}
           </div>
           <div>
-            {uptBtn && (<BaseButton handleClick={onUpdate} classs={'button update'} textLabel={true} label={"Actualizar"} />)}
+            {uptBtn && (<BaseButton 
+            handleClick={onUpdate} 
+            classs={'button update'} 
+            textLabel={true} 
+            label={"Actualizar"} 
+            />)}
           </div>
         </div>
         {showModal && (

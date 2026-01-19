@@ -1,7 +1,14 @@
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
 // import '../../assets/sass/products.scss'
-import { CancelledProducts, CreateProduct, PendingProducts, ProductsAdded, SellingProducts } from '../../../../index';
+import { 
+  CancelledProducts, 
+  CreateProduct, 
+  OutProducts, 
+  PendingProducts, 
+  ProductsAdded, 
+  SellingProducts 
+} from '../../../../index';
 
 import styled from 'styled-components';
 
@@ -34,6 +41,9 @@ export const ProductsScreen = () => {
       </Tab>
       <Tab eventKey="cancelledProduct" title="Productos Cancelados">
         <CancelledProducts />
+      </Tab>
+      <Tab eventKey="productsOut" title="Productos agotados">
+        <OutProducts />
       </Tab>
     </Tabs>
       </aside>

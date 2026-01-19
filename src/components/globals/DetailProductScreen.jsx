@@ -228,7 +228,7 @@ const handleSetProductInfo = () => {
         colorbtnhoverprimary={"var(--bg-primary-tr)"}
         colortextbtnhoverprimary={"var(--light)"}
                   img={true}
-                  icon={"whatsapp-grey"}
+                  icon={"pay"}
                   handleClick={handleCheckoutClick}
                   label={"Lo quiero!"}
                   textLabel={true}

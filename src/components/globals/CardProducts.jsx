@@ -1,7 +1,7 @@
 /* eslint-disable no-debugger */
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
-import { formatPrice, getFile, scrollTop } from "../../../globalActions";
+import { formatPrice } from "../../../globalActions";
 import styled from "styled-components";
 import { BaseButton } from "./BaseButton";
 import { useDispatch, useSelector } from "react-redux";

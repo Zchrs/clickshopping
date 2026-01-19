@@ -1,15 +1,10 @@
 /* eslint-disable no-unused-vars */
 import { useEffect, useState } from "react";
-import { fetchProducts, fetchProductsCategory, selectedProduct } from "../../../actions/productActions";
-import { BreadCrumb } from "../../../components/globals/BreadCrumb"
+import { fetchProducts, selectedProduct } from "../../../actions/productActions";
 import { startChecking } from "../../../actions/authActions";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { CardProducts } from "../../../components/globals/CardProducts";
-import { Empty } from "../../../components/globals/Empty";
-import { getFile } from "../../../../globalActions";
-import { io } from "socket.io-client";
-import { Pagination } from "../../../components/globals/Pagination";
+import { CardProducts, Empty, BreadCrumb, Pagination } from "../../../../index";
 
 export const TechnologyScreen = () => {
   const [activeTab, setActiveTab] = useState("laptops");
@@ -21,7 +16,7 @@ export const TechnologyScreen = () => {
   const [currentPage, setCurrentPage] = useState(1);
 
   const { t, i18n } = useTranslation();
-  const itemsPerPage = 12;
+  const itemsPerPage = 24;
 
   /* ✅ FILTROS */
   const laptops = allProducts.filter(p => p.category === "portatiles");
@@ -106,7 +101,7 @@ export const TechnologyScreen = () => {
           <div className="productscreen-cards">
             {activeProducts.length === 0 ? (
               <div className="productscreen-empty">
-                <Empty message={t("globals.emptyProducts")} />
+                <Empty img="empty" message={t("globals.emptyProducts")} />
               </div>
             ) : (
               paginatedProducts.map((itemL) => (
@@ -116,7 +111,8 @@ export const TechnologyScreen = () => {
                   jpg
                   img={itemL.images?.[0]?.img_url}
                   images={itemL.images}
-                  price={itemL.price}
+                  previousPrice={itemL.price}
+                  price={itemL.previousPrice}
                   onClick={() => handleSetProductClick(itemL)}
                   prodHover={() => handleSetProductClick(itemL)}
                   member="10% de descuento para miembros premium"

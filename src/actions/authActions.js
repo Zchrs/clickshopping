@@ -23,6 +23,9 @@ export const startLogin = (email, password) => {
           id: body.user.id,
           name: body.user.name,
           lastname: body.user.lastname,
+          city: body.user.city,
+          address: body.user.address,
+          zipCode: body.user.zip_code
         })
       );
 
@@ -117,6 +120,9 @@ export const startChecking = () => {
           id: body.id,
           name: body.name,
           lastname: body.lastname,
+          address: body.address,
+          city: body.city,
+          zipCode: body.zip_code,
           role: body.role,
         })
       );
@@ -142,7 +148,7 @@ export const startLoginAdmin = (email, pass, ) => {
       console.log(body)
       localStorage.setItem("role", body.admin.role);
       localStorage.setItem("tokenAdmin", body.admin.token);
-      localStorage.setItem("token-init-date", new Date().getTime());
+      localStorage.setItem("tokenAdmin-init-date", new Date().getTime());
         dispatch(
           loginAdminSuccess({
             fullname: body.admin.fullname,
@@ -233,7 +239,7 @@ export const startLoginAdmin = (email, pass, ) => {
           
           localStorage.setItem("role", body.role);
           localStorage.setItem("tokenAdmin", body.token);
-          localStorage.setItem("token-init-date", new Date().getTime());
+          localStorage.setItem("tokenAdmin-init-date", new Date().getTime());
          
           dispatch(
             loginAdminSuccess({

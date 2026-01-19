@@ -16,6 +16,7 @@ export * from './src/views/admin/products/PendingProducts'
 export * from './src/views/admin/products/SellingProducts'
 export * from './src/views/admin/products/CancelledProducts'
 export * from './src/views/admin/products/ProductsAdded'
+export * from './src/views/admin/products/OutProducts'
 
 // reportes
 export * from './src/views/admin/reports/ReportsScreen'

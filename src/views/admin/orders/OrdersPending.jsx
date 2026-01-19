@@ -2,6 +2,9 @@
 
 export const OrdersPending = () => {
   return (
-    <div>OrdersPending</div>
+    <section className="sections">
+      <h2>Pedidos pendientes</h2>
+      <div></div>
+    </section>
   )
 }

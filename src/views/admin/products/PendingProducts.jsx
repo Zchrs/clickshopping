@@ -2,7 +2,7 @@
 
 export const PendingProducts = () => {
   return (
-    <section>
+    <section className="sections">
         <h2>Productos pendientes</h2>
     </section>
   )

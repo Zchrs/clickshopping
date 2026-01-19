@@ -63,117 +63,119 @@ export const CreateProduct = () => {
 };
 
   return (
-    <ProductUpload className="uploadproducts" encType="multipart/form-data">
-      <h2 className="uploadproducts-h2">Agregar producto</h2>
-      <form className="uploadproducts-form" encType="multipart/form-data">
-        <div>
-          <BaseInput
-            id="name"
-            name="name"
-            classs={"inputs normal"}
-            placeholder="Nombre del producto"
-            inputRef={formRefs.name}
-            value={form.name}
-            onBlur={handleBlur}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div>
-          <BaseInput
-            id="price"
-            name="price"
-            classs={"inputs normal"}
-            placeholder="Precio"
-            inputRef={formRefs.price}
-            value={form.price}
-            onBlur={handleBlur}
-            onChange={handlePriceChange}
-            isNumber={true}
-            required
-          />
-        </div>
-        <div>
-          <BaseInput
-            id="previousPrice"
-            name="previousPrice"
-            classs={"inputs normal"}
-            placeholder="Precio anterior"
-            inputRef={formRefs.previousPrice}
-            value={form.previousPrice}
-            onBlur={handleBlur}
-            onChange={handleChange}
-            isNumber={true}
-            required
-            readOnly
-          />
-        </div>
-        <div>
-          <BaseInput
-            id="category"
-            name="category"
-            classs={"inputs normal"}
-            placeholder="Categoría"
-            inputRef={formRefs.category}
-            value={form.category}
-            onBlur={handleBlur}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div>
-          <BaseInput
-            id="quantity"
-            name="quantity"
-            classs={"inputs normal"}
-            placeholder="Cantidad"
-            inputRef={formRefs.quantity}
-            value={form.quantity}
-            onBlur={handleBlur}
-            onChange={handleChange}
-            required
-            isNumber={true}
-          />
-        </div>
-        <div>
-          <BaseInput
-            id="description"
-            name="description"
-            classs={"inputs normal"}
-            placeholder="Descripción"
-            inputRef={formRefs.description}
-            value={form.description}
-            onBlur={handleBlur}
-            onChange={handleChange}
-            required
-            isTextarea={true}
-          />
-        </div>
-        <div>
-          <MultiDropZoneCloudinary
-            id="images"
-            name="img_url"
-            type="file"
-            onChange={handleImagesChange}
-            setImages={handleSetImages}
-            onBlur={handleBlur}
-          />
-        </div>
-        <div>
-          <BaseButton
-            disabled={!isFormComplete}
-            handleClick={handleSubmitProduct}
-            classs={"button primary"}
-            colorbtn={"var(--primary)"}
-            colortextbtnprimary={"var(--light)"}
-            colorbtnhoverprimary={"var(--bg-primary-tr)"}
-            colortextbtnhoverprimary={"var(--light)"}
-            textLabel={true}
-            label={"Añadir producto"}
-          />
-        </div>
-      </form>
-    </ProductUpload>
+    <section className="sections">
+      <ProductUpload className="uploadproducts">
+        <h2 className="uploadproducts-h2">Agregar producto</h2>
+        <form className="uploadproducts-form" encType="multipart/form-data">
+          <div>
+            <BaseInput
+              id="name"
+              name="name"
+              classs={"inputs normal"}
+              placeholder="Nombre del producto"
+              inputRef={formRefs.name}
+              value={form.name}
+              onBlur={handleBlur}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div>
+            <BaseInput
+              id="price"
+              name="price"
+              classs={"inputs normal"}
+              placeholder="Precio"
+              inputRef={formRefs.price}
+              value={form.price}
+              onBlur={handleBlur}
+              onChange={handlePriceChange}
+              isNumber={true}
+              required
+            />
+          </div>
+          <div>
+            <BaseInput
+              id="previousPrice"
+              name="previousPrice"
+              classs={"inputs normal"}
+              placeholder="Precio anterior"
+              inputRef={formRefs.previousPrice}
+              value={form.previousPrice}
+              onBlur={handleBlur}
+              onChange={handleChange}
+              isNumber={true}
+              required
+              readOnly
+            />
+          </div>
+          <div>
+            <BaseInput
+              id="category"
+              name="category"
+              classs={"inputs normal"}
+              placeholder="Categoría"
+              inputRef={formRefs.category}
+              value={form.category}
+              onBlur={handleBlur}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div>
+            <BaseInput
+              id="quantity"
+              name="quantity"
+              classs={"inputs normal"}
+              placeholder="Cantidad"
+              inputRef={formRefs.quantity}
+              value={form.quantity}
+              onBlur={handleBlur}
+              onChange={handleChange}
+              required
+              isNumber={true}
+            />
+          </div>
+          <div>
+            <BaseInput
+              id="description"
+              name="description"
+              classs={"inputs normal"}
+              placeholder="Descripción"
+              inputRef={formRefs.description}
+              value={form.description}
+              onBlur={handleBlur}
+              onChange={handleChange}
+              required
+              isTextarea={true}
+            />
+          </div>
+          <div>
+            <MultiDropZoneCloudinary
+              id="images"
+              name="img_url"
+              type="file"
+              onChange={handleImagesChange}
+              setImages={handleSetImages}
+              onBlur={handleBlur}
+            />
+          </div>
+          <div>
+            <BaseButton
+              disabled={!isFormComplete}
+              handleClick={handleSubmitProduct}
+              classs={"button primary"}
+              colorbtn={"var(--primary)"}
+              colortextbtnprimary={"var(--light)"}
+              colorbtnhoverprimary={"var(--bg-primary-tr)"}
+              colortextbtnhoverprimary={"var(--light)"}
+              textLabel={true}
+              label={"Añadir producto"}
+            />
+          </div>
+        </form>
+      </ProductUpload>
+    </section>
   );
 };
 
