@@ -5,16 +5,16 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useTranslation } from "react-i18next";
-import {
-  Comments, 
-  Pagination, 
-  CardProductsSmall
-} from "../../../index";
+import { Comments, Pagination, CardProductsSmall } from "../../../index";
 import { getFile } from "../../reducers/globalReducer";
 import { startChecking } from "../../actions/authActions";
 import io from "socket.io-client";
 import "../home/home.scss";
-import { fetchProducts, selectedProduct, setProduct } from "../../actions/productActions";
+import {
+  fetchProducts,
+  selectedProduct,
+  setProduct,
+} from "../../actions/productActions";
 
 export const HomeScreen = () => {
   const dispatch = useDispatch();
@@ -26,46 +26,52 @@ export const HomeScreen = () => {
   const [products, setProducts] = useState([]);
 
   const allProducts = useSelector((state) => state.product.productInfo);
-  const rams = allProducts.filter(p => p.category === "memorias ram");
-  console.log(rams?.[0]?.previousPrice)
-  const hardDisks = allProducts.filter(p => p.category === "discos duros");
-  const motherBoards = allProducts.filter(p => p.category === "motherboards");
-const [laptopsImage, setLaptopsImage] = useState(null);
-const [othersImage, setOthersImage] = useState(null);
+  const rams = allProducts.filter((p) => p.category === "memorias ram");
+  const hardDisks = allProducts.filter((p) => p.category === "discos duros");
+  const motherBoards = allProducts.filter((p) => p.category === "motherboards");
+  const [laptopsImage, setLaptopsImage] = useState(null);
+  const [othersImage, setOthersImage] = useState(null);
 
+  const itemsPerPage = 16;
+  const totalPages = Math.ceil(
+    rams.length / itemsPerPage ||
+      hardDisks.lenght / itemsPerPage ||
+      motherBoards.length / itemsPerPage,
+  );
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedRams = rams.slice(startIndex, startIndex + itemsPerPage);
+  const paginatedHardDisks = hardDisks.slice(
+    startIndex,
+    startIndex + itemsPerPage,
+  );
+  const paginatedMotherboards = motherBoards.slice(
+    startIndex,
+    startIndex + itemsPerPage,
+  );
 
-      const itemsPerPage = 16;
-    const totalPages = Math.ceil(rams.length / itemsPerPage || hardDisks.lenght / itemsPerPage || motherBoards.length / itemsPerPage);  
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const paginatedRams = rams.slice(startIndex, startIndex + itemsPerPage);
-    const paginatedHardDisks = hardDisks.slice(startIndex, startIndex + itemsPerPage);
-    const paginatedMotherboards = motherBoards.slice(startIndex, startIndex + itemsPerPage);
+  useEffect(() => {
+    if (!Array.isArray(allProducts) || allProducts.length === 0) return;
 
+    setLaptopsImage((prev) => {
+      if (prev) return prev; // 🔒 ya existe, no la sobrescribas
 
-useEffect(() => {
-  if (!Array.isArray(allProducts) || allProducts.length === 0) return;
+      const laptop = allProducts.find(
+        (p) => p.category?.toLowerCase() === "portatiles",
+      );
 
-  setLaptopsImage(prev => {
-    if (prev) return prev; // 🔒 ya existe, no la sobrescribas
+      return laptop?.images?.[0]?.img_url || null;
+    });
 
-    const laptop = allProducts.find(
-      p => p.category?.toLowerCase() === "portatiles"
-    );
+    setOthersImage((prev) => {
+      if (prev) return prev; // 🔒 ya existe, no la sobrescribas
 
-    return laptop?.images?.[0]?.img_url || null;
-  });
+      const other = allProducts.find(
+        (p) => p.category?.toLowerCase() === "variados",
+      );
 
-  setOthersImage(prev => {
-    if (prev) return prev; // 🔒 ya existe, no la sobrescribas
-
-    const other = allProducts.find(
-      p => p.category?.toLowerCase() === "variados"
-    );
-
-    return other?.images?.[0]?.img_url || null;
-  });
-
-}, [allProducts]);
+      return other?.images?.[0]?.img_url || null;
+    });
+  }, [allProducts]);
 
   useEffect(() => {
     dispatch(startChecking());
@@ -91,6 +97,7 @@ useEffect(() => {
 
   useEffect(() => {
     dispatch(fetchProducts()); // 👈 IMPORTANTE
+    dispatch(startChecking());
   }, [dispatch]);
 
   const handleSetProductClick = (product) => {
@@ -197,18 +204,18 @@ useEffect(() => {
             ))
           )}
         </div>
-                    {totalPages.length > itemsPerPage && (
-                    <div>
-                      <Pagination
-                        currentPage={currentPage}
-                        totalPages={totalPages}
-                        onPageChange={setCurrentPage}
-                        colorText="dark"
-                        arrowPrev="button dark"
-                        arrowNext="button dark"
-                      />
-                    </div>
-                   )}
+        {totalPages.length > itemsPerPage && (
+          <div>
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+              colorText="dark"
+              arrowPrev="button dark"
+              arrowNext="button dark"
+            />
+          </div>
+        )}
       </div>
       <div className="homescreen__container">
         <h2>{t("products.hardDisks")}</h2>
@@ -230,11 +237,10 @@ useEffect(() => {
                 sellingsText={true}
                 sellings={t("globals.sellings")}
                 priceText={true}
-                price={itemC.price}
+                previousPrice={itemC.previousPrice}
                 productInfo={itemC}
                 jpg="true"
                 description={itemC.description}
-                beforePrice={itemC.previousPrice}
                 title={itemC.title}
                 thumbnails={itemC.thumbnails}
                 products="ropa para niños"
@@ -245,18 +251,18 @@ useEffect(() => {
             ))
           )}
         </div>
-                    {totalPages.length > itemsPerPage && (
-                    <div>
-                      <Pagination
-                        currentPage={currentPage}
-                        totalPages={totalPages}
-                        onPageChange={setCurrentPage}
-                        colorText="dark"
-                        arrowPrev="button dark"
-                        arrowNext="button dark"
-                      />
-                    </div>
-                   )}
+        {totalPages.length > itemsPerPage && (
+          <div>
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+              colorText="dark"
+              arrowPrev="button dark"
+              arrowNext="button dark"
+            />
+          </div>
+        )}
       </div>
       <div className="homescreen__container">
         <h2>{t("products.motherBoards")}</h2>
@@ -279,7 +285,7 @@ useEffect(() => {
                 sellingsText={true}
                 sellings={t("globals.sellings")}
                 priceText={true}
-                price={itemCl.price}
+                previousPrice={itemCl.previousPrice}
                 productInfo={itemCl}
                 jpg="true"
                 description={itemCl.description}
@@ -293,18 +299,18 @@ useEffect(() => {
             ))
           )}
         </div>
-                    {totalPages.length > itemsPerPage && (
-                    <div>
-                      <Pagination
-                        currentPage={currentPage}
-                        totalPages={totalPages}
-                        onPageChange={setCurrentPage}
-                        colorText="dark"
-                        arrowPrev="button dark"
-                        arrowNext="button dark"
-                      />
-                    </div>
-                   )}
+        {totalPages.length > itemsPerPage && (
+          <div>
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+              colorText="dark"
+              arrowPrev="button dark"
+              arrowNext="button dark"
+            />
+          </div>
+        )}
       </div>
 
       <div className="homescreen__container">

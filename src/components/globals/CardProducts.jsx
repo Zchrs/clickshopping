@@ -45,56 +45,22 @@ export const CardProducts = ({
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const dataFormErrors = (formCart) =>{
-    let user_id = document.getElementById("user_id")
-    let product_id = document.getElementById("product_id")
-    let price = document.getElementById("price")
-    let quantity = document.getElementById("quantity")
 
-    let data = {};
-    let errors = {};
-
-    if (!formCart.user_id && formCart.user_id ==! formCart.user_id) {
-      user_id.style.cssText = "box-shadow: red 1px 1px 2px, red -1px -1px 2px";
-      errors.user_id = "no permitido";
-      return
-    }  
-  
-    if (!formCart.product_id && formCart.product_id ==! formCart.product_id) {
-      product_id.style.cssText = "box-shadow: red 1px 1px 2px, red -1px -1px 2px";
-      errors.product_id = "no permitido";
-    }  else {
-      product_id.style.cssText = "box-shadow: #34B0BE 1px 1px 2px, #34B0BE -1px -1px 2px;";
-    }
-  
-    if (!formCart.price && formCart.price ==! formCart.price) {
-      price.style.cssText = "box-shadow: red 1px 1px 2px, red -1px -1px 2px";
-      errors.price = "no permitido.";
-    } else {
-      price.style.cssText = "box-shadow: #34B0BE 1px 1px 2px, #34B0BE -1px -1px 2px; color: black;";
-    }
-  
-    if (!formCart.quantity) {
-      quantity.style.cssText = "box-shadow: red 1px 1px 2px, red -1px -1px 2px";
-      errors.quantity = "no permitido.";
-    }else {
-      quantity.style.cssText = "box-shadow: #34B0BE 1px 1px 2px, #34B0BE -1px -1px 2px;";
-    }
-  
-
-
-    return errors
-
-  }
+  const initialForm = {
+    user_id: "",
+    product_id: "",
+    price: "",
+    quantity: "",
+  };
   
   const {
-    formCart,
+    form,
     errors,
     handleChangeProduct,
     handleSubmitAddCart,
     handleSubmitAddWishlist,
-    setFormCart
-  } = useForm(initialForm, dataFormErrors);
+    setForm
+  } = useForm(initialForm);
   
 
   // Cuando quieras establecer el estado del producto
@@ -104,7 +70,7 @@ export const CardProducts = ({
     
     dispatch(selectedProduct(productHover));
     localStorage.setItem("productHover", productHover);
-    setFormCart((prevFormCart) => ({
+    setForm((prevFormCart) => ({
       ...prevFormCart,
       user_id: user.id, // Assuming you want to set the user_id as well
       product_id: productHover.id,
@@ -118,7 +84,7 @@ export const CardProducts = ({
     // console.log(productHover, 'producto quitado')
     dispatch(clearProduct(productHover));
     localStorage.removeItem("productHover", productHover);
-    setFormCart(initialForm);
+    setForm(initialForm);
   };
 
   const handleMouseEnter = () => {

@@ -27,6 +27,9 @@ export const types = {
     REMOVE_PRODUCT: `[remove], deleted`,
     UPDATE_PRODUCT: `[update], Updated`,
     productViewedFinish: `[finish], viewed finish`,
+    startPayment: `[paying], start paying product`,
+    paymentSuccess: `[finish], product payed`,
+    errorPayment: `[error], product not payed`,
 
     CHANGE_LANG: 'CHANGE_LANG',
 

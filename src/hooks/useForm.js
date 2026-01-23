@@ -456,9 +456,9 @@ export const useForm = (initialForm, validateForm) => {
   const handleLogin = (e) => {
     if (!form.email) return;
     if (!form.password) return;
+    loadingActive();
     e.preventDefault();
     dispatch(startLogin(form.email, form.password));
-    loadingActive();
   };
 
   const handleSubmitAddCart = async (e) => {

@@ -11,7 +11,7 @@ import { startChecking } from "../actions/authActions";
 export const PrivateRoute = ({ children }) =>{
     const user = useSelector((state) => state.auth.user);
 
-    return (user) ? children : <Navigate to="/users/auth/login" replace />;
+    return (user) ? children : <Navigate to="/auth/login" replace />;
 }
 export const PrivateRouteAdmin = ({ children }) =>{
     const admin = useSelector((state) => state.authAdmin.admin);

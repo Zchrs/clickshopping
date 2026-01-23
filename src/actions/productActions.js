@@ -39,6 +39,27 @@ export const clearProduct = (productInfo) => {
     payload: ratings,
   });
 
+  export const startPayment = (productInfo) => {
+    return {
+      type: types.startPayment,
+      payload: Array.isArray(productInfo) ? productInfo : [],
+    };
+  };
+
+  export const paymentSuccess = (productInfo) => {
+    return {
+      type: types.paymentSuccess,
+      payload: Array.isArray(productInfo) ? productInfo : [],
+    };
+  };
+
+  export const errorPayment = (productInfo) => {
+    return {
+      type: types.errorPayment,
+      payload: Array.isArray(productInfo) ? productInfo : [],
+    };
+  };
+
 
   export const fetchSoldProducts = async () => {
     try {

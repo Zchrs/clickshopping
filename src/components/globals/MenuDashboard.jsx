@@ -126,7 +126,7 @@ const DashMenu = styled.div`
                     font-size: 20px;
                   }
                   &:hover{
-                    color: #EC3337;
+                    color: var(--primary);
                 }
             }
       @media (max-width: 920px) {
@@ -148,7 +148,7 @@ const DashMenu = styled.div`
       align-self: center;
       color: rgb(68, 66, 66);
       &:hover{
-          color: #EC3337;
+          color: var(--primary);
           img{
               filter: grayscale(0%);
               

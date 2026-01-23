@@ -3,15 +3,22 @@
 import { BaseButton } from "./BaseButton";
 import { getFile } from "../../reducers/globalReducer";
 import { NavLink } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
-import "../../assets/sass/boxinfo.scss"
+import "../../assets/sass/boxinfo.scss";
+import { fetchCartUser } from "../../actions/cartActions";
 // import styled from "styled-components";
 
 export const BoxInfo = (props) => {
   // const user = useSelector((state) => state.auth.user);
+  const [cartItems, setCartItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [subtotal, setSubtotal] = useState(0);
+  const [total, setTotal] = useState(0);
   const lang = useSelector((state) => state.langUI.lang);
+  const user = useSelector((state) => state.auth.user);
+  const userId = user?.id;
   const { t, i18n } = useTranslation();
   const {
     title,
@@ -40,108 +47,150 @@ export const BoxInfo = (props) => {
     i18n.changeLanguage(lang);
   }, [i18n, lang]);
 
+  useEffect(() => {
+    const getCartItems = async () => {
+      try {
+        if (userId && typeof userId === "string" && userId.trim() !== "") {
+          const items = await fetchCartUser(userId);
+          setCartItems(items);
+          calculateTotals(items);
+        } else {
+          console.error("User ID is invalid or missing");
+        }
+      } catch (error) {
+        console.error("Error loading cart items:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getCartItems();
+  }, [userId]);
+
+  const calculateTotals = (items) => {
+    const subtotalValue = items.reduce(
+      (sum, item) => sum + item.price * item.quantity,
+      0,
+    );
+    const totalItemsCount = items.reduce((sum, item) => sum + item.quantity, 0);
+    // Puedes ajustar aquí si hay un costo de envío u otros costos adicionales
+    setSubtotal(subtotalValue);
+    setTotal(totalItemsCount);
+  };
+
   return (
     // <BoxInfoStyle>
-      <div className="loginbox">
-        <div className="loginbox-subloginbox">
+    <div className="loginbox">
+      <div className="loginbox-subloginbox">
+        <img
+          className="loginbox-img"
+          src={getFile("svg", `${icon}`, "svg")}
+          alt="Icon"
+        />
+        {arrow && (
           <img
-            className="loginbox-img"
-            src={getFile("svg", `${icon}`, "svg")}
-            alt="Icon"
+            className="loginbox__img"
+            src={getFile("svg", "arrow-down-reed", "svg")}
+            alt="Arrow"
           />
-          {arrow && (
-            <img
-              className="loginbox__img"
-              src={getFile("svg", "arrow-down-reed", "svg")}
-              alt="Arrow"
-            />
-          )}
-        </div>
-        <div className="loginbox__box">
-          {emptyCart && (
-            <div className="loginbox-empty">
-              <img src={getFile("svg", `${img}`, "svg")} alt="Empty Cart" />
-              <h2 className="loginbox__h2">{title}</h2>
-            </div>
-          )}
-          {texts && (
-            <div className="loginbox__container">
-              <h2 className="loginbox__h4">{titleA}</h2>
-              {textB && (
-                <div className="loginbox-texts">
-                  <NavLink to={"auth/login"} className="loginbox__a">
-                    {text}
-                  </NavLink>
-                  &nbsp;
-                  <p className="loginbox__p">{textA}</p>
-                  &nbsp;
-                  <NavLink to={"auth/register"} className="loginbox__a">
-                    {textB}
-                  </NavLink>
-                </div>
-              )}
-              {textC && (
-                <div className="loginbox-textsa">
-                  <p className="loginbox__p">{textC}</p>
-                </div>
-              )}
-              {btnlogin && (
-                <BaseButton
-                  label={t("auth.login")}
-                  classs={'button primary'}
-                  colorbtn={"var(--primary)"}
-                  colortextbtnprimary={"var(--light)"}
-                  colorbtnhoverprimary={"var(--bg-primary-tr)"}
-                  colortextbtnhoverprimary={"var(--light)"}
-                  link={"auth/login"}
-                />
-              )}
-              {newUser && <p className="loginbox__p2">{textD}</p>}
-            </div>
-          )}
-          {textT && <p className="loginbox__p">{textU}</p>}
-          {btns && (
-            <div className="loginbox__buttons">
-              <h3 className="loginbox__h3">{title}</h3>
-              <p className="loginbox__p">{text}</p>
-              <div className="loginbox__btns">
-                <BaseButton
-                  label={t("auth.login")}
-                  classs={'button primary'}
-                  colorbtn={"var(--primary)"}
-                  colortextbtnprimary={"var(--light)"}
-                  colorbtnhoverprimary={"var(--primary-light)"}
-                  colortextbtnhoverprimary={"var(--light)"}
-                  link={"auth/login"}
-                />
-                <BaseButton
-                  label={t("auth.register")}
-                  classs="button secondary"
-                  colorbtn={"var(--secondary)"}
-                  colorbtntextsecondary={"var(--tertiary)"}
-                  colorbtnhoversecondary={"var(--secondary-semi)"}
-                  hovercolorbtntextsecondary={"var(--light)"}
-                  link={"auth/register"}
-                />
-              </div>
-            </div>
-          )}
-          {social && (
-            <div className="loginbox__social">
-              <div className="loginbox__gruops">
-                <h4>{t("auth.sesion")}</h4>
-                <hr />
-              </div>
-              <div className="loginbox__social-box">
-                <img src={getFile("svg", `facebook`, "svg")} alt="Facebook" />
-                <img src={getFile("svg", `twitter`, "svg")} alt="Twitter" />
-                <img src={getFile("svg", `linkedin`, "svg")} alt="LinkedIn" />
-                <img src={getFile("svg", `instagram`, "svg")} alt="Instagram" />
-              </div>
-            </div>
-          )}
-        </div>
+        )}
       </div>
+      <div className="loginbox__box">
+        {emptyCart && (
+          <div>
+            <h4>Tienes ({total}) artículos en tu carrito</h4>
+            {loading ? (
+              <p>Cargando productos...</p>
+            ) : !Array.isArray(cartItems) || cartItems.length === 0 ? (
+              <div className="loginbox-empty">
+                <img src={getFile("svg", `${img}`, "svg")} alt="Empty Cart" />
+                <h2 className="loginbox__h2">{title}</h2>
+              </div>
+            ) : (
+              cartItems.map((item) => (
+                <img className="loginbox-imgproducts" src={item.img_urls?.[0]} alt={item.name} key={item.id} />
+              ))
+            )}
+          </div>
+        )}
+        {texts && (
+          <div className="loginbox__container">
+            <h2 className="loginbox__h4">{titleA}</h2>
+            {textB && (
+              <div className="loginbox-texts">
+                <NavLink to={"auth/login"} className="loginbox__a">
+                  {text}
+                </NavLink>
+                &nbsp;
+                <p className="loginbox__p">{textA}</p>
+                &nbsp;
+                <NavLink to={"auth/register"} className="loginbox__a">
+                  {textB}
+                </NavLink>
+              </div>
+            )}
+            {textC && (
+              <div className="loginbox-textsa">
+                <p className="loginbox__p">{textC}</p>
+              </div>
+            )}
+            {btnlogin && (
+              <BaseButton
+                label={t("auth.login")}
+                classs={"button primary"}
+                colorbtn={"var(--primary)"}
+                colortextbtnprimary={"var(--light)"}
+                colorbtnhoverprimary={"var(--bg-primary-tr)"}
+                colortextbtnhoverprimary={"var(--light)"}
+                link={"auth/login"}
+              />
+            )}
+            {newUser && <p className="loginbox__p2">{textD}</p>}
+          </div>
+        )}
+        {textT && <p className="loginbox__p">{textU}</p>}
+        {btns && (
+          <div className="loginbox__buttons">
+            <h3 className="loginbox__h3">{title}</h3>
+            <p className="loginbox__p">{text}</p>
+            <div className="loginbox__btns">
+              <BaseButton
+                label={t("auth.login")}
+                classs={"button primary"}
+                colorbtn={"var(--primary)"}
+                colortextbtnprimary={"var(--light)"}
+                colorbtnhoverprimary={"var(--primary-light)"}
+                colortextbtnhoverprimary={"var(--light)"}
+                link={"auth/login"}
+              />
+              <BaseButton
+                label={t("auth.register")}
+                classs="button secondary"
+                colorbtn={"var(--secondary)"}
+                colorbtntextsecondary={"var(--tertiary)"}
+                colorbtnhoversecondary={"var(--secondary-semi)"}
+                hovercolorbtntextsecondary={"var(--light)"}
+                link={"auth/register"}
+              />
+            </div>
+          </div>
+        )}
+        {social && (
+          <div className="loginbox__social">
+            <div className="loginbox__gruops">
+              <h4>{t("auth.sesion")}</h4>
+              <hr />
+            </div>
+            <div className="loginbox__social-box">
+              <img src={getFile("svg", `facebook`, "svg")} alt="Facebook" />
+              <img src={getFile("svg", `twitter`, "svg")} alt="Twitter" />
+              <img src={getFile("svg", `linkedin`, "svg")} alt="LinkedIn" />
+              <img src={getFile("svg", `instagram`, "svg")} alt="Instagram" />
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
     /* </BoxInfoStyle> */
   );
 };
@@ -153,7 +202,6 @@ export const BoxInfo = (props) => {
 //   cursor: pointer;
 //   transition: all ease .3s;
 //   z-index: 9999;
-
 
 //   &__container {
 //     display: grid;
@@ -242,11 +290,11 @@ export const BoxInfo = (props) => {
 //   &:hover &-img {
 //     transition: all ease .3s;
 //     filter:
-//       invert(41%) 
-//       sepia(98%) 
-//       saturate(1865%) 
-//       hue-rotate(177deg) 
-//       brightness(100%) 
+//       invert(41%)
+//       sepia(98%)
+//       saturate(1865%)
+//       hue-rotate(177deg)
+//       brightness(100%)
 //       contrast(101%);
 //   }
 
@@ -261,11 +309,11 @@ export const BoxInfo = (props) => {
 //     transform: rotateZ(180deg);
 //     transition: all ease .3s;
 //     filter:
-//       invert(41%) 
-//       sepia(98%) 
-//       saturate(1865%) 
-//       hue-rotate(177deg) 
-//       brightness(100%) 
+//       invert(41%)
+//       sepia(98%)
+//       saturate(1865%)
+//       hue-rotate(177deg)
+//       brightness(100%)
 //       contrast(101%);
 //   }
 

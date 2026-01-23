@@ -16,8 +16,8 @@ export const startLogin = (email, password) => {
     if (body.ok) {
       localStorage.setItem("id", body.user.id);
       localStorage.setItem("role", body.user.role);
-      localStorage.setItem("token", body.user.token);
-      localStorage.setItem("token-init-date", new Date().getTime());
+      localStorage.setItem("tokenUser", body.user.token);
+      localStorage.setItem("tokenUser-init-date", new Date().getTime());
       dispatch(
         loginSuccess({
           id: body.user.id,
@@ -112,8 +112,8 @@ export const startChecking = () => {
       
       localStorage.setItem("id", body.id);
       localStorage.setItem("role", body.role);
-      localStorage.setItem("token", body.token);
-      localStorage.setItem("token-init-date", new Date().getTime());
+      localStorage.setItem("tokenUser", body.token);
+      localStorage.setItem("tokenUser-init-date", new Date().getTime());
 
       dispatch(
         loginSuccess({

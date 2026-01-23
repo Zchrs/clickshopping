@@ -10,7 +10,6 @@ export const CheckOut = () => {
     // const {productInfo} = location.state;
     const productInfo = useSelector((state) => state.product.selectedProduct);
     const user = useSelector((state) => state.auth.user);
-    console.log(user)
     
     
     return (
@@ -39,13 +38,17 @@ export const CheckOut = () => {
              <p>Cuentas bancarias</p>
              <p>Moneybrokers</p>
             </div>
-             <div className='checkout-left-img'>
-                <img src={productInfo.images?.[0]?.img_url} alt="" />
-                <div>
-                    <h3>{productInfo.title}</h3>
-                    <strong>{formatPrice(productInfo.previousPrice)}</strong>
+                <div className='checkout-left-img'>
+                   <img src={productInfo.images?.[0]?.img_url} alt="" />
+                   <div className='checkout-left-img-info'>
+                       <h3>{productInfo.title}</h3>
+                       <strong>{formatPrice(productInfo.previousPrice)}</strong>
+                      <div className='checkout-left-info'>
+                          {productInfo.description}   
+                        
+                      </div>
+                   </div>
                 </div>
-             </div>
              
         </div>
 
