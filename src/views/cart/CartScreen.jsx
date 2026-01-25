@@ -3,11 +3,11 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCartUser, moveFromCartToWishlist, removeFromCart } from "../../actions/cartActions";
-import { BaseButton } from "../../../index";
+import { BaseButton, CardProductCart, Empty } from "../../../index";
 import styled from "styled-components";
 import { formatPrice } from "../../../globalActions";
 import Swal from "sweetalert2";
-import { CardProductCart } from "../../components/globals/CardProductCart";
+import { useTranslation } from "react-i18next";
 
 
 export const CartScreen = () => {
@@ -16,6 +16,8 @@ export const CartScreen = () => {
   const [subtotal, setSubtotal] = useState(0);
   const [total, setTotal] = useState(0);
   const { id } = useSelector((state) => state.auth.user);
+  const lang = useSelector((state) => state.langUI.lang);
+  const { t, i18n } = useTranslation();
   const dispatch = useDispatch();
   const userId = id;
 
@@ -153,7 +155,8 @@ export const CartScreen = () => {
             {loading ? (
               <p>Cargando productos...</p>
             ) : !Array.isArray(cartItems) || cartItems.length === 0 ? (
-              <p>No hay productos disponibles.</p>
+                <Empty img="empty" message={t("globals.emptyProducts")} />
+              
             ) : (
               cartItems.map((item) => (
                 <CardProductCart
@@ -189,7 +192,12 @@ export const CartScreen = () => {
           <BaseButton
             textLabel={true}
             label={`Pagar (${total})`}
-            classs={"button mini-red"}
+            icon={"pay"}
+            classs={'button primary'} 
+            colorbtn={"var(--bg-primary)"}
+            colortextbtnprimary={"var(--light)"}
+            colorbtnhoverprimary={"var(--bg-primary-tr)"}
+            colortextbtnhoverprimary={"white"}  
           />
           <div>
             <h5>Entrega Rápida</h5>
@@ -215,7 +223,7 @@ const MyCart = styled.div`
 
   .mycart {
     display: grid;
-    grid-template-columns: 73% 1fr;
+    grid-template-columns: 70% 1fr;
     width: 100%;
     align-items: start;
     height: fit-content;

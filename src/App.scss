@@ -607,5 +607,21 @@ gap: 7px;
   -ms-transform: rotate(45deg);
   transform: rotate(45deg);
 }
+.swal-confirm-btn {
+  background: var(--primary) !important;
+  color: white !important;
+  border-radius: 8px !important;
+  padding: 8px 18px !important;
+  font-weight: 400 !important;
+  font-size: 14px;
+  transition: all 0.25s ease !important;
+
+  &:hover{
+    background: var(--primary-semi) !important;
+  }
+}
+.swal2-loader {
+  border-color: var(--primary) transparent var(--primary) transparent !important;
+}
 
 /* fin de estilos de componente checkbox */

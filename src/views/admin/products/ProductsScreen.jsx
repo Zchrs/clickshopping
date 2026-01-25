@@ -26,23 +26,23 @@ export const ProductsScreen = () => {
       className="productsscreen-tabs"
       fill
     >
-      <Tab eventKey="addProduct" title="Crear Producto">
+      <Tab eventKey="addProduct" title="Crear">
        <CreateProduct />
       </Tab>
-      <Tab eventKey="addedProducts" title="Productos agregados">
+      <Tab eventKey="addedProducts" title="Agregados">
        <ProductsAdded />
       </Tab>
 
-      <Tab eventKey="sellingsProduct" title="Productos vendidos">
+      <Tab eventKey="sellingsProduct" title="Vendidos">
         <SellingProducts />
       </Tab>
-      <Tab eventKey="pendingProduct" title="Productos pendientes">
+      <Tab eventKey="pendingProduct" title="Pendientes">
         <PendingProducts />
       </Tab>
-      <Tab eventKey="cancelledProduct" title="Productos Cancelados">
+      <Tab eventKey="cancelledProduct" title="Cancelados">
         <CancelledProducts />
       </Tab>
-      <Tab eventKey="productsOut" title="Productos agotados">
+      <Tab eventKey="productsOut" title="Agotados">
         <OutProducts />
       </Tab>
     </Tabs>
@@ -84,6 +84,7 @@ const ScreenProducts = styled.section`
         border: var(--primary-light) 1px solid;
         transition: all ease .5s;
         border-radius: 8px 8px 0 0;
+        padding: 5px 20px;
    
         &:hover {
             background: var(--primary);

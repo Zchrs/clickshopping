@@ -4,11 +4,11 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCartUser, moveFromCartToWishlist, removeFromCart } from "../../../actions/cartActions";
-import { BaseButton } from "../../../../index";
+import { BaseButton,  CardProductCart, Empty } from "../../../../index";
 import styled from "styled-components";
 import { formatPrice } from "../../../../globalActions";
 import Swal from "sweetalert2";
-import { CardProductCart } from "../../../components/globals/CardProductCart";
+import { useTranslation } from "react-i18next";
 
 export const UserCartScreen = () => {
   const [cartItems, setCartItems] = useState([]);
@@ -16,6 +16,8 @@ export const UserCartScreen = () => {
   const [subtotal, setSubtotal] = useState(0);
   const [total, setTotal] = useState(0);
   const { id } = useSelector((state) => state.auth.user);
+    const lang = useSelector((state) => state.langUI.lang);
+    const { t, i18n } = useTranslation();
   const dispatch = useDispatch();
   const userId = id;
 
@@ -39,32 +41,61 @@ export const UserCartScreen = () => {
     getCartItems();
   }, [userId]);
 
-  const handleRemoveFromCart = async (productId, name) => {
-    const result = await Swal.fire({
-      title: 'Vas a eliminar un producto',
-      html: `¡Estás seguro que deseas eliminar <strong>${name}</strong> del carrito?`,
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Confirmar',
-      cancelButtonText: 'Volver',
-      background: '#f0f0f0',
-      customClass: {
-        popup: 'custom-popup',
-        title: 'custom-title',
-        content: 'custom-content',
-        confirmButton: 'custom-confirm-button',
-        cancelButton: 'custom-cancel-button',
-      },
+const handleRemoveFromCart = async (productId, name) => {
+  const result = await Swal.fire({
+    title: "Vas a eliminar un producto",
+    html: `¿Estás seguro que deseas eliminar <strong>${name}</strong> del carrito?`,
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: "Confirmar",
+    cancelButtonText: "Volver",
+    background: "#f0f0f0",
+    customClass: {
+      popup: "custom-popup",
+      title: "custom-title",
+      content: "custom-content",
+      confirmButton: "custom-confirm-button",
+      cancelButton: "custom-cancel-button",
+    },
+  });
+
+  if (!result.isConfirmed) return;
+
+  Swal.fire({
+    title: "Eliminando...",
+    allowOutsideClick: false,
+    didOpen: () => Swal.showLoading(),
+  });
+
+  try {
+    const response = await dispatch(removeFromCart(productId));
+
+    Swal.fire({
+      icon: "success",
+      title: "Listo",
+      text:
+        response?.payload?.message ||
+        response?.message ||
+        "Producto eliminado correctamente",
+      confirmButtonText: "Aceptar",
     });
 
-    if (result.isConfirmed) {
-      await dispatch(removeFromCart(productId));
-      // Después de eliminar el producto del carrito, recargar los elementos del carrito
-      const items = await fetchCartUser(userId);
-      setCartItems(items);
-      calculateTotals(items);
-    }
-  };
+    const items = await fetchCartUser(userId);
+    setCartItems(items);
+    calculateTotals(items);
+
+  } catch (error) {
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text:
+        error?.response?.data?.error ||
+        error?.message ||
+        "No se pudo eliminar el producto",
+      confirmButtonText: "Aceptar",
+    });
+  }
+};
 
   const handleMoveToWishlist = async (productId, name) => {
     try {
@@ -153,7 +184,7 @@ export const UserCartScreen = () => {
             {loading ? (
               <p>Cargando productos...</p>
             ) : !Array.isArray(cartItems) || cartItems.length === 0 ? (
-              <p>No hay productos disponibles.</p>
+              <Empty img="empty" message={t("globals.emptyProducts")} />
             ) : (
               cartItems.map((item) => (
                 <CardProductCart
@@ -189,7 +220,12 @@ export const UserCartScreen = () => {
           <BaseButton
             textLabel={true}
             label={`Pagar (${total})`}
-            classs={"button mini-red"}
+                        icon={"pay"}
+            classs={'button primary'} 
+            colorbtn={"var(--bg-primary)"}
+            colortextbtnprimary={"var(--light)"}
+            colorbtnhoverprimary={"var(--bg-primary-tr)"}
+            colortextbtnhoverprimary={"white"}  
           />
           <div>
             <h5>Entrega Rápida</h5>
@@ -215,7 +251,7 @@ const MyCart = styled.div`
 
   .mycart {
     display: grid;
-    grid-template-columns: 73% 1fr;
+    grid-template-columns: 70% 1fr;
     width: 100%;
     align-items: start;
     height: fit-content;
@@ -255,6 +291,7 @@ const MyCart = styled.div`
 
       &-items {
         display: grid;
+        place-items: center;
         gap: 15px;
       }
     }

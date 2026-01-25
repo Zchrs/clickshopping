@@ -5,6 +5,12 @@
   transition: all ease .3s;
   z-index: 9999;
 
+  &-flex{
+    display: flex;
+    width: fit-content;
+    margin: auto;
+    gap: 5px; 
+  }
 
   &__container {
     display: grid;
@@ -205,6 +211,7 @@
     }
   }
     &-imgproducts{
+    gap: 5px;
     width: 35px;
   }
 }

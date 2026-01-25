@@ -107,9 +107,16 @@ export const BoxInfo = (props) => {
                 <h2 className="loginbox__h2">{title}</h2>
               </div>
             ) : (
-              cartItems.map((item) => (
-                <img className="loginbox-imgproducts" src={item.img_urls?.[0]} alt={item.name} key={item.id} />
-              ))
+              <div className="loginbox-flex">
+              {cartItems.map((item) => (
+                <img 
+                  className="loginbox-imgproducts" 
+                  key={item.id} 
+                  src={item.img_urls?.[0]} 
+                  alt={item.name} 
+                />
+              ))}
+              </div>
             )}
           </div>
         )}

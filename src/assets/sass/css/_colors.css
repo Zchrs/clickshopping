@@ -1,7 +1,7 @@
 :root {
     --primary: #00a9ff;
-    --primary-semi: #004d86;
-    --primary-light: #054a862a;
+    --primary-semi: #2978b4;
+    --primary-light: #6cb2ef2a;
     --primary-semi-soft: #f7ffff;
     --primary-soft: #d5decb;
     --secondary: #787878;
@@ -21,7 +21,7 @@
     /* TEXT COLORS */
     --text-primary: #00a9ff;
     --text-primary-semi: #004d86;
-    --text-primary-light: #CBD6DA;
+    --text-primary-light: #a3cad9;
     --text-primary-semi-soft: #f7ffff;
     --text-primary-soft: #d5decb;
     --text-secondary: #FFE08A;

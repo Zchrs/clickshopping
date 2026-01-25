@@ -303,8 +303,21 @@ export const useForm = (initialForm, validateForm) => {
         }
       );
   
-      console.log(response);
-      setLoading(false);
+          Swal.fire({
+      title: "Estamos agregando un producto.",
+      text: "Cargando",
+      allowOutsideClick: false,
+      background: "#f9fafb",
+      customClass: {
+        popup: "swal-popup",
+        title: "swal-title",
+        htmlContainer: "swal-text",
+        confirmButton: "swal-confirm-btn",
+      },
+      didOpen: () => Swal.showLoading(),
+    });
+
+      console.log(response)
       setResponse(true);
       setForm(initialForm);
       
@@ -456,7 +469,20 @@ export const useForm = (initialForm, validateForm) => {
   const handleLogin = (e) => {
     if (!form.email) return;
     if (!form.password) return;
-    loadingActive();
+    
+    Swal.fire({
+      title: "Iniciando sesión...",
+      text: "Validando credenciales",
+      allowOutsideClick: false,
+      background: "#f9fafb",
+      customClass: {
+        popup: "swal-popup",
+        title: "swal-title",
+        htmlContainer: "swal-text",
+        confirmButton: "swal-confirm-btn",
+      },
+      didOpen: () => Swal.showLoading(),
+    });
     e.preventDefault();
     dispatch(startLogin(form.email, form.password));
   };
@@ -671,6 +697,19 @@ export const useForm = (initialForm, validateForm) => {
     if (!form.email) return;
     if (!form.pass) return;
     
+    Swal.fire({
+      title: "Iniciando sesión...",
+      text: "Validando credenciales",
+      allowOutsideClick: false,
+      background: "#f9fafb",
+      customClass: {
+        popup: "swal-popup",
+        title: "swal-title",
+        htmlContainer: "swal-text",
+        confirmButton: "swal-confirm-btn",
+      },
+      didOpen: () => Swal.showLoading(),
+    });
     e.preventDefault();
     dispatch(startLoginAdmin(form.email, form.pass));
 
