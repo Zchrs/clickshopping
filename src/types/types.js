@@ -1,7 +1,5 @@
 
 
-
-
 export const types = {
     login: `[auth], login`,
     logout: `[auth], logout`,
@@ -27,12 +25,9 @@ export const types = {
     REMOVE_PRODUCT: `[remove], deleted`,
     UPDATE_PRODUCT: `[update], Updated`,
     productViewedFinish: `[finish], viewed finish`,
-    startPayment: `[paying], start paying product`,
-    paymentSuccess: `[finish], product payed`,
-    errorPayment: `[error], product not payed`,
-
+    
     CHANGE_LANG: 'CHANGE_LANG',
-
+    
     // types para el estado del carrito
     ADD_TO_CART: 'Adding to cart',
     REMOVE_FROM_CART: 'Removed to cart success',
@@ -40,6 +35,16 @@ export const types = {
     ADD_TO_CART_SUCCESS: 'Added to cart success',
     ADD_TO_CART_FAIL: 'ADD_TO_CART_FAIL',
     MOVE_FROM_WISHLIST_TO_CART: 'Move to wishlist success',
+    
+    // types para el estado de las ótrdenes
+    startPayment: `[paying], start paying product`,
+    errorPayment: `[error], order pay failed`,
+    pendingPayment: `[pending], payout order pending`,
+    paymentSuccess: `[finish], order payed`,
+    orderView: `[looking], looking order start`,
+    setFilteredOrders: `[filtered], filtered orders`,
+    SELECTED_ORDER: `[selected], order selected`,
+    UPDATE_ORDER: `[update], orpdated`,
 
     // types para el estado de la lista de deseos
     ADD_TO_WISHLIST: 'ADD_TO_WISHLIST',

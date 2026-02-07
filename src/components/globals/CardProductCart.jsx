@@ -51,11 +51,11 @@ const ProductCartCard = styled.div`
         width: 100%;
         grid-template-columns: 15% 1fr;
         height: fit-content;
-        background: white;
+        /* background: white; */
         padding: 10px;
         gap: 10px;
         align-items: center;
-        box-shadow: 1px 1px 3px #ebe9e9, -1px -1px 3px #ebe9e9;
+        /* box-shadow: 1px 1px 3px #ebe9e9, -1px -1px 3px #ebe9e9; */
 
         h3{
             font-weight: 500;

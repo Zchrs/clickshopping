@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { CardProductsSmall } from "../../components/globals/CardProductsSmall";
+import { Link } from "react-router-dom";
 import { getFile } from "../../reducers/globalReducer";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
@@ -26,44 +27,44 @@ export const Dashboard = () => {
     <DashUser>
       <section className="dashbuser">
         <div className="dashbuser-header">
-          <div className="dashbuser-items">
+          <Link className="dashbuser-items">
             <img src={getFile("svg", "wishlist", "svg")} alt="" />
             <p>{t("dashboard.wishlist")}</p>
-          </div>
-          <div className="dashbuser-items">
+          </Link>
+          <Link className="dashbuser-items">
             <img src={getFile("svg", "following", "svg")} alt="" />
             <p>{t("globals.following")}</p>
-          </div>
-          <div className="dashbuser-items">
+          </Link>
+          <Link className="dashbuser-items">
             <img src={getFile("svg", "followers", "svg")} alt="" />
             <p>{t("globals.follow")}</p>
-          </div>
-          <div className="dashbuser-items">
-            <img src={getFile("svg", "coupons", "svg")} alt="" />
-            <p>{t("globals.coupons")}</p>
-          </div>
+          </Link>
+          <Link to={"/dashboard/my-cart"} className="dashbuser-items">
+            <img src={getFile("svg", "cart", "svg")} alt="" />
+            <p>{t("globals.cart")}</p>
+          </Link>
         </div>
         <div className="dashbuser-contain">
           <div className="dashbuser-orders-grid">
             <h2>{t("dashboard.orders")}</h2>
             <div className="dashbuser-orders-contain">
               <div className="dashbuser-group">
-                <div className="dashbuser-orders-items">
+                <Link to={"/dashboard/orders"} className="dashbuser-orders-items">
                   <img src={getFile("svg", "wallet-red-full", "svg")} alt="" />
                   <p>{t("dashboard.pendingPay")}</p>
-                </div>
-                <div className="dashbuser-orders-items">
+                </Link>
+                <Link className="dashbuser-orders-items">
                   <img src={getFile("svg", "send-pending-red", "svg")} alt="" />
                   <p>{t("dashboard.pendingSend")}</p>
-                </div>
-                <div className="dashbuser-orders-items">
+                </Link>
+                <Link className="dashbuser-orders-items">
                   <img src={getFile("svg", "send-red", "svg")} alt="" />
                   <p>{t("dashboard.sent")}</p>
-                </div>
-                <div className="dashbuser-orders-items">
+                </Link>
+                <Link className="dashbuser-orders-items">
                   <img src={getFile("svg", "ratings-red", "svg")} alt="" />
                   <p>{t("dashboard.ratings")}</p>
-                </div>
+                </Link>
               </div>
             </div>
           </div>
@@ -181,8 +182,8 @@ const DashUser = styled.section`
       background: white;
       border-radius: 10px;
       box-shadow:
-        1px 1px 2px #ebe9e9,
-        -1px -1px 2px #ebe9e9;
+        1px 1px 2px #e5ecec,
+        -1px -1px 2px #e5ecec;
 
       @media (max-width: 500px) {
         display: flex;
@@ -239,6 +240,7 @@ const DashUser = styled.section`
       cursor: pointer;
       width: fit-content;
       color: black;
+      align-items: baseline;
 
       @media (max-width: 450px) {
         width: fit-content;
@@ -320,7 +322,7 @@ const DashUser = styled.section`
 
         img {
           margin: auto;
-          height: 35px;
+          height: 30px;
           filter: invert(41%) sepia(98%) saturate(1865%) hue-rotate(177deg)
             brightness(100%) contrast(101%);
 

@@ -186,10 +186,10 @@ export const useForm = (initialForm, validateForm) => {
       cancelButtonText: 'Volver',
       background: '#f0f0f0',
       customClass: {
-        popup: 'custom-popup',
+        popup: 'swal-custom-popup',
         title: 'custom-title',
         content: 'custom-content',
-        confirmButton: 'custom-confirm-button',
+        confirmButton: 'swal-confirm-btn',
       },
     }).then((result) => {
       if (result.isConfirmed) {
@@ -223,10 +223,10 @@ export const useForm = (initialForm, validateForm) => {
           confirmButtonText: 'Volver',
           background: '#f0f0f0',
           customClass: {
-            popup: 'custom-popup',
+            popup: 'swal-custom-popup',
             title: 'custom-title',
             content: 'custom-content',
-            confirmButton: 'custom-confirm-button',
+            confirmButton: 'swal-confirm-btn',
           },
         })
         console.log("Product updated successfully", response.data);
@@ -240,10 +240,10 @@ export const useForm = (initialForm, validateForm) => {
         icon: 'error',
         background: '#f0f0f0',
         customClass: {
-            popup: 'custom-popup',
+            popup: 'swal-custom-popup',
             title: 'custom-title',
             content: 'custom-content',
-            confirmButton: 'custom-confirm-button',
+            confirmButton: 'swal-confirm-btn',
         },
     });
     setLoading(false);
@@ -284,10 +284,10 @@ export const useForm = (initialForm, validateForm) => {
       cancelButtonText: 'Volver',
       background: '#f0f0f0',
       customClass: {
-        popup: 'custom-popup',
+        popup: 'swal-custom-popup',
         title: 'custom-title',
         content: 'custom-content',
-        confirmButton: 'custom-confirm-button',
+        confirmButton: 'swal-confirm-btn',
       },
     }).then((result) => {
       if (result.isConfirmed) {
@@ -329,10 +329,10 @@ export const useForm = (initialForm, validateForm) => {
         confirmButtonText: 'Volver',
         background: '#f0f0f0',
         customClass: {
-          popup: 'custom-popup',
+          popup: 'swal-custom-popup',
           title: 'custom-title',
           content: 'custom-content',
-          confirmButton: 'custom-confirm-button',
+          confirmButton: 'swal-confirm-btn',
         },
       })
           // Manejar acciones adicionales si es necesario
@@ -359,10 +359,10 @@ export const useForm = (initialForm, validateForm) => {
             cancelButtonText: 'Volver',
             background: '#f0f0f0',
             customClass: {
-                popup: 'custom-popup',
+                popup: 'swal-custom-popup',
                 title: 'custom-title',
                 content: 'custom-content',
-                confirmButton: 'custom-confirm-button',
+                confirmButton: 'swal-confirm-btn',
                 cancelButton: 'custom-cancel-button',
             },
         });
@@ -376,10 +376,10 @@ export const useForm = (initialForm, validateForm) => {
                 icon: 'success',
                 background: '#f0f0f0',
                 customClass: {
-                    popup: 'custom-popup',
+                    popup: 'swal-custom-popup',
                     title: 'custom-title',
                     content: 'custom-content',
-                    confirmButton: 'custom-confirm-button',
+                    confirmButton: 'swal-confirm-btn',
                 },
             });
             return response.data;
@@ -394,10 +394,10 @@ export const useForm = (initialForm, validateForm) => {
             icon: 'error',
             background: '#f0f0f0',
             customClass: {
-                popup: 'custom-popup',
+                popup: 'swal-custom-popup',
                 title: 'custom-title',
                 content: 'custom-content',
-                confirmButton: 'custom-confirm-button',
+                confirmButton: 'swal-confirm-btn',
             },
         });
         throw error.response?.data || error.message;
@@ -529,10 +529,10 @@ export const useForm = (initialForm, validateForm) => {
               cancelButtonText: 'Volver',
               background: '#f0f0f0',
               customClass: {
-                popup: 'custom-popup',
+                popup: 'swal-custom-popup',
                 title: 'custom-title',
                 content: 'custom-content',
-                confirmButton: 'custom-confirm-button',
+                confirmButton: 'swal-confirm-btn',
               },
             })
           ),
@@ -548,10 +548,10 @@ export const useForm = (initialForm, validateForm) => {
         cancelButtonText: 'Volver',
         background: '#f0f0f0',
         customClass: {
-          popup: 'custom-popup',
+          popup: 'swal-custom-popup',
           title: 'custom-title',
           content: 'custom-content',
-          confirmButton: 'custom-confirm-button',
+          confirmButton: 'swal-confirm-btn',
         },
       })
       return;
@@ -600,10 +600,10 @@ export const useForm = (initialForm, validateForm) => {
               cancelButtonText: 'Volver',
               background: '#f0f0f0',
               customClass: {
-                popup: 'custom-popup',
+                popup: 'swal-custom-popup',
                 title: 'custom-title',
                 content: 'custom-content',
-                confirmButton: 'custom-confirm-button',
+                confirmButton: 'swal-confirm-btn',
               },
             })
           ),
@@ -619,10 +619,10 @@ export const useForm = (initialForm, validateForm) => {
         cancelButtonText: 'Volver',
         background: '#f0f0f0',
         customClass: {
-          popup: 'custom-popup',
+          popup: 'swal-custom-popup',
           title: 'custom-title',
           content: 'custom-content',
-          confirmButton: 'custom-confirm-button',
+          confirmButton: 'swal-confirm-btn',
         },
       })
       return;
@@ -765,10 +765,10 @@ export const useForm = (initialForm, validateForm) => {
               cancelButtonText: 'Volver',
               background: '#f0f0f0',
               customClass: {
-                popup: 'custom-popup',
+                popup: 'swal-custom-popup',
                 title: 'custom-title',
                 content: 'custom-content',
-                confirmButton: 'custom-confirm-button',
+                confirmButton: 'swal-confirm-btn',
                 cancelButton: 'custom-cancel-button',
               },
             })
@@ -784,10 +784,10 @@ export const useForm = (initialForm, validateForm) => {
               confirmlButtonText: 'Reintentar',
               background: '#f0f0f0',
               customClass: {
-                popup: 'custom-popup',
+                popup: 'swal-custom-popup',
                 title: 'custom-title',
                 content: 'custom-content',
-                confirmButton: 'custom-confirm-button',
+                confirmButton: 'swal-confirm-btn',
                 cancelButton: 'custom-cancel-button',
               },
             })

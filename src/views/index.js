@@ -16,6 +16,7 @@ export * from './products/aliments/grains/GrainsScreen';
 export * from './products/aliments/vegetables/VegetablesScreen';
 export * from './products/clothing/ClothingScreen';
 export * from './products/technology/TechnologySxreen';
+export * from './products/fwmale/FemaleProductsScreen';
 
 export * from '../components/globals/DetailProductScreen';
 export * from '../components/globals/CardProductsSmall';

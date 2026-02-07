@@ -95,6 +95,7 @@ export const moveFromCartToWishlist = (productId) => async (dispatch, getState) 
   }
 };
 
+
 export const clearCart = () => ({
   type: types.CLEAR_CART,
 });

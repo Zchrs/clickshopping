@@ -9,7 +9,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { formatPrice, scrollTop } from "../../../globalActions";
 import Swal from "sweetalert2";
 import styled from "styled-components";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { clearProduct, selectedProduct } from "../../actions/productActions";
 import { useForm } from "../../hooks/useForm";
 import { useValidations } from "../../hooks/useValidations";
@@ -23,7 +23,10 @@ export const DetailProductScreen = ({
   const location = useLocation();
   const showLocation = useLocation();
   const product = useSelector((state) => state.product.selectedProduct);
+  console.log([product])
   const productHover = useSelector((state) => state.product.selectedProduct);
+    const [selectedIds, setSelectedIds] = useState([]);
+    const [cartItems, setCartItems] = useState([]);
   const ratings = useSelector((state) => state.product.ratings);
   const user = useSelector((state) => state.auth.user);
   const { formRefs, validateForm } = useValidations();
@@ -73,34 +76,44 @@ export const DetailProductScreen = ({
     setForm(initialForm);
   };
 
-  const handleCheckoutClick = () => {
-    if (user) {
-      navigate(`checkout`);
-    } else {
-      Swal.fire({
-        title: "Regístrate",
-        text: "Debes ser cliente registrado para comprar",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonText: "Quiero registrarme",
-        cancelButtonText: "Volver",
-        background: "#f0f0f0",
-        customClass: {
-          popup: "custom-popup",
+const handleCheckoutClick = () => {
+  if (!user) {
+    Swal.fire({
+      title: "Regístrate",
+      text: "Debes ser cliente registrado para comprar",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Quiero registrarme",
+      cancelButtonText: "Volver",
+      background: "#f0f0f0",
+      customClass: {
+          popup: "swal-custom-popup",
           title: "custom-title",
           content: "custom-content",
-          confirmButton: "custom-confirm-button-register",
-          cancelButton: "custom-cancel-button-register",
+          confirmButton: "swal-confirm-btn",
+          cancelButton: "swal-cancel-btn",
         },
-      }).then((result) => {
-        if (result.isConfirmed) {
-          navigate("/auth/register");
-        } else {
-          return;
-        }
-      });
-    }
-  };
+    }).then((result) => {
+      if (result.isConfirmed) navigate("/auth/register");
+    });
+    return;
+  }
+
+navigate("checkout", {
+  state: {
+    products: [
+      {
+        product_id: product.id,
+        name: product.name,
+        price: product.price,
+        quantity: 1,
+        img: product.images.img_url, // ✅ string directo
+      },
+    ],
+  },
+});
+};
+
 
   const handleMouseEnter = () => {
     if (user) {
@@ -127,11 +140,11 @@ export const DetailProductScreen = ({
         cancelButtonText: "Cancelar",
         background: "#f0f0f0",
         customClass: {
-          popup: "custom-popup",
+          popup: "swal-custom-popup",
           title: "custom-title",
           content: "custom-content",
-          confirmButton: "custom-confirm-button",
-          cancelButton: "custom-cancel-button",
+          confirmButton: "swal-confirm-btn",
+          cancelButton: "swal-cancel-btn",
         },
       }).then((result) => {
         if (result.isConfirmed) {
@@ -155,11 +168,11 @@ export const DetailProductScreen = ({
         cancelButtonText: "Cancelar",
         background: "#f0f0f0",
         customClass: {
-          popup: "custom-popup",
+          popup: "swal-custom-popup",
           title: "custom-title",
           content: "custom-content",
-          confirmButton: "custom-confirm-button",
-          cancelButton: "custom-cancel-button",
+          confirmButton: "swal-confirm-btn",
+          cancelButton: "swal-cancel-btn",
         },
       }).then((result) => {
         if (result.isConfirmed) {

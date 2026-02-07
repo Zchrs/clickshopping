@@ -4,25 +4,24 @@ import Swal from "sweetalert2";
 import axios from "axios";
 import { formatPrice } from "../../../../globalActions";
 import { BaseButton } from "../../../../index";
-import { fetchOrders } from "../../../actions/orderActions";
+import { fetchUserOrders } from "../../../actions/orderActions";
 import { useDispatch, useSelector } from "react-redux";
 
-export const OrdersComplete = () => {
+export const OrdersPending = () => {
   const allOrders = useSelector((state) => state.order.orderInfo || []);
-  console.log(allOrders)
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
 
-  const completeOrders = allOrders.filter(o => o.status === "approved");
+  const pendingOrders = allOrders.filter(o => o.status === "pending");
 
   useEffect(() => {
-    dispatch(fetchOrders()).finally(() => setLoading(false));
+    dispatch(fetchUserOrders()).finally(() => setLoading(false));
   }, []);
 
   if (loading) {
     return (
       <section className="sections">
-        <h2>Pedidos completados</h2>
+        <h2>Pedidos pendientes</h2>
         <p>Cargando...</p>
       </section>
     );
@@ -30,13 +29,13 @@ export const OrdersComplete = () => {
 
   return (
     <section className="sections">
-      <h2>Pedidos completados</h2>
+      <h2>Pedidos pendientes</h2>
 
-      {!completeOrders.length ? (
-        <p>No hay pedidos completados</p>
+      {!pendingOrders.length ? (
+        <p>No hay pedidos pendientes</p>
       ) : (
-        <div className="order-pending-list">
-          {completeOrders.map((order) => (
+        <div className="orders-pending-list">
+          {pendingOrders.map((order) => (
             <div key={order.id} className="order-card">
               <div className="order-card-header">
                 <strong>Pedido #{order.id}</strong>
@@ -47,26 +46,13 @@ export const OrdersComplete = () => {
                 <p><strong>Usuario ID:</strong> {order.user_id}</p>
                 <p><strong>Nombre:</strong> {order.name} {order.lastname}</p>
                 <p><strong>Email:</strong> {order.email}</p>
-                <p><strong>Estado:</strong> {order.status}</p>
               </div>
 
               <div className="order-card-body">
                 <p><strong>Total:</strong> {formatPrice(order.total)}</p>
                 <p><strong>Fecha:</strong> {new Date(order.created_at).toLocaleString()}</p>
               </div>
-                <div className="order-card-actions">
-                <BaseButton
-                  textLabel
-                  label="Aprobada"
-                  icon="success"
-                  img
-                  classs={"button primary"}
-                  colorbtn={"var(--success)"}
-                  colortextbtnprimary={"var(--light)"}
-                  colorbtnhoverprimary={"var(--success)"}
-                  colortextbtnhoverprimary={"white"}
-                />
-              </div>
+
             </div>
           ))}
         </div>

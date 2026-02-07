@@ -45,6 +45,7 @@ export * from './src/views/admin/users/UserVerifications'
  
  // components
  export * from './src/components/globals/BaseButton'
+ export * from './src/components/globals/BaseCheckbox'
  export * from './src/components/globals/BaseInput'
  export * from './src/components/globals/HeaderAdmin'
  export * from './src/components/globals/FooterAdmin'

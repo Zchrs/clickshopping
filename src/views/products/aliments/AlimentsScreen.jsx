@@ -114,6 +114,7 @@ useEffect(() => {
                   prodHover={() => handleSetProductClick(itemL)}
                   member="10% de descuento para miembros premium"
                   previuosPrice={itemL.previousPrice}
+                  quantity={itemL.quantity}
                   description={itemL.description}
                   title={itemL.title}
                   ratingss

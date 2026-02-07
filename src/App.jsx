@@ -30,6 +30,7 @@ import {
   ReferralsScreen,
   SuggestionsScreen,
   ProductsDeleted,
+  FemaleProductsScreen,
 } from "./views/index";
 import {
   ProductsScreen,
@@ -62,6 +63,7 @@ import { PublicRoute, PublicRouteAdmin } from "./router/PublicRouter";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.scss";
 import { De } from "react-country-flags-select";
+import { UsersOrdersScreen } from "./views/users/orders/UsersOrdersScreen";
 function App() {
   const storedLang = localStorage.getItem("lang");
 
@@ -72,8 +74,6 @@ function App() {
 
   return (
     <>
-      {/* <ImageKitProvider
-        urlEndpoint={import.meta.env.VITE_IMAGEKIT_URL_ENDPOINT}> */}
         <Provider store={store}>
           <HashRouter>
             <Routes>
@@ -107,6 +107,11 @@ function App() {
                   exact
                   path="categories/fruits"
                   element={<FruitsScreen />}
+                />
+                <Route
+                  exact
+                  path="categories/female"
+                  element={<FemaleProductsScreen />}
                 />
               </Route>
               <Route exact path="/products/*" element={<ProductsLayout />}>
@@ -181,6 +186,8 @@ function App() {
                   path="products-delete"
                   element={<ProductsDeleted />}
                 />
+                <Route exact path="my-cart/checkout" element={<CheckOut />} />
+                <Route exact path="orders" element={<UsersOrdersScreen />} />
               </Route>
 
               <Route
@@ -279,7 +286,7 @@ function App() {
             </Routes>
           </HashRouter>
         </Provider>
-      {/* </ImageKitProvider> */}
+
     </>
   );
 }

@@ -29,6 +29,7 @@ import {
   ReclamationsScreen,
   ReferralsScreen,
   ProductsDeleted,
+  FemaleProductsScreen,
 } from "../views/index";
 
 import { 
@@ -59,6 +60,7 @@ import { useDispatch } from "react-redux";
 import { useEffect } from "react";
 import { startChecking, startCheckingAdmin } from "../actions/authActions";
 import { PublicRoute } from "./PublicRouter";
+import { UsersOrdersScreen } from "../views/users/orders/UsersOrdersScreen";
 // import { startChecking } from "../actions/auth";
 // import { useEffect } from "react";
 // import { Page404 } from "../components/Page404";
@@ -75,7 +77,11 @@ export const AppRouter = () => {
         <Route exact path="categories/grains" element={<GrainsScreen />} />
         <Route exact path="categories/vetetables" element={<VegetablesScreen />} />
         <Route exact path="categories/fruits" element={<FruitsScreen />} />
-        
+                        <Route
+                          exact
+                          path="categories/female"
+                          element={<FemaleProductsScreen />}
+                        />
       </Routes>
   );
 };
@@ -137,9 +143,12 @@ export const DashboardRouter = () => {
           <Route exact path="suggestions" element={<SuggestionsScreen />} />
           <Route exact path="settings" element={<SettingsScreen />} />
           <Route exact path="products-delete" element={<ProductsDeleted />} />
+          <Route exact path="my-cart/checkout" element={<CheckOut />} />
+          <Route exact path="orders" element={<UsersOrdersScreen />} />
      </Routes> 
   );
 };
+
 export const RulesRouter = () => {
   return (
     <Routes>

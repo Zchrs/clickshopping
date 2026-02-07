@@ -30,9 +30,9 @@ export const DashboardLayout = () => {
         </header>
         <section className="dashboard-container">
           <nav id="menu" className="dashboard-menu">
-            <div className="dashboard-dashavt">
+            {/* <div className="dashboard-dashavt">
               <Avatar img={"default-avatar"} avtMedium={true} clas={"avatar"} nameSmall={"namepanel"} />
-            </div>
+            </div> */}
             <MenuDashboard />
           </nav>
           {menu && ( <nav id="menu" className="dashboard-menumobile">
@@ -65,7 +65,7 @@ const DshbLyt = styled.section`
     max-width: 1920px;
     height: fit-content;
     min-height: 100vh;
-    background: #f1f2f5;
+    background: #edeff4;
     align-items: baseline;
     gap: 25px;
     @media (max-width: 430px) {
@@ -138,7 +138,7 @@ const DshbLyt = styled.section`
             min-height: 100vh;
             background: white;
             border-radius: 10px;
-            box-shadow: 1px 1px 3px #ebe9e9;
+            box-shadow: 1px 1px 3px #e2e6e8;
             padding: 20px 0;
             z-index: 999;
         }

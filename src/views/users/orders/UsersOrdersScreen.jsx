@@ -1,3 +1,4 @@
+
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 import { OrdersComplete } from "./OrdersComplete";
@@ -5,7 +6,7 @@ import { OrdersPending } from "./OrdersPending";
 import { OrdersCancelled } from "./OrdersCancelled";
 import styled from "styled-components";
 
-export const PurchasesScreen = () => {
+export const UsersOrdersScreen = () => {
   return (
     <Orders>
       <header className="productsscreen-header">
@@ -17,7 +18,7 @@ export const PurchasesScreen = () => {
           id="fill-tab-example"
           className="productsscreen-tabs"
           fill>
-                      <Tab eventKey="pendingsOrders" title="Pendientes">
+         <Tab eventKey="pendingsOrders" title="Pendientes">
             <OrdersPending />
           </Tab>
           <Tab eventKey="completedOrders" title="Completados">

@@ -8,12 +8,14 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { startChecking } from "../../actions/authActions";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { Lang } from "./Lang";
 import { Avatar } from "./Avatar";
 import styled from "styled-components";
 
 export const Header = () => {
   const user = useSelector((state) => state.auth.user);
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const { t } = useTranslation();
 
@@ -193,6 +195,20 @@ export const Header = () => {
           </div>
         </div>
         <div className="head-menu">
+          <div className="head-menu-woman">
+            <BaseButton
+            img={true}
+            icon={"female"}
+              textLabel
+              classs={"button primary"}
+              colorbtn={"var(--danger)"}
+              colortextbtnprimary={"var(--light)"}
+              colorbtnhoverprimary={"var(--woman)"}
+              colortextbtnhoverprimary={"white"}
+              label="Exclusivo femenino"
+              handleClick={() => navigate("/categories/female")}
+            />
+          </div>
           <div className="head-menu__container">
             <div>
               <InputSearch clas="inputSearch large" />
@@ -486,6 +502,18 @@ const HeaDer = styled.div`
       height: 250px;
       place-items: center;
       padding: 0;
+
+      &-woman {
+        display: grid;
+        position: absolute;
+        top: 90px;
+        left: 15px;
+        width: 16%;
+        height: fit-content;
+        @media (max-width: 580px) {
+          width: 50%;
+        }
+      }
 
       @media (max-width: 700px) {
         margin-top: 70px;
