@@ -73,10 +73,11 @@ const ScreenProducts = styled.section`
         width: fit-content;
         border-bottom: var(--primary-light) 1px solid;
         
-    }
-
-    .nav-link {
+      }
+      
+      .nav-link {
         display: grid;
+        font-size: 18px;
         gap: 5px;
         color: black;
         text-decoration: none;
