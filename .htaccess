@@ -1,15 +1,15 @@
 
 <IfModule mod_headers.c>
-    Header set Access-Control-Allow-Origin "https://www.ultrasystem.shop"
+    Header set Access-Control-Allow-Origin "https://www.clikshoping.shop"
     Header set Access-Control-Allow-Methods "POST, GET, OPTIONS, PUT, DELETE"
     Header set Access-Control-Allow-Headers "Content-Type, Authorization"
 </IfModule>
 
 <IfModule mod_headers.c>
     # Configuración CORS mejorada
-    SetEnvIf Origin "^https://(www\.)?ultrasystem\.shop$" ORIGIN_ALLOWED=$0
-    SetEnvIf Origin "^https://admin\.ultrasystem\.shop$" ORIGIN_ALLOWED=$0
-    SetEnvIf Origin "^https://ultrasystem-api\.vercel\.(app|com)(/api)?$" ORIGIN_ALLOWED=$0
+    SetEnvIf Origin "^https://(www\.)?clikshoping\.shop$" ORIGIN_ALLOWED=$0
+    SetEnvIf Origin "^https://admin\.clikshoping\.shop$" ORIGIN_ALLOWED=$0
+    SetEnvIf Origin "^https://clikshoping-api\.vercel\.(app|com)(/api)?$" ORIGIN_ALLOWED=$0
     SetEnvIf Origin "^http://(localhost|192\.168\.200\.182):(5173|4173|4000)(/api)?$" ORIGIN_ALLOWED=$0
 
     # Encabezados CORS
