@@ -40,7 +40,7 @@ export * from './../layouts/DashboardLayout';
 export * from './users/Dashboard';
 export * from './users/address/SendAddressScreen';
 export * from './users/suggestions/SuggestionsScreen';
-export * from './users/wish/WishListcreen';
+export * from './users/wish/WishListScreen';
 export * from './users/payment/PaymentMethodsScreen';
 
 export * from './../layouts/PagesInfoLayout';

@@ -43,6 +43,7 @@ const AdmDashLayout = styled.section`
     max-width: 1920px;
     height: fit-content;
     min-height: 100vh;
+    overflow: hidden;
     background: #f2f8ff;
     align-items: baseline;
     
@@ -50,7 +51,10 @@ const AdmDashLayout = styled.section`
         display: grid;
         width: 100%;
         height: fit-content;
-        // border: 1px solid;
+                box-shadow: 
+        rgb(190, 188, 188) 1px 1px 3px, 
+        rgb(190, 188, 188) -1px -1px 3px;
+        padding: 12px;
     }
     .dashboardlayout-menud{
         display: grid;

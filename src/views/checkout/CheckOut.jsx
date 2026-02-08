@@ -55,21 +55,26 @@ const handlePay = async () => {
       icon: "success",
       title: "Pedido creado",
       text: res.data.message || "Pedido pendiente de aprobación",
-              customClass: {
-                popup: 'swal-custom-popup',
-                title: 'custom-title',
-                content: 'custom-content',
-                confirmButton: 'swal-confirm-btn',
-              },
+        customClass: {
+          popup: 'swal-custom-popup',
+          title: 'custom-title',
+          content: 'custom-content',
+          confirmButton: 'swal-confirm-btn',
+        },
     });
 
     navigate("/dashboard/orders");
   } catch (error) {
-    Swal.fire(
-      "Error",
-      error?.response?.data?.error || "No se pudo crear el pedido",
-      "error"
-    );
+    Swal.fire({
+     icon: "error",  
+     text: error?.response?.data?.error || "No se pudo crear el pedido",
+      customClass: {
+        popup: 'swal-custom-popup',
+        title: 'custom-title',
+        content: 'custom-content',
+        confirmButton: 'swal-confirm-btn',
+      },
+    });
   } finally {
     setPaying(false);
   }

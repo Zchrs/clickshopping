@@ -61,7 +61,7 @@
   &-empty {
     display: grid;
     place-items: center;
-    opacity: .5;
+    opacity: .2;
 
     h2 {
       opacity: .5;
@@ -98,13 +98,7 @@
 
   &:hover &-img {
     transition: all ease .3s;
-    filter:
-      invert(41%) 
-      sepia(98%) 
-      saturate(1865%) 
-      hue-rotate(177deg) 
-      brightness(100%) 
-      contrast(101%);
+    filter: var(--filter-primary);
   }
 
   &__img {
@@ -117,13 +111,7 @@
   &:hover &__img {
     transform: rotateZ(180deg);
     transition: all ease .3s;
-    filter:
-      invert(41%) 
-      sepia(98%) 
-      saturate(1865%) 
-      hue-rotate(177deg) 
-      brightness(100%) 
-      contrast(101%);
+    filter: var(--filter-primary);
   }
 
   &-subloginbox {

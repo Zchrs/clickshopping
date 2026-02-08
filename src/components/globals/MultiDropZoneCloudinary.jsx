@@ -12,8 +12,6 @@ export const MultiDropZoneCloudinary = ({ id, setImages, name, type }) => {
   const [errorMessage, setErrorMessage] = useState('');
   const fileInputRef = useRef(null);
 
-  // Configuración para Hostinger
-
   const MAX_FILE_SIZE = 30 * 1024 * 1024; // 30MB
   const MAX_FILES = 6;
 

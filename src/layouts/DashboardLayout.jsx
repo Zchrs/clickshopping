@@ -76,7 +76,7 @@ const DshbLyt = styled.section`
         width: 100%;
         height: 50px;
         color: red;
-        padding: 0 25px;
+        padding: 25px;
         @media (max-width: 450px) {
             padding: 0 12px;
         }
@@ -88,7 +88,7 @@ const DshbLyt = styled.section`
         height: fit-content;
         min-height: 100vh;
         gap: 25px;
-        padding: 0 24px;
+        padding: 24px;
         max-width: 1920px;
         margin: 0 auto;
 
@@ -117,7 +117,6 @@ const DshbLyt = styled.section`
         display: grid;
         width: 100%;
         height: fit-content;
-        
         gap: 25px;
         @media (max-width: 920px) {
             display: none;

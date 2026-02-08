@@ -49,19 +49,30 @@ export const Dashboard = () => {
             <h2>{t("dashboard.orders")}</h2>
             <div className="dashbuser-orders-contain">
               <div className="dashbuser-group">
-                <Link to={"/dashboard/orders"} className="dashbuser-orders-items">
+                <Link
+                  to="/dashboard/orders?tab=pendingPayment"
+                  className="dashbuser-orders-items">
                   <img src={getFile("svg", "wallet-red-full", "svg")} alt="" />
                   <p>{t("dashboard.pendingPay")}</p>
                 </Link>
-                <Link className="dashbuser-orders-items">
+
+                <Link
+                  to="/dashboard/orders?tab=pendingSend"
+                  className="dashbuser-orders-items">
                   <img src={getFile("svg", "send-pending-red", "svg")} alt="" />
                   <p>{t("dashboard.pendingSend")}</p>
                 </Link>
-                <Link className="dashbuser-orders-items">
+
+                <Link
+                  to="/dashboard/orders?tab=send"
+                  className="dashbuser-orders-items">
                   <img src={getFile("svg", "send-red", "svg")} alt="" />
                   <p>{t("dashboard.sent")}</p>
                 </Link>
-                <Link className="dashbuser-orders-items">
+
+                <Link
+                  to="/dashboard/orders?tab=ratings"
+                  className="dashbuser-orders-items">
                   <img src={getFile("svg", "ratings-red", "svg")} alt="" />
                   <p>{t("dashboard.ratings")}</p>
                 </Link>
@@ -323,8 +334,7 @@ const DashUser = styled.section`
         img {
           margin: auto;
           height: 30px;
-          filter: invert(41%) sepia(98%) saturate(1865%) hue-rotate(177deg)
-            brightness(100%) contrast(101%);
+          filter: var(--filter-primary);
 
           @media (max-width: 500px) {
             height: 25px;

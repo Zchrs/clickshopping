@@ -11,10 +11,15 @@ export const HeaderAdmin = () => {
   return (
     <AdminHeader className="header">
         <div className="header-logo">
-          <img src={getFile('img/vector', 'logo', 'svg')} alt="Logo" />
+          <img src={getFile('svg', 'logo', 'svg')} alt="Logo" />
         </div>
         <div className="header-dashavt">
-          <AvatarAdmin dropData={true} nameAdm={fullname} img={"default-avatar"} avtsmall={true} clas={"avatar tumb"} />
+          <AvatarAdmin 
+          dropData={true} 
+          nameAdm={fullname} 
+          img={"default-avatar"} 
+          avtsmall={true} 
+          clas={"avatar tumb"} />
         </div>
     </AdminHeader>
   )

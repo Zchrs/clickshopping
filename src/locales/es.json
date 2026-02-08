@@ -37,7 +37,7 @@
       "takeLookGroceryText": "Nuestro equipo comercil se encuentra trabajando para traerte esta sección pronto, no te desconectes de nuestros lanzamientos",
       "childrenSet": "Accesorios",
       "smartphones": "Celulares",
-      "newCustomer": "¿Nuevo en Ultrasystem? ¡Haz clic en registrarme y comienza a comprar o vender!",
+      "newCustomer": "¿Nuevo en Clickshopping? ¡Haz clic en registrarme y comienza a comprar o vender!",
       "messages": "Aquí encontrarás tus mensajes sin leer. Inicia sesión ahora.",
       "grains": "Granos",
       "readMore": "Leér más",
@@ -64,7 +64,7 @@
       "reports": "Reportes",
       "roles": "Roles y permisos",
       "buyCategory": "Comprar por categorías",
-      "tycText": "Al crear una cuenta estás aceptando los Términos y condiciones de Ultrasystem.com y Política de Privacidad"
+      "tycText": "Al crear una cuenta estás aceptando los Términos y condiciones de Clickshopping.com y Política de Privacidad"
     },
     "auth": {
       "title": "Bienvenido REIM PARTNERS",
@@ -504,8 +504,8 @@
       "blog": "Blog",
       "buyAndCollect": "Comprar y recoge",
       "Franchises": "Franquicias",
-      "earn": "Earn with Ultrasystem",
-      "supplier": "Proveedor Ultrasystem",
+      "earn": "Gana con Clickshopping",
+      "supplier": "Proveedor Clickshopping",
       "afiliatte": "Programa de afiliados",
       "sellApp": "Vender aplicaciones",
       "advertise": "Anuncia con nosotros",
@@ -514,7 +514,7 @@
       "redem": "Redimir puntos",
       "recharge": "Recargar saldo",
       "currency": "Convertir moneda (coming soon)",
-      "buyAst": "Comprar USM (Ultrasystem Token)",
+      "buyAst": "Comprar USM (Clickshopping Token)",
       "buyWithAst": "Comprar con USM",
       "buyNft": "Comprar NFT",
       "buyWithNft": "Comprar con NFT",

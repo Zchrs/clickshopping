@@ -216,8 +216,7 @@ const AvaTar = styled.div`
         &:hover {
           color: var(--bg-primary);
           img {
-            filter: invert(41%) sepia(98%) saturate(1865%) hue-rotate(177deg)
-              brightness(100%) contrast(101%);
+            filter: var(--filter-primary);
           }
         }
         &:focus-visible {
@@ -250,8 +249,7 @@ const AvaTar = styled.div`
         &:hover {
           color: var(--bg-primary);
           img {
-            filter: invert(41%) sepia(98%) saturate(1865%) hue-rotate(177deg)
-              brightness(100%) contrast(101%);
+            filter: var(--filter-primary);
           }
         }
       }

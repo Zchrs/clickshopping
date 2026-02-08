@@ -369,7 +369,7 @@ const HeaDer = styled.div`
             }
 
             &:hover {
-              color: #00a9ff;
+              color: var(--primary);
               transition: all ease 0.3s;
 
               img {
@@ -481,7 +481,7 @@ const HeaDer = styled.div`
       cursor: pointer;
 
       img {
-        height: 50px;
+        height: 40px;
 
         @media (max-width: 600px) {
           height: 45px;
@@ -549,10 +549,10 @@ const HeaDer = styled.div`
           border-radius: 10px 10px 0px 0px;
           cursor: pointer;
           place-items: center;
-          background: #00a9ff;
+          background: var(--primary);
 
           &:hover {
-            background: #054986;
+            background: var(--primary-semi);
           }
 
           @media (max-width: 700px) {
@@ -588,11 +588,16 @@ const HeaDer = styled.div`
   .isactive {
     transition: all 0.3s ease-in-out;
     place-items: center;
-    background: #054986;
+    background: var(--light);
     display: grid;
     padding: 8px 38px;
     height: 40px;
     border-radius: 10px 10px 0px 0px;
+    color: var(--dark);
+    li{
+      color: var(--dark);
+      font-weight: 600;
+    }
 
     @media (max-width: 700px) {
       padding: 6px 8px;

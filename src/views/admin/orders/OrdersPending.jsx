@@ -76,24 +76,16 @@ export const OrdersPending = () => {
       ) : (
         <div className="orders-pending-list">
           {pendingOrders.map((order) => (
-            <div key={order.id} className="order-card">
-              <div className="order-card-header">
+            <div key={order.id} className="orders-card">
                 <strong>Pedido #{order.id}</strong>
-                <span className="badge pending">Pendiente</span>
-              </div>
-
-              <div className="order-card-user">
                 <p><strong>Usuario ID:</strong> {order.user_id}</p>
                 <p><strong>Nombre:</strong> {order.name} {order.lastname}</p>
                 <p><strong>Email:</strong> {order.email}</p>
-              </div>
-
-              <div className="order-card-body">
                 <p><strong>Total:</strong> {formatPrice(order.total)}</p>
                 <p><strong>Fecha:</strong> {new Date(order.created_at).toLocaleString()}</p>
-              </div>
-
-              <div className="order-card-actions">
+              
+ <p><strong>Pendiente: </strong>{order.status}</p>
+              <div className="orders-card-actions">
                 <BaseButton
                   textLabel
                   label="Aprobar"
@@ -110,9 +102,9 @@ export const OrdersPending = () => {
                   label="Rechazar"
                   icon="check"
                   classs={"button primary"}
-                  colorbtn={"var(--bg-danger)"}
+                  colorbtn={"var(--secondary)"}
                   colortextbtnprimary={"var(--light)"}
-                  colorbtnhoverprimary={"var(--danger-semi)"}
+                  colorbtnhoverprimary={"var(--secondary-semi)"}
                   colortextbtnhoverprimary={"white"}
                   // handleClick={() => handleApprove(order.id)}
                 />

@@ -10,7 +10,7 @@ export const AdminLayout = () => {
         </header>
         <div className="adminlayout-contain">
         <div className="adminlayout-logo">
-          <img src={getFile('img/vector', 'logo', 'svg')} alt="Logo" />
+          <img src={getFile('svg', 'logo', 'svg')} alt="Logo" />
         </div>
             <AdminRouter />
         </div>
@@ -41,7 +41,7 @@ const LayoutApp = styled.section `
         margin: auto;
         img{
             width: 100%;
-            filter: brightness(500%);
+            filter: invert(50%) brightness(500%);
         }
     }
     .adminlayout-contain{

@@ -31,6 +31,7 @@ import {
   SuggestionsScreen,
   ProductsDeleted,
   FemaleProductsScreen,
+  WishListScreen,
 } from "./views/index";
 import {
   ProductsScreen,
@@ -188,6 +189,7 @@ function App() {
                 />
                 <Route exact path="my-cart/checkout" element={<CheckOut />} />
                 <Route exact path="orders" element={<UsersOrdersScreen />} />
+                <Route exact path="wishlist" element={<WishListScreen />} />
               </Route>
 
               <Route

@@ -39,23 +39,74 @@
     }
   }
 }
-.order{
-  
+.orders{
+      display: grid;
+      gap: 15px;
   &-card{
+    display: grid;
     border: 1px solid #e9ebeb;
+    gap: 25px;
     border-radius: 15px;
     padding: 10px;
+
     &-actions{
       display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    &-complete{
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    &-user{
+      display: grid;
+      box-shadow: var(--ds-s);
+      border-radius: 10px;
+      padding: 10px;
+      gap: 5px;
+    }
+    &-admin{
+      display: flex;
+      gap: 5px;
+    }
+
+    &-capturepayment{
+      display: grid;
       gap: 10px;
     }
   }
   &-pending{
+    display: grid;
+    gap: 15px;
+    align-content: start;
+    &-user{
+      &-list{
+        display: flex;
+        gap: 10px;
+        align-content: start;
+      }
+    }
     &-list{
       display: grid;
-      gap: 10px;
       grid-template-columns: repeat(3, 1fr);
+      align-content: start;
+      gap: 10px;
     }
+  }
+  &-products{
+
+    &-grid{
+      display: flex;
+    }
+&-item{
+  img{
+    width: 50px;
+  }
+
+}
   }
 }
 // estilos de pantalla términos y condiciones y similares
@@ -310,13 +361,7 @@
         flex-direction: row-reverse;
         
                 img{
-                  filter:
-                    invert(41%) 
-                    sepia(98%) 
-                    saturate(1865%) 
-                    hue-rotate(177deg) 
-                    brightness(100%) 
-                    contrast(101%);
+                  filter: var(--filter-primary)
                 }
       }
         p{
@@ -673,9 +718,28 @@ gap: 7px;
 .swal2-loader {
   border-color: var(--primary) transparent var(--primary) transparent !important;
 }
+
 .swal2-success {
     border-color: var(--primary) !important;
     color: var(--primary) !important;
+}
+
+.swal2-icon.swal2-success {
+  border-color: var(--primary) !important;
+  color: var(--primary) !important;
+}
+
+.swal2-success-line-tip,
+.swal2-success-line-long {
+  background-color: var(--primary) !important;
+}
+
+.swal2-success-ring {
+  border-color: var(--primary) !important;
+}
+
+.swal2-success-fix {
+  background-color: transparent !important;
 }
 
 /* fin de estilos de componente checkbox */

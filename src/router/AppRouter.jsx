@@ -30,6 +30,7 @@ import {
   ReferralsScreen,
   ProductsDeleted,
   FemaleProductsScreen,
+  WishListScreen,
 } from "../views/index";
 
 import { 
@@ -145,6 +146,7 @@ export const DashboardRouter = () => {
           <Route exact path="products-delete" element={<ProductsDeleted />} />
           <Route exact path="my-cart/checkout" element={<CheckOut />} />
           <Route exact path="orders" element={<UsersOrdersScreen />} />
+          <Route exact path="wishlist" element={<WishListScreen />} />
      </Routes> 
   );
 };

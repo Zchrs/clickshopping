@@ -183,6 +183,11 @@ export const useRoutesDashAdmin = () => {
       route: "verify-profile",
       text: "Verificación de usuarios",
     },
+    {
+      name: "warranty",
+      route: "warranty",
+      text: "Garantías",
+    },
 
     {
       name: "sugestions",

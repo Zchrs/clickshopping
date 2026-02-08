@@ -18,12 +18,13 @@ const EmPty = styled.div`
   width: fit-content;
   height: fit-content;
   text-align: center;
+  margin: auto;
   gap: 10px;
 
   img{
       width: 300px;
       filter: invert(80%);
-      opacity: 0.5;
+      opacity: 0.1;
 
       @media (max-width: 780px) {
         width: 100%;

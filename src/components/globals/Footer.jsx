@@ -62,7 +62,7 @@ export const Footer = () => {
         <div className="footer-middle">
           <div className="footer-middle__contain">
             <div className="footer-middle__links">
-              <h2>Alisuper</h2>
+              <h2>Clickshopping</h2>
               {useRoutesFooter().slice(0, 5).map((item) => (
                 <NavLink to={item.route} key={item.name}>
                   {item.text}
@@ -144,7 +144,7 @@ export const Footer = () => {
         <div className="footer-down">
           <div className="footer-down__container">
             <img src={getFile("svg", `logo`, "svg")} alt="" />
-            <p>&copy; Ultrasystem {currentYear} </p>
+            <p>&copy; Clickshopping {currentYear} </p>
           </div>
         </div>
         <div className="footer-mobile">
@@ -310,7 +310,7 @@ const FooTer = styled.div`
     &-down {
       display: grid;
       padding: 20px;
-      background: black;
+      background: var(--dark);
       place-items: center;
       &__container {
         display: flex;
@@ -318,7 +318,7 @@ const FooTer = styled.div`
         gap: 10px;
         img {
           height: 30px;
-          filter: brightness(500%);
+          filter: invert(50%) brightness(500%);
         }
       }
     }

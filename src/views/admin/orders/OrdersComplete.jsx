@@ -9,7 +9,6 @@ import { useDispatch, useSelector } from "react-redux";
 
 export const OrdersComplete = () => {
   const allOrders = useSelector((state) => state.order.orderInfo || []);
-  console.log(allOrders)
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
 
@@ -35,26 +34,22 @@ export const OrdersComplete = () => {
       {!completeOrders.length ? (
         <p>No hay pedidos completados</p>
       ) : (
-        <div className="order-pending-list">
+        <div className="orders-pending-list">
           {completeOrders.map((order) => (
-            <div key={order.id} className="order-card">
-              <div className="order-card-header">
-                <strong>Pedido #{order.id}</strong>
-                <span className="badge pending">Pendiente</span>
-              </div>
+            <div key={order.id} className="orders-card">
 
-              <div className="order-card-user">
+
+
+              <div className="orders-card-user">
+                <p><strong>Pedido #</strong>{order.id}</p>
                 <p><strong>Usuario ID:</strong> {order.user_id}</p>
                 <p><strong>Nombre:</strong> {order.name} {order.lastname}</p>
                 <p><strong>Email:</strong> {order.email}</p>
                 <p><strong>Estado:</strong> {order.status}</p>
-              </div>
-
-              <div className="order-card-body">
                 <p><strong>Total:</strong> {formatPrice(order.total)}</p>
                 <p><strong>Fecha:</strong> {new Date(order.created_at).toLocaleString()}</p>
-              </div>
-                <div className="order-card-actions">
+              
+                <div className="orders-card-actions">
                 <BaseButton
                   textLabel
                   label="Aprobada"
@@ -66,6 +61,7 @@ export const OrdersComplete = () => {
                   colorbtnhoverprimary={"var(--success)"}
                   colortextbtnhoverprimary={"white"}
                 />
+              </div>
               </div>
             </div>
           ))}

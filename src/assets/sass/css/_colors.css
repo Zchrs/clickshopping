@@ -1,6 +1,6 @@
 :root {
-    --primary: #00a9ff;
-    --primary-semi: #2978b4;
+    --primary: #F70A04;
+    --primary-semi: #BA252A;
     --primary-light: #6cb2ef2a;
     --primary-semi-soft: #f7ffff;
     --primary-soft: #d5decb;
@@ -22,8 +22,8 @@
     --dark: black;
   
     /* TEXT COLORS */
-    --text-primary: #00a9ff;
-    --text-primary-semi: #004d86;
+    --text-primary: #BA252A;
+    --text-primary-semi: #BA252A;
     --text-primary-light: #a3cad9;
     --text-primary-semi-soft: #f7ffff;
     --text-primary-soft: #d5decb;
@@ -41,8 +41,8 @@
     --text-dark: black;
   
     /* BACKGROUNDS */
-    --bg-primary: #00a9ff;
-    --bg-primary-tr: #32587c;
+    --bg-primary: #F70A04;
+    --bg-primary-tr: #BA252A;
     --bg-primary-semi: #004d86;
     --bg-primary-light: #CBD6DA;
     --bg-primary-semi-soft: #f7ffff;
@@ -86,4 +86,13 @@
     --ds-l: 0px 4px 6px -4px rgba(16, 24, 40, 0.1), 0px 10px 15px -3px rgba(16, 24, 40, 0.1);
     --ds-xl: 0px 8px 10px -6px rgba(16, 24, 40, 0.1), 0px 20px 25px -5px rgba(16, 24, 40, 0.1);
     --ds-xxl: 0px 40px 100px -12px rgba(16, 24, 40, 0.1);
+
+    /* filter */
+    --filter-primary:
+  invert(14%) 
+  sepia(95%) 
+  saturate(7483%) 
+  hue-rotate(2deg) 
+  brightness(103%) 
+  contrast(104%);
   }
