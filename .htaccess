@@ -9,7 +9,7 @@
     # Configuración CORS mejorada
     SetEnvIf Origin "^https://(www\.)?clikshoping\.shop$" ORIGIN_ALLOWED=$0
     SetEnvIf Origin "^https://admin\.clikshoping\.shop$" ORIGIN_ALLOWED=$0
-    SetEnvIf Origin "^https://clikshoping-api\.vercel\.(app|com)(/api)?$" ORIGIN_ALLOWED=$0
+    SetEnvIf Origin "^https://clickshopping-api\.vercel\.(app|com)(/api)?$" ORIGIN_ALLOWED=$0
     SetEnvIf Origin "^http://(localhost|192\.168\.200\.182):(5173|4173|4000)(/api)?$" ORIGIN_ALLOWED=$0
 
     # Encabezados CORS
