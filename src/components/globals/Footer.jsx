@@ -11,9 +11,11 @@ import { useSelector } from "react-redux";
 import { initialForm, useForm } from "../../hooks/useForm";
 import styled from "styled-components";
 import { useRoutesFooter } from "../../views/users/routes/routes";
+  
 
 export const Footer = () => {
   const lang = useSelector((state) => state.langUI.lang);
+  const user = useSelector((state) => state.auth.user);
   const currentYear = new Date().getFullYear();
   const { t, i18n } = useTranslation();
   useEffect(() => {
@@ -147,7 +149,7 @@ export const Footer = () => {
             <p>&copy; Clickshopping {currentYear} </p>
           </div>
         </div>
-        <div className="footer-mobile">
+{ user && <div className="footer-mobile">
           <MenuBottom
             icon={"home-mobile"}
             text={t("globals.home")}
@@ -160,7 +162,7 @@ export const Footer = () => {
             icon4={"coupons-red"}
             text4={t("globals.coupons")}
           />
-        </div>
+        </div>}
       </footer>
     </FooTer>
   );

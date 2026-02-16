@@ -71,7 +71,7 @@ const AuthLyt = styled.section`
             img{
                 width: 100%;
                 margin: auto 0;
-                filter: brightness(500%);
+                filter: invert(50%) brightness(500%);
             }
         }
     }

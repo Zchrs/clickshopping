@@ -1,14 +1,13 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-debugger */
 
-import axios from "axios";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useTranslation } from "react-i18next";
 import { Comments, Pagination, CardProductsSmall } from "../../../index";
 import { getFile } from "../../reducers/globalReducer";
 import { startChecking } from "../../actions/authActions";
-import io from "socket.io-client";
+
 import "../home/home.scss";
 import {
   fetchProducts,
@@ -73,27 +72,53 @@ export const HomeScreen = () => {
     });
   }, [allProducts]);
 
-  useEffect(() => {
-    dispatch(startChecking());
-    i18n.changeLanguage(lang);
+useEffect(() => {
+  dispatch(startChecking());
+  i18n.changeLanguage(lang);
 
-    const socket = io(import.meta.env.VITE_APP_API_WEBSOCKET_URL, {
-      cors: true,
+  let eventSource;
+  let retryTimeout;
+  let active = true;
+
+  const connectSSE = () => {
+    if (!active) return;
+
+    eventSource = new EventSource(
+      `${import.meta.env.VITE_APP_API_URL}/products/stream`,
+      { withCredentials: true }
+    );
+
+    eventSource.addEventListener("products", (event) => {
+      try {
+        const products = JSON.parse(event.data);
+        setProducts(products);
+      } catch (e) {
+        console.error("❌ Error parseando SSE", e);
+      }
     });
 
-    socket.on("connect", () => {
-      console.log("Conectado al servidor de WebSocket");
+    eventSource.addEventListener("heartbeat", () => {
+      // 💓 conexión viva
     });
 
-    socket.on("updateProducts", (updatedProducts) => {
-      console.log("Productos actualizados:", updatedProducts);
-      setProducts(updatedProducts);
-    });
+    eventSource.onerror = () => {
+      console.warn("⚠️ SSE desconectado. Reintentando...");
+      eventSource.close();
 
-    return () => {
-      socket.disconnect();
+      // 🔁 reconexión silenciosa
+      retryTimeout = setTimeout(connectSSE, 1500);
     };
-  }, [i18n, lang, dispatch]);
+  };
+
+  // 🔌 primera conexión
+  connectSSE();
+
+  return () => {
+    active = false;
+    clearTimeout(retryTimeout);
+    eventSource?.close();
+  };
+}, [lang, dispatch]);
 
   useEffect(() => {
     dispatch(fetchProducts()); // 👈 IMPORTANTE
@@ -173,7 +198,7 @@ export const HomeScreen = () => {
           </div>
         </div>
       </header>
-      <div className="homescreen__container top">
+      <div className="homescreen__container">
         <h1 className="homescreen__h1">{t("globals.buyCategory")}</h1>
         <h2>{t("products.ramMemory")}</h2>
         <div className="homescreen__container-contain">

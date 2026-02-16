@@ -484,11 +484,11 @@ const HeaDer = styled.div`
         height: 40px;
 
         @media (max-width: 600px) {
-          height: 45px;
+          height: 35px;
         }
 
         @media (max-width: 399px) {
-          height: 30px;
+          height: 20px;
         }
       }
     }

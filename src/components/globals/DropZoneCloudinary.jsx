@@ -1,12 +1,10 @@
-/* eslint-disable no-debugger */
-/* eslint-disable no-undef */
-/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
-import{ useRef, useState } from 'react';
+import { useRef, useState } from "react";
 import axios from "axios";
-import styled from 'styled-components';
+import styled from "styled-components";
+import { BaseButton } from "./BaseButton";
 
-export const DropZoneCloudinary = ({ id, setImage, name }) => {
+export const DropZoneCloudinary = ({ id, setImage, name, paymentProof }) => {
   const [active, setActive] = useState(false);
   const [file, setFile] = useState(null);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -14,7 +12,7 @@ export const DropZoneCloudinary = ({ id, setImage, name }) => {
   const [errorMessage, setErrorMessage] = useState("");
   const fileInputRef = useRef(null);
 
-  const MAX_FILE_SIZE = 30 * 1024 * 1024; // 30MB
+  const MAX_FILE_SIZE = 30 * 1024 * 1024;
 
   const handleDragEvents = (e) => {
     e.preventDefault();
@@ -26,17 +24,17 @@ export const DropZoneCloudinary = ({ id, setImage, name }) => {
     e.preventDefault();
     setActive(false);
     if (e.dataTransfer.files?.length) {
-      validateAndUpload(e.dataTransfer.files[0]);
+      validateFile(e.dataTransfer.files[0]);
     }
   };
 
   const handleFileChange = (e) => {
     if (e.target.files?.length) {
-      validateAndUpload(e.target.files[0]);
+      validateFile(e.target.files[0]);
     }
   };
 
-  const validateAndUpload = (file) => {
+  const validateFile = (file) => {
     const validTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
 
     if (!validTypes.includes(file.type)) {
@@ -54,10 +52,11 @@ export const DropZoneCloudinary = ({ id, setImage, name }) => {
     setFile(file);
     setUploadStatus("idle");
     setErrorMessage("");
-    uploadToCloudinary(file);
   };
 
-  const uploadToCloudinary = async (file) => {
+  const uploadToCloudinary = async () => {
+    if (!file) return;
+
     setUploadStatus("uploading");
     setUploadProgress(0);
 
@@ -130,23 +129,7 @@ export const DropZoneCloudinary = ({ id, setImage, name }) => {
 
           {!file ? (
             <div className="dropzone-content">
-              <div className="upload-icon">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                  <polyline points="17 8 12 3 7 8"></polyline>
-                  <line x1="12" y1="3" x2="12" y2="15"></line>
-                </svg>
-              </div>
+              <div className="upload-icon">⬆️</div>
               <p className="dropzone-text">
                 Arrastra una imagen aquí o haz clic para seleccionarla
               </p>
@@ -193,15 +176,33 @@ export const DropZoneCloudinary = ({ id, setImage, name }) => {
             </div>
           )}
         </div>
+
+        {/* ✅ BOTÓN FUERA DEL DROPZONE */}
+{  paymentProof &&      <BaseButton
+          textLabel
+          label="Enviar comprobante de pago"
+          icon="check"
+          disabled={!file || uploadStatus === "uploading"}
+          onClick={uploadToCloudinary}
+          classs={"button primary"}
+          colorbtn={"var(--primary)"}
+          colortextbtnprimary={"var(--light)"}
+          colorbtnhoverprimary={"var(--primary-semi)"}
+          colortextbtnhoverprimary={"white"}
+        />}
       </div>
     </DropzoneWrapper>
   );
 };
 
+
 const DropzoneWrapper = styled.div`
+
   width: 100%;
 
   .dropzone {
+    display: grid;
+gap: 10px;
     width: 100%;
   }
 

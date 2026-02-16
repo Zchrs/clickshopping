@@ -95,4 +95,10 @@
   hue-rotate(2deg) 
   brightness(103%) 
   contrast(104%);
+
+
+  --filter-white:
+  invert(50%) 
+  brightness(100%) 
+  --filter-white-dark
   }

@@ -5,7 +5,9 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   build: {
-    chunkSizeWarningLimit: 100000, // Establece un valor más alto para el límite de advertencia del tamaño del fragmento
+    chunkSizeWarningLimit: 100000,
+    outDir: "E:/clickshopping-api/public", // nueva carpeta
+    emptyOutDir: true, // Establece un valor más alto para el límite de advertencia del tamaño del fragmento
     rollupOptions: {
       output: {
         manualChunks: {

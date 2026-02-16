@@ -94,16 +94,24 @@
       grid-template-columns: repeat(3, 1fr);
       align-content: start;
       gap: 10px;
+      @media (max-width: 680px) {
+        grid-template-columns: 1fr;
+        
+      }
     }
   }
   &-products{
 
     &-grid{
       display: flex;
+      flex-wrap: nowrap;
     }
 &-item{
   img{
     width: 50px;
+      @media (max-width: 680px) {
+        width: 30%;
+      }
   }
 
 }

@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 import { getFile } from '../../reducers/globalReducer'
 import { Avatar } from './Avatar';
 
-import '../../assets/sass/headerproduct.scss'
 
 export const HeaderInfo = ({headClass}) => {
 

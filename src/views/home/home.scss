@@ -282,6 +282,7 @@
         @media (max-width: 920px) {
           clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
           width: 100%;
+          height: auto;
           margin-left: 0%;
           grid-column: 1 / 6;
           grid-row: 1 / 3;
@@ -296,16 +297,9 @@
 
         img {
           position: absolute;
-          object-fit: fill;
+          object-fit: cover;
           width: 100%;
-          padding: 50px;
-          margin-left: -50px;
           // transform: skewX(15deg);
-
-          @media (max-width: 920px) {
-               padding: 10px;
-               margin-left: 0px;
-          }
         }
 
         &::before {
@@ -410,7 +404,7 @@
         margin-left: -53px;
         height: auto;
         //  transform: skewX(-15deg);
-        background: green;
+        // background: green;
         overflow: hidden;
         border-radius: 15px;
         clip-path: polygon(14% 0, 100% 0, 90% 100%, 0% 100%);
@@ -419,6 +413,13 @@
           margin: 0;
           width: 100%;
           clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+          grid-row: 4 / 5;
+          grid-column: 1 / 3;
+        }
+        @media (max-width: 480px) {
+          margin: 0;
+          width: 100%;
+          height: fit-content;
           grid-row: 4 / 5;
           grid-column: 1 / 3;
         }
@@ -477,7 +478,7 @@
         width: 100%;
         height: auto;
         //  transform: skewX(-15deg);
-        background: palevioletred;
+        // background: palevioletred;
         overflow: hidden;
         border-radius: 15px;
         clip-path: polygon(12.5% 0, 100% 0, 100% 100%, 0% 100%);
@@ -485,6 +486,13 @@
         @media (max-width: 920px) {
           clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
           transform: skewX(0deg);
+          grid-row: 4 / 5;
+          grid-column: 3 / 5;
+        }
+                @media (max-width: 480px) {
+          margin: 0;
+          width: 100%;
+          height: fit-content;
           grid-row: 4 / 5;
           grid-column: 3 / 5;
         }
@@ -499,8 +507,9 @@
           position: absolute;
           height: 100%;
           // left: -30px;
-
+          
           @media (max-width: 920px) {
+            object-fit: cover;
             width: 100%;
           }
 

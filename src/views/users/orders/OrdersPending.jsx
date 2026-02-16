@@ -119,19 +119,7 @@ export const OrdersPending = () => {
                       id={`proof_${order.id}`}
                       name={`proof_${order.id}`}
                       setImage={(img) => handleImageUploaded(order.id, img)}
-                    />
-
-                    <BaseButton
-                      textLabel
-                      label="Enviar comprobante de pago"
-                      icon="check"
-                      disabled={!image}
-                      onClick={() => handleSendProof(order.id)}
-                      classs={"button primary"}
-                      colorbtn={"var(--secondary)"}
-                      colortextbtnprimary={"var(--light)"}
-                      colorbtnhoverprimary={"var(--secondary-semi)"}
-                      colortextbtnhoverprimary={"white"}
+                      paymentProof
                     />
                   </div>
                   </div>
