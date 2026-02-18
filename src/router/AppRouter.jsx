@@ -74,7 +74,7 @@ export const AppRouter = () => {
         <Route exact path="/*" element={<HomeScreen />} />
         <Route exact path="categories/services" element={<ClothingScreen />} />
         <Route exact path="categories/technology" element={<TechnologyScreen />} />
-        <Route exact path="categories/spare-parts" element={<AlimentsScreen />} />
+        <Route exact path="categories/books" element={<AlimentsScreen />} />
         <Route exact path="categories/grains" element={<GrainsScreen />} />
         <Route exact path="categories/vetetables" element={<VegetablesScreen />} />
         <Route exact path="categories/fruits" element={<FruitsScreen />} />

@@ -152,7 +152,7 @@ export const Footer = () => {
                   <Link to="https://web.facebook.com/people/Clickshopping/100068470897448/" target="_blank">
                   <img src={getFile("svg", `facebook`, "svg")} alt="" />
                   </Link>
-                  <Link to="/https://vm.tiktok.com/ZS9JoNDJUmHLQ-rczYW/" target="_blank">
+                  <Link to="https://vm.tiktok.com/ZS9JoNDJUmHLQ-rczYW/" target="_blank">
                   <img src={getFile("svg", `tiktok`, "svg")} alt="" />
                   </Link>
                 </div>

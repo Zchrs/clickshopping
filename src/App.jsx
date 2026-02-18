@@ -92,7 +92,7 @@ function App() {
                 />
                 <Route
                   exact
-                  path="categories/spare-parts"
+                  path="categories/books"
                   element={<AlimentsScreen />}
                 />
                 <Route

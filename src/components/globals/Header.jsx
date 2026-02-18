@@ -30,7 +30,7 @@ export const Header = () => {
 
   const buttonsList = [
     { route: "home", text: t("globals.home") },
-    { route: "categories/spare-parts", text: t("globals.foods") },
+    { route: "categories/books", text: t("globals.foods") },
     { route: "categories/technology", text: t("globals.technology") },
     { route: "categories/services", text: t("globals.clothing") },
   ];

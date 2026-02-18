@@ -16,18 +16,18 @@ export const AlimentsScreen = () => {
   const allProducts = useSelector((state) => state.product.productInfo || []);
   const { t, i18n } = useTranslation();
   const [currentPage, setCurrentPage] = useState(1);
-  const [activeTab, setActiveTab] = useState("newSpareParts");
+  const [activeTab, setActiveTab] = useState("booksRecent");
   const itemsPerPage = 24;
   
   /* ✅ FILTROS */
-  const newSpareParts = allProducts.filter(p => p.category === "repuestos nuevos");
-  const usedSpareParts = allProducts.filter(p => p.category === "repuestos usados");
-  const accesoriesParts = allProducts.filter(p => p.category === "accesorios");
+  const booksRecent = allProducts.filter(p => p.category === "recientes");
+  const genre = allProducts.filter(p => p.category === "genero");
+  const all = allProducts.filter(p => p.category === "accesorios");
 
   const productsByTab = {
-    newSpareParts,
-    usedSpareParts,
-    accesoriesParts,
+    booksRecent,
+    genre,
+    all,
   };
   
   const activeProducts = productsByTab[activeTab] || [];
@@ -68,14 +68,14 @@ useEffect(() => {
       {/* 🔘 TABS */}
       <div className="productscreen-features">
         <div className={`productscreen-features-menu ${showFeatures ? "show" : "hide"}`}>
-          <button className={activeTab === "newSpareParts" ? "active" : ""} onClick={() => setActiveTab("newSpareParts")}>
-            Repuestos nuevos
+          <button className={activeTab === "booksRecent" ? "active" : ""} onClick={() => setActiveTab("booksRecent")}>
+            Agregados recientemente
           </button>
-          <button className={activeTab === "usedSpareParts" ? "active" : ""} onClick={() => setActiveTab("usedSpareParts")}>
-            Repuestos usados
+          <button className={activeTab === "genre" ? "active" : ""} onClick={() => setActiveTab("genre")}>
+            Género
           </button>
-          <button className={activeTab === "accesoriesParts" ? "active" : ""} onClick={() => setActiveTab("accesoriesParts")}>
-            Acsesorios y partes
+          <button className={activeTab === "all" ? "active" : ""} onClick={() => setActiveTab("all")}>
+            Todos
           </button>
           <div
             className={`productscreen-features-menu-btn ${showFeatures ? "showBtn" : "hideBtn"}`}
@@ -90,9 +90,9 @@ useEffect(() => {
       <div className="productscreen-container">
         <div className="productscreen-contain">
           <h2 className="h2-light">
-            {activeTab === "newSpareParts" && "Repuestos nuevos"}
-            {activeTab === "usedSpareParts" && "Repuestos usados"}
-            {activeTab === "accesoriesParts" && "Accesorios"}
+            {activeTab === "booksRecent" && "Agregados recientemente"}
+            {activeTab === "genre" && "Género"}
+            {activeTab === "all" && "Todos"}
           </h2>
 
           <div className="productscreen-cards">
