@@ -47,25 +47,27 @@ export const BoxInfo = (props) => {
     i18n.changeLanguage(lang);
   }, [i18n, lang]);
 
-  useEffect(() => {
-    const getCartItems = async () => {
-      try {
-        if (userId && typeof userId === "string" && userId.trim() !== "") {
-          const items = await fetchCartUser(userId);
-          setCartItems(items);
-          calculateTotals(items);
-        } else {
-          console.error("User ID is invalid or missing");
-        }
-      } catch (error) {
-        console.error("Error loading cart items:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+useEffect(() => {
+  if (!userId) {
+    setCartItems([]);
+    setLoading(false);
+    return;
+  }
 
-    getCartItems();
-  }, [userId]);
+  const getCartItems = async () => {
+    try {
+      const items = await fetchCartUser(userId);
+      setCartItems(items);
+      calculateTotals(items);
+    } catch (error) {
+      console.error("Error loading cart items:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  getCartItems();
+}, [userId]);
 
   const calculateTotals = (items) => {
     const subtotalValue = items.reduce(

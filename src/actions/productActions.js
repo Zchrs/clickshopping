@@ -52,28 +52,38 @@ export const clearProduct = (productInfo) => {
     }
   };
 
-  export const fetchProducts = () => async (dispatch) => {
-    try {
+export const fetchProducts = () => async (dispatch) => {
+  try {
+    const response = await axios.get(
+      import.meta.env.VITE_APP_API_GET_PRODUCTS_URL
+    );
 
-        // Consultar la base de datos si no hay productos en localStorage o si el array está vacío
-        const response = await axios.get(import.meta.env.VITE_APP_API_GET_PRODUCTS_URL);
-        const productsComplete = await Promise.all(response.data.map(async (productInfo) => {
-            const imagesRes = await axios.get(`${import.meta.env.VITE_APP_API_GET_IMAGE_PRODUCTS_URL}/${productInfo.id}`);
-            return {
-                ...productInfo,
-                images: imagesRes.data.images || [],
-            };
-        }));
+    const productsArray = Array.isArray(response.data)
+      ? response.data
+      : response.data.products || [];
 
-        // Guardar los productos en localStorage después de la consulta
-        localStorage.setItem('products', JSON.stringify(productsComplete));
-        dispatch(setProduct(productsComplete));
-        return productsComplete;
-    } catch (error) {
-        console.error('Error al obtener los productos:', error);
-        dispatch(setProduct([])); // Asegurarse de despachar un array vacío en caso de error
-        throw error;
-    }
+    const productsComplete = await Promise.all(
+      productsArray.map(async (productInfo) => {
+        const imagesRes = await axios.get(
+          `${import.meta.env.VITE_APP_API_GET_IMAGE_PRODUCTS_URL}/${productInfo.id}`
+        );
+
+        return {
+          ...productInfo,
+          images: imagesRes.data.images || [],
+        };
+      })
+    );
+
+    localStorage.setItem("products", JSON.stringify(productsComplete));
+    dispatch(setProduct(productsComplete));
+    return productsComplete;
+
+  } catch (error) {
+    console.error("❌ Error al obtener los productos:", error);
+    dispatch(setProduct([]));
+    return [];
+  }
 };
 
   // Función para escuchar actualizaciones de productos y actualizar localStorage

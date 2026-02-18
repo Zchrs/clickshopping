@@ -7,18 +7,13 @@ import styled from 'styled-components';
 
 
 export const Slider = () => {
-  const images = [
-    'default-product',
-    'man-avatar',
-    'default-product',
-    'icon-avatar',
-    'default-avatar'
-  ];
+  const productThumbs = useSelector(
+    state => state.product.selectedProduct?.images || []
+  );
 
-  const productThumbs = useSelector(state => state.product.selectedProduct?.images || []);
-  // console.log(productThumbs)
-  const location = useLocation();
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  if (!productThumbs.length) return null;
 
   const goToIndex = (index) => {
     setCurrentIndex(index);
@@ -26,26 +21,33 @@ export const Slider = () => {
 
   const goToPrevSlide = () => {
     let index = currentIndex - 1;
-    if (index < 0) index = images.length - 1;
+    if (index < 0) index = productThumbs.length - 1;
     setCurrentIndex(index);
   };
 
   const goToNextSlide = () => {
     let index = currentIndex + 1;
-    if (index >= images.length) index = 0;
+    if (index >= productThumbs.length) index = 0;
     setCurrentIndex(index);
   };
 
   return (
     <SliDer>
       <div className="slider-container">
-        <button className='prev' onClick={goToPrevSlide}></button>
+        <button className="prev" onClick={goToPrevSlide}></button>
+
         <div className="slider">
           <div className="slide">
-          <img loading='lazy' src={productThumbs[currentIndex].img_url} alt="" />
+            <img
+              loading="lazy"
+              src={productThumbs[currentIndex]}
+              alt=""
+            />
           </div>
         </div>
-        <button className='next' onClick={goToNextSlide}></button>
+
+        <button className="next" onClick={goToNextSlide}></button>
+
         <div className="thumbs">
           {productThumbs.map((thumb, index) => (
             <div
@@ -53,10 +55,7 @@ export const Slider = () => {
               className={index === currentIndex ? 'thumb activesl' : 'thumb'}
               onClick={() => goToIndex(index)}
             >
-              <img
-                loading='lazy'
-                src={thumb.img_url}
-                alt="" />
+              <img loading="lazy" src={thumb} alt="" />
             </div>
           ))}
         </div>

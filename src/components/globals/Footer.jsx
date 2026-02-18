@@ -4,7 +4,7 @@ import { BaseButton } from "./BaseButton";
 import { BaseCheckbox } from "./BaseCheckbox";
 import { getFile } from "../../reducers/globalReducer";
 import { MenuBottom } from "./MenuBottom";
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
@@ -141,13 +141,30 @@ export const Footer = () => {
                 </form>
               </div>
             </div>
+
           </div>
+              
+                <div className="footer-social">
+                  <h2>Síguenos: </h2>
+                  <Link to="https://www.instagram.com/clikshoping.shop?igsh=MXB6aGx2Z3FnMjFvdA==" target="_blank">
+                  <img src={getFile("svg", `instagram`, "svg")} alt="" />
+                  </Link>
+                  <Link to="https://web.facebook.com/people/Clickshopping/100068470897448/" target="_blank">
+                  <img src={getFile("svg", `facebook`, "svg")} alt="" />
+                  </Link>
+                  <Link to="/https://vm.tiktok.com/ZS9JoNDJUmHLQ-rczYW/">
+                  <img src={getFile("svg", `tiktok`, "svg")} alt="" />
+                  </Link>
+                </div>
+              
         </div>
+        
         <div className="footer-down">
           <div className="footer-down__container">
             <img src={getFile("svg", `logo`, "svg")} alt="" />
             <p>&copy; Clickshopping {currentYear} </p>
           </div>
+          
         </div>
 { user && <div className="footer-mobile">
           <MenuBottom
@@ -163,6 +180,7 @@ export const Footer = () => {
             text4={t("globals.coupons")}
           />
         </div>}
+        
       </footer>
     </FooTer>
   );
@@ -181,6 +199,15 @@ const FooTer = styled.div`
   }
   .footer {
     margin-top: 50px;
+
+    &-social{
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      img{
+        width: 60px;
+      }
+    }
 
     &-up {
       display: grid;

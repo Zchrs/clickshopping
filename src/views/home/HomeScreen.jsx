@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import { Comments, Pagination, CardProductsSmall } from "../../../index";
 import { getFile } from "../../reducers/globalReducer";
 import { startChecking } from "../../actions/authActions";
+import { useProductsSSE } from "../../hooks/useProductsSSE";
 
 import "../home/home.scss";
 import {
@@ -22,7 +23,6 @@ export const HomeScreen = () => {
   const lang = useSelector((state) => state.langUI.lang);
   const ratings = useSelector((state) => state.product.ratings);
   const [currentPage, setCurrentPage] = useState(1);
-  const [products, setProducts] = useState([]);
 
   const allProducts = useSelector((state) => state.product.productInfo);
   const rams = allProducts.filter((p) => p.category === "memorias ram");
@@ -48,82 +48,32 @@ export const HomeScreen = () => {
     startIndex + itemsPerPage,
   );
 
-  useEffect(() => {
-    if (!Array.isArray(allProducts) || allProducts.length === 0) return;
-
-    setLaptopsImage((prev) => {
-      if (prev) return prev; // 🔒 ya existe, no la sobrescribas
-
-      const laptop = allProducts.find(
-        (p) => p.category?.toLowerCase() === "portatiles",
-      );
-
-      return laptop?.images?.[0]?.img_url || null;
-    });
-
-    setOthersImage((prev) => {
-      if (prev) return prev; // 🔒 ya existe, no la sobrescribas
-
-      const other = allProducts.find(
-        (p) => p.category?.toLowerCase() === "variados",
-      );
-
-      return other?.images?.[0]?.img_url || null;
-    });
-  }, [allProducts]);
+  useProductsSSE();
 
 useEffect(() => {
-  dispatch(startChecking());
-  i18n.changeLanguage(lang);
+  if (!Array.isArray(allProducts) || allProducts.length === 0) return;
 
-  let eventSource;
-  let retryTimeout;
-  let active = true;
+  setLaptopsImage((prev) => {
+    if (prev) return prev;
 
-  const connectSSE = () => {
-    if (!active) return;
-
-    eventSource = new EventSource(
-      `${import.meta.env.VITE_APP_API_URL}/products/stream`,
-      { withCredentials: true }
+    const laptop = allProducts.find(
+      (p) => p.category?.toLowerCase() === "portatiles"
     );
 
-    eventSource.addEventListener("products", (event) => {
-      try {
-        const products = JSON.parse(event.data);
-        setProducts(products);
-      } catch (e) {
-        console.error("❌ Error parseando SSE", e);
-      }
-    });
+    return laptop?.images?.[0] || null;
+  });
 
-    eventSource.addEventListener("heartbeat", () => {
-      // 💓 conexión viva
-    });
+  setOthersImage((prev) => {
+    if (prev) return prev;
 
-    eventSource.onerror = () => {
-      console.warn("⚠️ SSE desconectado. Reintentando...");
-      eventSource.close();
+    const other = allProducts.find(
+      (p) => p.category?.toLowerCase() === "variados"
+    );
 
-      // 🔁 reconexión silenciosa
-      retryTimeout = setTimeout(connectSSE, 1500);
-    };
-  };
+    return other?.images?.[0] || null;
+  });
+}, [allProducts]);
 
-  // 🔌 primera conexión
-  connectSSE();
-
-  return () => {
-    active = false;
-    clearTimeout(retryTimeout);
-    eventSource?.close();
-  };
-}, [lang, dispatch]);
-
-  useEffect(() => {
-    dispatch(fetchProducts()); // 👈 IMPORTANTE
-    dispatch(startChecking());
-  }, [dispatch]);
 
   const handleSetProductClick = (product) => {
     dispatch(selectedProduct(product));
@@ -212,7 +162,7 @@ useEffect(() => {
                 key={itemL.id}
                 productLink={`/products/${itemL.id}`}
                 addToWish={"addwishlist-red"}
-                img={itemL.images?.[0]?.img_url} // ✅ imagen principal
+                 img={itemL.images?.[0]} // ✅ imagen principal
                 images={itemL.images} // ✅ PASAR EL ARRAY
                 sellingsText
                 sellings={t("globals.sellings")}
@@ -258,7 +208,7 @@ useEffect(() => {
                 prodHover={() => handleSetProductClick(itemC)}
                 addToWish={"addwishlist-red"}
                 addTocart={"addcart-red"}
-                img={itemC.images[0].img_url}
+                 img={itemC.images?.[0]}
                 sellingsText={true}
                 sellings={t("globals.sellings")}
                 priceText={true}
@@ -305,7 +255,7 @@ useEffect(() => {
                 prodHover={() => handleSetProductClick(itemCl)}
                 addToWish={"addwishlist-red"}
                 addTocart={"addcart-red"}
-                img={itemCl.images?.[0]?.img_url}
+                 img={itemCl.images?.[0]}
                 thumbnails={itemCl.images}
                 sellingsText={true}
                 sellings={t("globals.sellings")}

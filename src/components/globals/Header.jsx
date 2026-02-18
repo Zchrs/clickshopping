@@ -1,69 +1,39 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { NavLink } from "react-router-dom";
+/* eslint-disable react-hooks/exhaustive-deps */
+import { NavLink, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
+import styled from "styled-components";
+
+import { startChecking } from "../../actions/authActions";
 import { getFile } from "../../reducers/globalReducer";
+import { useStickyHeader } from "../../hooks/useStickyHeader";
+
 import { BoxInfo } from "./BoxInfo";
 import { InputSearch } from "./InputSearch";
 import { BaseButton } from "./BaseButton";
-import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { startChecking } from "../../actions/authActions";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
 import { Lang } from "./Lang";
 import { Avatar } from "./Avatar";
-import styled from "styled-components";
 
 export const Header = () => {
   const user = useSelector((state) => state.auth.user);
-  const navigate = useNavigate();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const buttonsList = [
-    {
-      name: "home",
-      route: "home",
-      text: t("globals.home"),
-    },
-    {
-      name: "spare sparts",
-      route: "categories/spare-parts",
-      text: t("globals.foods"),
-    },
-    {
-      name: "technology",
-      route: "categories/technology",
-      text: t("globals.technology"),
-    },
-    {
-      name: "clothing",
-      route: "categories/services",
-      text: t("globals.clothing"),
-    },
-  ];
-  // const { menuList, buttonsList } = props;
-  const [menuFixed, UseMenuFixed] = useState(false);
+  const menuFixed = useStickyHeader(100);
 
-  // Montaje/ejecución del componente
   useEffect(() => {
-    const handleScroll = () => {
-      const offset = window.scrollY;
-      if (offset > 100) {
-        UseMenuFixed(true);
-      } else {
-        UseMenuFixed(false);
-      }
+    dispatch(startChecking());
+  }, [dispatch]);
 
-      dispatch(startChecking());
-    };
-
-    window.addEventListener("scroll", handleScroll);
-
-    // quitando el listener en el desmontaje/cambio de pantalla
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
+  const buttonsList = [
+    { route: "home", text: t("globals.home") },
+    { route: "categories/spare-parts", text: t("globals.foods") },
+    { route: "categories/technology", text: t("globals.technology") },
+    { route: "categories/services", text: t("globals.clothing") },
+  ];
 
   return (
     <HeaDer>
@@ -229,6 +199,7 @@ export const Header = () => {
     </HeaDer>
   );
 };
+
 
 const HeaDer = styled.div`
   .head {
