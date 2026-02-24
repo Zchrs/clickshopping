@@ -3,6 +3,7 @@
       "home": "Home",
       "help": "Help",
       "back": "Go back",
+      "productOfMonth": "Product of the month",
       "backHome": "Back to home",
       "select": "Select",
       "services": "services",
@@ -30,7 +31,7 @@
       "takeLookText": "Children's clothing of the highest quality made in Colombia.",
       "takeLookTech": "Take a look at our technology section.",
       "takeLookTechText": "Find the latest in our cutting-edge technology products here.",
-      "takeLookTechTextLap": "Find the latest in our laptops to latest technology products here.",
+      "takeLookTechTextLap": "Take advantage and buy our best-selling product of the month now !It's selling out fast! Featuring the latest technology.",
       "takeLookGrain": "Enjoy our great variety",
       "takeLookGrainText": "80% of our 100% organic and durable grains are grown through hydroponic processes.",
       "takeLookGrocery": "Make-up section will be available soon",
@@ -69,9 +70,9 @@
       "tycText": "By continuing, you confirm that you are an adult. By creating an account, you agree to the Clickshopping.com Free Membership Agreement and Privacy Policy"
     },
     "auth": {
-      "title": "Welcome REIM PARTNERS",
+      "title": "Welcome to Clickshopping",
       "data": "Enter your data as clearly as possible so that there are no typing errors",
-      "phobe": "Phone number",
+      "phobe": "Phone number Example: +57 92 XXXX XXXX",
       "pass": "Your password",
       "remember": "Remember me",
       "welcome": "Welcome",

@@ -8,136 +8,10 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { MultiDropZone } from '../../../components/globals/MultiDropZone';
 
-// export const UpdateProduct = () => {
-//   const selectedProduct = useSelector((state) => state.product);
-//   const { t } = useTranslation();
-
-
-//   const initialForm = {
-//     id: '',	
-//     name: '',
-//     price: '',
-//     previousPrice: '',
-//     category: '',
-//     quantity: '',
-//     description: '',
-//     image: ''
-//   };
-
-//   const {
-//     form,
-//     errors,
-//     loading,
-//     handleChange,
-//     handleUpdateProduct,
-//     handleSetImage
-//   } = useForm(initialForm);
-
-
-// return (
-//   <ProductUpdate className="updateproducts" encType="multipart/form-data" >
-//     <h2 className="updateproducts-h2">Actualizar producto</h2>
-//     <p className="updateproducts-h3"> Detalle a actualizar de: <strong>{ selectedProduct.name }</strong> </p>
-//     <form className="updateproducts-form" encType="multipart/form-data">
-//       <div>
-
-
-//         <BaseInput 
-//           id="name" 
-//           name="name" 
-//           classs={"inputs outline"}
-//           placeholder="Nombre del producto"
-//           value={form.name}
-//             onChange={handleChange}
-             
-//         />
-        
-//       </div>
-//       <div>
-//         <BaseInput 
-//           id="price" 
-//           name="price" 
-//           classs={"inputs outline"}
-//           placeholder="Precio" 
-//           value={form.price}
-//             onChange={handleChange}
-//             isNumber={true}
-            
-//         />
-        
-//       </div>
-//       <div>
-//         <BaseInput 
-//           id="previousPrice" 
-//           name="previousPrice" 
-//           classs={"inputs outline"}
-//           placeholder="Precio anterior" 
-//           value={form.previousPrice}
-//             onChange={handleChange}
-//             isNumber={true}
-            
-//         />
-        
-//       </div>
-//       <div>
-//         <BaseInput 
-//           id="category" 
-//           name="category" 
-//           classs={"inputs outline"}
-//           placeholder="Categoría" 
-//           value={form.category}
-//             onChange={handleChange}
-            
-//         />
-        
-//       </div>
-//       <div>
-//         <BaseInput 
-//           id="quantity" 
-//           name="quantity" 
-//           classs={"inputs outline"}
-//           placeholder="Cantidad" 
-//           value={form.quantity}
-//             onChange={handleChange}
-            
-//           isNumber={true}
-//         />
-       
-//       </div>
-//       <div>
-//         <BaseInput 
-//           id="description" 
-//           name="description" 
-//           classs={"inputs outline"}
-//           placeholder="Descripción" 
-//           value={form.description}
-//             onChange={handleChange}
-            
-//           isTextarea={true}
-//         />
-       
-//       </div>
-//       <div>
-//         <DropZone
-//           id="image" 
-//           name="image"
-//           type="file"
-//           setImage={handleSetImage}
-//           />
-          
-//       </div>
-//       <div>
-//       <BaseButton handleClick={() => handleUpdateProduct(selectedProduct.id)} classs={"button little-red"} textLabel={true} label={"Actualizar producto"}/>
-//       </div>
-//     </form>
-//   </ProductUpdate>
-    
-//   )
-// }
 
 export const UpdateProduct = ({item}) => {
 
-  const selectedProduct = useSelector((state) => state.product);
+  const selectedProduct = useSelector((state) => state.product.selectedProduct);
   console.log(selectedProduct, 'selected desde update paoduct')
   const [isFormComplete, setIsFormComplete] = useState(false);
 
@@ -169,21 +43,20 @@ export const UpdateProduct = ({item}) => {
     setIsFormComplete(isFormFilled);
   }, [form]);
 
-  useEffect(() => {
-    if (item) {
-
-      setForm({
-        id: item.id || '',
-        name: item.name || '',
-        price: item.price || '',
-        previousPrice: item.previousPrice || '',
-        category: item.category || '',
-        quantity: item.quantity || '',
-        description: item.description || '',
-        img_url: item.images || [],
+useEffect(() => {
+  if (selectedProduct) {
+    setForm({
+      id: selectedProduct.id || '',
+      name: selectedProduct.name || '',
+      price: selectedProduct.price || '',
+      previousPrice: selectedProduct.previousPrice || '',
+      category: selectedProduct.category || '',
+      quantity: selectedProduct.quantity || '',
+      description: selectedProduct.description || '',
+      img_url: selectedProduct.images || [],
     });
-    }
-  }, [item, setForm]);
+  }
+}, [selectedProduct, setForm]);
 
   return (
     <ProductUpdate>
@@ -283,7 +156,11 @@ export const UpdateProduct = ({item}) => {
           <div>
             <BaseButton
               handleClick={() => handleUpdateProduct(selectedProduct?.id || '')}
-              classs={'button little-red'}
+              classs={'button primary'}
+              $colorbtn={"var(--primary)"}
+              $colortextbtnprimary={"var(--light)"}
+              $colorbtnhoverprimary={"var(--bg-primary-tr)"}
+              $colortextbtnhoverprimary={"var(--light)"}
               textLabel={true}
               label={'Actualizar producto'}
               disabled={!isFormComplete || loading}

@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import axios from "axios";
 import { formatPrice } from "../../../../globalActions";
-import { BaseButton } from "../../../../index";
 import { fetchUserOrders } from "../../../actions/orderActions";
 import { useDispatch, useSelector } from "react-redux";
 import { DropZoneCloudinary } from "../../../components/globals/DropZoneCloudinary";

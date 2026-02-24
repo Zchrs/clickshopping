@@ -3,21 +3,17 @@ import { AuthRouter } from "../../router/AppRouter"
 import { useTranslation } from 'react-i18next';
 import { useEffect } from "react";
 import { useSelector } from 'react-redux';
-import { useDispatch } from "react-redux";
-import { startChecking } from "../../actions/authActions";
 
 const grid = {
     display: 'grid',
 }
 
 export const AuthHome = () =>{
-  const dispatch = useDispatch();
     const lang = useSelector(state => state.langUI.lang);
     const { t, i18n } = useTranslation();
     useEffect(() => {
-      dispatch(startChecking());
         i18n.changeLanguage(lang);
-      }, [i18n, lang, dispatch]);
+      }, [i18n, lang]);
 
 
 

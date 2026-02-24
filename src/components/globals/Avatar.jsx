@@ -4,7 +4,7 @@ import { getFile } from "../../reducers/globalReducer";
 import { NavLink } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
-import { startChecking, startLogout } from "../../actions/authActions";
+import { startLogout } from "../../actions/authActions";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import styled from "styled-components";
@@ -26,7 +26,6 @@ export const Avatar = ({
 
   useEffect(() => {
     i18n.changeLanguage(lang);
-    dispatch(startChecking());
   }, [i18n, lang, dispatch]);
 
   const handleLogout = () => {

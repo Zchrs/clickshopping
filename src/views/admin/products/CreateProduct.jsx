@@ -165,10 +165,10 @@ export const CreateProduct = () => {
               disabled={!isFormComplete}
               handleClick={handleSubmitProduct}
               classs={"button primary"}
-              colorbtn={"var(--primary)"}
-              colortextbtnprimary={"var(--light)"}
-              colorbtnhoverprimary={"var(--bg-primary-tr)"}
-              colortextbtnhoverprimary={"var(--light)"}
+              $colorbtn={"var(--primary)"}
+              $colortextbtnprimary={"var(--light)"}
+              $colorbtnhoverprimary={"var(--bg-primary-tr)"}
+              $colortextbtnhoverprimary={"var(--light)"}
               textLabel={true}
               label={"Añadir producto"}
             />

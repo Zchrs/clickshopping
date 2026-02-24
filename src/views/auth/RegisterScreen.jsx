@@ -4,7 +4,7 @@ import { BaseInput } from "../../components/globals/BaseInput"
 import { BaseButton } from "../../components/globals/BaseButton"
 import { getFile } from "../../reducers/globalReducer"
 import { useTranslation } from 'react-i18next';
-import { countries } from "../../../apiEmulated";
+import  rawCountries  from "../../../countries.json";
 import { useValidations } from'../../hooks/useValidations'
 import { useForm } from'../../hooks/useForm'
 import { useState } from "react";
@@ -19,13 +19,21 @@ export const RegisterScreen = () => {
 
   const initialForm = {
   country: "",
+  dialCode: "",
   name: "",
   lastname: "",
   phone: "",
   email: "",
-  role: "ordinary client",
+  role: "client",
   password: "",
 };
+
+
+  const countries = rawCountries.map(c => ({
+  label: c.name,
+  value: c.iso2,
+  dialCode: c.dialCode
+}));
 
   const {
     form,
@@ -33,11 +41,14 @@ export const RegisterScreen = () => {
     loading,
     response,
     modal,
+    setForm,
     handleChange,
     handleBlur,
     handleSubmits,
     handleCountryChange,
-  } = useForm(initialForm, validateForm);
+    handlePhoneChange
+  } = useForm(initialForm, validateForm, countries);
+
 
 
   const formComplete = () => {
@@ -53,22 +64,23 @@ export const RegisterScreen = () => {
       <form onSubmit={handleSubmits}>
       
         <div>
-        <BaseInput
-        inputRef={formRefs.country}
-        isSearchableSelect
-         isSelect
-          height={"100%"}
-          width={"100%"}
-          classs={"inputs normal"}
-          id="country"
-          placeholder={t('auth.location')}
-          name="country"
-          value={form.country}
-          onChange={ handleCountryChange }
-          onBlur={ handleBlur }
-          options={countries}
-          required
-        />
+<BaseInput
+  inputRef={formRefs.country}
+  isSearchableSelect
+  isSelect
+  height={"100%"}
+  width={"100%"}
+  classs={"inputs normal"}
+  id="country"
+  placeholder={t('auth.location')}
+  name="country"
+  // ✅ CORRECCIÓN: Encontrar el objeto completo basado en form.country
+  value={form.country}
+  onChange={handleCountryChange}
+  onBlur={handleBlur}
+  options={countries}
+  required
+/>
         </div>
         <div>
           <BaseInput
@@ -100,18 +112,17 @@ export const RegisterScreen = () => {
         </div>
         <div>
           <BaseInput
-          inputRef={formRefs.phone}
-          classs={"inputs normal"}
-          placeholder={t('auth.phone')}
-          name="phone"
-          id="phone"
-          value={form.phone}
-              onBlur={handleBlur}
-              onChange={handleChange}
-          required
-          isNumber
-          />
-         
+            inputRef={formRefs.phone}
+            type="tel"
+            classs={"inputs normal"}
+            id="phone"
+            name="phone"
+            placeholder={t("auth.phone")}
+            value={form.phone}
+            onChange={handlePhoneChange}
+            onBlur={handleBlur}
+            required
+          />          
         </div>
         <div>
           <BaseInput
@@ -150,10 +161,10 @@ export const RegisterScreen = () => {
           textLabel={true} 
           label={t('auth.newAccount')}
            classs={`button primary ${!isFormComplete ? 'button primary disabled' : ''}`}
-          colorbtn={"var(--primary)"}
-          colortextbtnprimary={"var(--light)"}
-          colorbtnhoverprimary={"var(--bg-primary-tr)"}
-          colortextbtnhoverprimary={"white"} 
+          $colorbtn={"var(--primary)"}
+          $colortextbtnprimary={"var(--light)"}
+          $colorbtnhoverprimary={"var(--bg-primary-tr)"}
+          $colortextbtnhoverprimary={"white"} 
         />
       </form>
       <div className="auth-gruop2">

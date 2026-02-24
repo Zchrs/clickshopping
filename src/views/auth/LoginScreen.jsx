@@ -6,22 +6,12 @@ import { getFile } from "../../reducers/globalReducer"
 import { useValidations } from'../../hooks/useValidations'
 import { useTranslation } from 'react-i18next';
 import { useForm } from "../../hooks/useForm";
-import { useDispatch } from "react-redux";
-import { startChecking } from "../../actions/authActions";
-import Loader from "../../components/globals/Loader";
-import Message from "../../components/globals/Message";
-import { useEffect } from "react";
-
 
 
 export const LoginScreen = () => {
   const { formRefs, validateForm } = useValidations();
   const { t } = useTranslation();
-  const dispatch = useDispatch();
 
-  useEffect(() => {
-    dispatch(startChecking());
-  }, [dispatch]);
 
   const initialForm = {
     email: "",
@@ -69,15 +59,15 @@ export const LoginScreen = () => {
           
           />
         </div>
-        <Link className="a">{t('auth.forgetPass')}</Link>
+        <Link to="/recovery-account" className="a">{t('auth.forgetPass')}</Link>
         <BaseButton 
               handleClick={handleLogin} 
               label={t('auth.login')}
               classs={'button primary'} 
-              colorbtn={"var(--primary)"}
-              colortextbtnprimary={"var(--light)"}
-              colorbtnhoverprimary={"var(--bg-primary-tr)"}
-              colortextbtnhoverprimary={"white"}  
+              $colorbtn={"var(--primary)"}
+              $colortextbtnprimary={"var(--light)"}
+              $colorbtnhoverprimary={"var(--bg-primary-tr)"}
+              $colortextbtnhoverprimary={"white"}  
               textLabel={true}
         />
       </form>

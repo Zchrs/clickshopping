@@ -64,10 +64,10 @@ export const OrdersComplete = () => {
                   link={false}
                   img
                   classs={"button primary"}
-                  colorbtn={"var(--success)"}
-                  colortextbtnprimary={"var(--light)"}
-                  colorbtnhoverprimary={"var(--success)"}
-                  colortextbtnhoverprimary={"white"}
+                  $colorbtn={"var(--success)"}
+                  $colortextbtnprimary={"var(--light)"}
+                  $colorbtnhoverprimary={"var(--success)"}
+                  $colortextbtnhoverprimary={"white"}
                 />
               </div>
               </div>

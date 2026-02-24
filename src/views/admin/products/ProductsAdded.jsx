@@ -4,12 +4,23 @@
 import styled from 'styled-components';
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import io from 'socket.io-client';
-import { Backward, BaseButton, BaseInput, CardProductsAdmin, MultiDropZone, UpdateProduct } from "../../../../index";
+import { Backward, BaseButton, BaseInput, CardProductsAdmin, MultiDropZone } from "../../../../index";
 
-import { clearProduct, fetchProducts, selectedProduct, setProduct, updateProduct } from '../../../actions/productActions';
-import { initialForm, useForm } from '../../../hooks/useForm';
+import { clearProduct, setProduct } from '../../../actions/productActions';
+import { useForm } from '../../../hooks/useForm';
 import { useValidations } from "../../../hooks/useValidations";
+import { useProductsSSE } from '../../../hooks/useProductsSSE';
+
+const initialForm = {
+  id: "",
+  name: "",
+  price: "",
+  previousPrice: "",
+  category: "",
+  quantity: "",
+  description: "",
+  img_url: [],
+};
 
 export const ProductsAdded = ({ 
   item
@@ -21,6 +32,7 @@ export const ProductsAdded = ({
   const [selProduct, setSelProduct] = useState(null);
 const { formRefs, validateForm } = useValidations();
 
+useProductsSSE();
 
   const {
       form,
@@ -35,44 +47,8 @@ const { formRefs, validateForm } = useValidations();
       loading,
   } = useForm(initialForm);
 
-  // const closeModal = () => setShowModal(false);
 
-  // const openModal = (product) => {
-  //     dispatch(setProduct(product));
-  //     setSelProduct(product);
-  //     setFormProduct({
-  //         id: product.id,
-  //         name: product.name,
-  //         price: product.price,
-  //         previousPrice: product.previousPrice,
-  //         category: product.category,
-  //         quantity: product.quantity,
-  //         description: product.description,
-  //         img_url: product.images || [],
-  //     });
-  //     setShowModal(true);
-  // };
-
-  useEffect(() => {
-      const socket = io(import.meta.env.VITE_APP_API_WEBSOCKET_URL, {
-          cors: true,
-      });
-
-      socket.on('connect', () => {
-          console.log('Conectado al servidor de WebSocket');
-      });
-
-      socket.on('updateProducts', (updatedProducts) => {
-          console.log('Productos actualizados:', updatedProducts);
-          dispatch(updateProduct(updatedProducts));
-      });
-
-      dispatch(fetchProducts()).finally(() => setLoading(false));
-
-      return () => {
-          socket.disconnect();
-      };
-  }, [dispatch]);
+ 
 
 
   useEffect(() => {
@@ -105,15 +81,15 @@ const { formRefs, validateForm } = useValidations();
       setSelProduct(product);
       console.log(product.id, 'desde handle update')
       setForm({
-          id: product.id,
-          name: product.name,
-          price: product.price,
-          previousPrice: product.previousPrice,
-          category: product.category,
-          quantity: product.quantity,
-          description: product.description,
-          img_url: product.images || [],
-      });
+  id: product.id ?? "",
+  name: product.name ?? "",
+  price: product.price ?? "",
+  previousPrice: product.previousPrice ?? "",
+  category: product.category ?? "",
+  quantity: product.quantity ?? "",
+  description: product.description ?? "",
+  img_url: product.images ?? [],
+});
   };
 
   const handleBackward = () => {
@@ -152,7 +128,7 @@ const { formRefs, validateForm } = useValidations();
                                   productInfo={item}
                                   addToWish={"addwishlist-red"}
                                   addTocart={"addcart-red"}
-                                  img={item.images?.[0]?.img_url}   // ✅ imagen principal
+                                  img={item.images?.[0]}  // ✅ imagen principal
                                   images={item.images}     
                                   description={item.description}
                                   quantity={item.quantity}
@@ -162,8 +138,8 @@ const { formRefs, validateForm } = useValidations();
                                   discount="10%"
                                   uptBtn={true}
                                   delBtn={true}
-                                  onUpdate={() => handleUpdate(item.id)}
-                                  onDelete={() => deleteProduct(item.id)}
+                                  onUpdate={() => handleUpdate(item)}
+                                  onDelete={() => deleteProduct(item)}
                                   classs={"productcard background"}
                               />
                           ))
@@ -253,7 +229,7 @@ const { formRefs, validateForm } = useValidations();
                                       name="description"
                                       classs={'inputs outline'}
                                       placeholder="Descripción"
-                                      formRefs={form.descriptions}
+                                      formRefs={form.description}
                                       value={form.description}
                                       onChange={handleChangeProduct}
                                       isTextarea={true}
@@ -272,7 +248,11 @@ const { formRefs, validateForm } = useValidations();
                               <div>
                                   <BaseButton
                                       type="submit"
-                                      classs={'button little-red'}
+                                      classs={'button primary'}
+                                                    $colorbtn={"var(--primary)"}
+              $colortextbtnprimary={"var(--light)"}
+              $colorbtnhoverprimary={"var(--bg-primary-tr)"}
+              $colortextbtnhoverprimary={"var(--light)"}
                                       textLabel={true}
                                       label={'Actualizar producto'}
                                       disabled={!isFormComplete || loading}

@@ -51,7 +51,11 @@ import {
   Discounts,
   SettingsScreen,
   CreateProduct,
-  UpdateProduct
+  UpdateProduct,
+  Recovery,
+  RecoveryPasshordHome,
+  Verify,
+  VerifyCode
  } from '../../index'
 
 import { CheckOut } from "../views/checkout/CheckOut";
@@ -68,6 +72,12 @@ import { UsersOrdersScreen } from "../views/users/orders/UsersOrdersScreen";
 
 
 export const AppRouter = () => {
+
+    const dispatch = useDispatch();
+    
+  useEffect(() => {
+    dispatch(startChecking());
+  }, [dispatch]);
 
   return (
       <Routes>
@@ -114,6 +124,36 @@ export const AuthRouter = () => {
     </Routes>
   );
 };
+
+export const VerifyRouter = () => {
+  return (
+    <Routes>
+      <Route exact path="/*" element={<Verify />} />
+
+      <Route
+        exact
+        path="clients/account/verify/:userId/:token"
+        element={<VerifyCode />}
+      />
+    </Routes>
+  );
+};
+
+export const RecoveryPasswordRouterClient = () => {
+  return (
+    <Routes>
+      <Route exact path="/*" element={<Recovery />} />
+
+      <Route
+        exact
+        path="recovery-password"
+        element={<RecoveryPasshordHome />}
+      />
+      <Route exact path="recovery-send-code" element={<CheckOut />} />
+    </Routes>
+  );
+};
+
 
 export const DashboardRouter = () => {
   const dispatch = useDispatch();

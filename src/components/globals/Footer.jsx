@@ -126,10 +126,10 @@ export const Footer = () => {
                       link={"/"}
                       label={t("footer.subscribe")}
                       classs={'button primary'} 
-                      colorbtn={"var(--bg-primary)"}
-                      colortextbtnprimary={"var(--light)"}
-                      colorbtnhoverprimary={"var(--bg-primary-tr)"}
-                      colortextbtnhoverprimary={"white"}  
+                      $colorbtn={"var(--bg-primary)"}
+                      $colortextbtnprimary={"var(--light)"}
+                      $colorbtnhoverprimary={"var(--bg-primary-tr)"}
+                      $colortextbtnhoverprimary={"white"}  
                     />
                   </div>
                   <div className="footer-middle__group2">
@@ -146,7 +146,7 @@ export const Footer = () => {
               
                 <div className="footer-social">
                   <h2>Síguenos: </h2>
-                  <Link to="https://www.instagram.com/clikshoping.shop?igsh=MXB6aGx2Z3FnMjFvdA==" target="_blank">
+                  <Link to="https://www.instagram.com/clikshoping.oficial?utm_source=qr&igsh=MXB6aGx2Z3FnMjFvdA==" target="_blank">
                   <img src={getFile("svg", `instagram`, "svg")} alt="" />
                   </Link>
                   <Link to="https://web.facebook.com/people/Clickshopping/100068470897448/" target="_blank">

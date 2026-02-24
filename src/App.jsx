@@ -52,6 +52,10 @@ import {
   AdminDashboardLayout,
   CreateProduct,
   ImageKitProvider,
+  Verify,
+  VerifyCode,
+  HomeRecovery,
+  RecoveryPasshordHome,
 } from "../index";
 import { MenuProvider } from "./layouts/MenuContext";
 import { ProductsLayout } from "./layouts/ProductsLayout";
@@ -65,11 +69,13 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.scss";
 import { De } from "react-country-flags-select";
 import { UsersOrdersScreen } from "./views/users/orders/UsersOrdersScreen";
+import { use } from "react";
 
 function App() {
   const storedLang = localStorage.getItem("lang");
 
   // Despacha la acción para establecer el idioma en Redux solo si hay un idioma almacenado en localStorage
+
   if (storedLang) {
     store.dispatch(changeLang({ lang: storedLang }));
   }
@@ -286,6 +292,21 @@ function App() {
                 <Route exact path="discounts" element={<Discounts />} />
                 <Route exact path="settings" element={<SettingsScreen />} />
               </Route>
+              
+              
+            <Route exact path="/*" element={<Verify />}>
+              <Route
+                exact
+                path="clients/account/verify/:userId/:token"
+                element={<VerifyCode />}
+              />
+            </Route>
+            <Route exact path="/recovery-account/*" element={
+              <HomeRecovery />}
+              >
+              <Route exact path="recovery-password" element={<RecoveryPasshordHome />} />
+              <Route exact path="recovery-send-code" element={<CheckOut />} />
+            </Route>
             </Routes>
           </HashRouter>
         </Provider>

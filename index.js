@@ -80,6 +80,17 @@ export * from './src/views/admin/users/UserVerifications'
  export * from './src/components/globals/ScreenResolution'
  export * from './src/components/globals/ImageKitProvider'
  export * from './src/components/globals/MultiDropZoneCloudinary'
+ export * from './src/components/globals/Verify'
+ export * from './src/components/globals/VerifyCode'
+ export * from './src/components/globals/VisitorsTracker'
+ export * from './src/components/globals/EnterCode'
+ export * from './src/components/globals/RecoveryPasshordHome'
+ export * from './src/components/globals/Recovery'
+ export * from './src/components/globals/HomeRecovery'
+ export * from './src/components/globals/RecoveryPassword'
+
+ 
+
 
  
 

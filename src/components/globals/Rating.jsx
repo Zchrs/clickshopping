@@ -58,10 +58,11 @@ export const Rating = ({ title, sellings, ratings, productID, userID }) => {
           cancelButtonText: 'Volver',
           background: '#f0f0f0',
           customClass: {
-            popup: 'custom-popup',
-            title: 'custom-title',
-            content: 'custom-content',
-            confirmButton: 'custom-confirm-button',
+            icon: 'swal-',
+            popup: 'swal-custom-popup',
+            title: 'swal-custom-title',
+            content: 'swal-custom-content',
+            confirmButton: 'swal-confirm-btn',
           },
         });
         return;

@@ -18,6 +18,7 @@ export const initialForm = {
   name: "",
   lastname: "",
   country: "",
+  dialCode: "",
   phone: "",
   email: "",
   password: "",
@@ -38,7 +39,7 @@ export const initialForm = {
 
 
 
-export const useForm = (initialForm, validateForm) => {
+export const useForm = (initialForm, validateForm, countries = []) => {
   // ---------------- variables de estado -----------------------
   const [form, setForm] = useState(initialForm);
   const [errors, setErrors] = useState({});
@@ -50,6 +51,7 @@ export const useForm = (initialForm, validateForm) => {
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selected, setSelected] = useState(null);
   const [checked, setChecked] = useState(false);
+   const [message, setMessage] = useState("");
   const user = useSelector((state) => state.auth.user);
   
   // ----------------- funciones form -------------------------
@@ -77,16 +79,54 @@ export const useForm = (initialForm, validateForm) => {
     };
   };
 
-  const handleCountryChange = (options) => {
-    if (!options) {
-      setSelectedCountry(options.target.value); // Llama a la función proporcionada con el país seleccionado
-    } else {
-      setForm({
-        ...form,
-        country: options.target.value,
-      });
+const handleCountryChange = (e) => {
+  const countryCode = e.target.value;
+
+  const selectedCountry = countries.find(
+    (c) => c.value === countryCode
+  );
+
+  if (!selectedCountry) {
+    setForm(prev => ({
+      ...prev,
+      country: "",
+      dialCode: "",
+      phone: ""
+    }));
+    return;
+  }
+
+  setForm(prev => {
+    const phoneWithoutDial = prev.phone
+      .replace(/^\+\d+[-\d]*\s?/, "");
+
+    return {
+      ...prev,
+      country: countryCode,
+      dialCode: selectedCountry.dialCode,
+      phone: `${selectedCountry.dialCode} ${phoneWithoutDial}`.trim()
+    };
+  });
+};
+
+const handlePhoneChange = (e) => {
+  const value = e.target.value;
+
+  setForm(prev => {
+    if (!prev.dialCode) {
+      return { ...prev, phone: value };
     }
-  };
+
+    if (!value.startsWith(prev.dialCode)) {
+      return {
+        ...prev,
+        phone: prev.dialCode + " "
+      };
+    }
+
+    return { ...prev, phone: value };
+  });
+};
 
   const handleClearCountry = (label, value) => {
     if (label) {
@@ -837,6 +877,197 @@ export const useForm = (initialForm, validateForm) => {
     setModal(true);
   };
 
+    const handleChangePassword = async (e) => {
+    e.preventDefault();
+
+    if (!form.password || !form.rePassword) return;
+
+    const finalForm = {
+      email: form.email,
+      password: form.password,
+    };
+
+    debugger;
+
+    setErrors(validateForm);
+    setLoading(true);
+
+    try {
+      const response = await axios.post(
+        import.meta.env.VITE_APP_API_RESET_PASSWORD,
+        finalForm,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        }
+      );
+
+      console.log(response.data);
+      setResponse(true);
+      setForm(initialForm);
+      setLoading(false);
+
+      Swal.fire({
+        title: "¡Hecho!",
+        html: `Contraseña cambiada correctamente`,
+        icon: "success",
+        background: "#f0f0f0",
+        customClass: {
+          popup: "custom-popup",
+          title: "custom-title",
+          content: "custom-content",
+          confirmButton: "custom-confirm-button",
+          cancelButton: "custom-cancel-button",
+        },
+      }).then(() => {
+        navigate("/advisor/auth/login"); // ✅ Redirige después del éxito
+      });
+    } catch (error) {
+      console.error(error);
+      Swal.fire({
+        title: "¡Error!",
+        html: `Error al cambiar la contraseña`,
+        icon: "warning",
+        background: "#f0f0f0",
+        customClass: {
+          popup: "custom-popup",
+          title: "custom-title",
+          content: "custom-content",
+          confirmButton: "custom-confirm-button",
+          cancelButton: "custom-cancel-button",
+        },
+      });
+    } finally {
+      setLoading(false);
+      setModal(true);
+    }
+  };
+
+    const handleRequestCode = async (e) => {
+    e.preventDefault();
+
+    const finalForm = { ...form };
+    if (!finalForm.email) return false;
+
+    setErrors(validateForm);
+    setLoading(true);
+
+    try {
+      const response = await axios.post(
+        import.meta.env.VITE_APP_API_REQUEST_RECOVERY_CODE,
+        { email: finalForm.email }, // solo necesitas enviar el email
+        {
+          headers: {
+            "Content-type": "application/json",
+            Accept: "application/json",
+          },
+        }
+      );
+
+      console.log(response);
+      setLoading(false);
+      setResponse(true);
+
+      setTimeout(() => {
+        setResponse(false);
+        Swal.fire({
+          title: "¡Hecho!",
+          html: `Código enviado a: <b>${finalForm.email}</b>`,
+          icon: "success",
+          background: "#f0f0f0",
+          customClass: {
+            popup: "custom-popup",
+            title: "custom-title",
+            content: "custom-content",
+            confirmButton: "custom-confirm-button",
+            cancelButton: "custom-cancel-button",
+          },
+        });
+      }, 200);
+
+      return true; // ✅ Éxito
+    } catch (error) {
+      console.error("Error al solicitar el código:", error);
+      setLoading(false);
+      return false; // ❌ Fallo
+    }
+  };
+
+  const handleVerifyCode = async (e, { email, code }) => {
+    if (e?.preventDefault) e.preventDefault();
+
+    setErrors("");
+    setMessage("");
+
+    if (!/^\d{6}$/.test(code)) {
+      setErrors("El código debe tener 6 dígitos numéricos.");
+      return;
+    }
+
+    try {
+      const res = await fetch(import.meta.env.VITE_APP_API_VERIFY_CODE, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, code }),
+      });
+
+      const result = await res.json();
+
+      if (!res.ok) {
+        Swal.fire({
+          title: "¡Error!",
+          html: result?.error || "Código inválido o expirado.",
+          icon: "warning",
+          background: "#f0f0f0",
+          customClass: {
+            popup: "custom-popup",
+            title: "custom-title",
+            content: "custom-content",
+            confirmButton: "custom-confirm-button",
+            cancelButton: "custom-cancel-button",
+          },
+        });
+        return;
+      }
+
+      Swal.fire({
+        title: "¡Hecho!",
+        html: "¡Código correcto!",
+        icon: "success",
+        background: "#f0f0f0",
+        customClass: {
+          popup: "custom-popup",
+          title: "custom-title",
+          content: "custom-content",
+          confirmButton: "custom-confirm-button",
+          cancelButton: "custom-cancel-button",
+        },
+      });
+
+      setMessage("Código verificado.");
+      return true;
+    } catch (err) {
+      console.error(err);
+      Swal.fire({
+        title: "¡Error!",
+        html: "Código inválido o expirado.",
+        icon: "warning",
+        background: "#f0f0f0",
+        customClass: {
+          popup: "custom-popup",
+          title: "custom-title",
+          content: "custom-content",
+          confirmButton: "custom-confirm-button",
+          cancelButton: "custom-cancel-button",
+        },
+      });
+      return false;
+    }
+  };
+
+
   return {
     form,
     errorsCart,
@@ -870,6 +1101,10 @@ export const useForm = (initialForm, validateForm) => {
     handleUpdateProduct,
     openModal,
     handleCountryChange,
-    handleSubmitAddWishlist
+    handleSubmitAddWishlist,
+    handleRequestCode,
+    handleChangePassword,
+    handlePhoneChange,
+    handleVerifyCode
   };
 };

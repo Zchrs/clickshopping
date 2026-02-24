@@ -1,7 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { useEffect, useState } from "react";
 import { fetchProducts, selectedProduct } from "../../../actions/productActions";
-import { startChecking } from "../../../actions/authActions";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { CardProducts, Empty, BreadCrumb, Pagination } from "../../../../index";
@@ -44,7 +43,6 @@ export const TechnologyScreen = () => {
   }, [activeTab]);
 
   useEffect(() => {
-    dispatch(startChecking());
     i18n.changeLanguage(lang);
   }, [i18n, lang, dispatch]);
 

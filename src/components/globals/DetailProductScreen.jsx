@@ -13,6 +13,8 @@ import { useEffect, useState } from "react";
 import { clearProduct, selectedProduct } from "../../actions/productActions";
 import { useForm } from "../../hooks/useForm";
 import { useValidations } from "../../hooks/useValidations";
+import { useParams } from "react-router-dom";
+
 
 export const DetailProductScreen = ({
   user_id,
@@ -20,16 +22,22 @@ export const DetailProductScreen = ({
   price,
   quantity,
 }) => {
+  const { id } = useParams();
   const location = useLocation();
   const showLocation = useLocation();
   const product = useSelector((state) => state.product.selectedProduct);
-  console.log([product])
   const productHover = useSelector((state) => state.product.selectedProduct);
     const [selectedIds, setSelectedIds] = useState([]);
     const [cartItems, setCartItems] = useState([]);
   const ratings = useSelector((state) => state.product.ratings);
   const user = useSelector((state) => state.auth.user);
   const { formRefs, validateForm } = useValidations();
+
+  const allProducts = useSelector((state) => state.product.productInfo);
+const productFromStore = useSelector(
+  (state) => state.product.selectedProduct
+);
+
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -45,6 +53,16 @@ export const DetailProductScreen = ({
   useEffect(() => {
     scrollTop();
   }, []);
+
+  useEffect(() => {
+  if (productFromStore?.id === id) return;
+
+  const foundProduct = allProducts.find(p => p.id === id);
+
+  if (foundProduct) {
+    dispatch(selectedProduct(foundProduct));
+  }
+}, [id, allProducts]);
 
   const {
     form,
@@ -235,10 +253,10 @@ navigate("checkout", {
               <div className="detailproduct-contain-btns">
                 <BaseButton
                   classs={"button primary"}
-                  colorbtn={"var(--danger)"}
-                  colortextbtnprimary={"var(--light)"}
-                  colorbtnhoverprimary={"var(--bg-primary-tr)"}
-                  colortextbtnhoverprimary={"var(--light)"}
+                  $colorbtn={"var(--danger)"}
+                  $colortextbtnprimary={"var(--light)"}
+                  $colorbtnhoverprimary={"var(--bg-primary-tr)"}
+                  $colortextbtnhoverprimary={"var(--light)"}
                   img={true}
                   icon={"pay"}
                   handleClick={handleCheckoutClick}
@@ -251,10 +269,10 @@ navigate("checkout", {
                   icon={"addcart-red"}
                   textLabel={true}
                   classs={"button primary"}
-                  colorbtn={"var(--primary)"}
-                  colortextbtnprimary={"var(--light)"}
-                  colorbtnhoverprimary={"var(--bg-primary-tr)"}
-                  colortextbtnhoverprimary={"var(--light)"}
+                  $colorbtn={"var(--primary)"}
+                  $colortextbtnprimary={"var(--light)"}
+                  $colorbtnhoverprimary={"var(--bg-primary-tr)"}
+                  $colortextbtnhoverprimary={"var(--light)"}
                   label={"Agregar al carrito"}
                   onMouseEnter={handleMouseEnter}
                   onMouseLeave={handleMouseLeave}
@@ -266,10 +284,10 @@ navigate("checkout", {
                     img={true}
                     icon={"share-red"}
                     classs={"button primary"}
-                    colorbtn={"var(--success)"}
-                    colortextbtnprimary={"var(--light)"}
-                    colorbtnhoverprimary={"var(--bg-primary-tr)"}
-                    colortextbtnhoverprimary={"var(--light)"}
+                    $colorbtn={"var(--success)"}
+                    $colortextbtnprimary={"var(--light)"}
+                    $colorbtnhoverprimary={"var(--bg-primary-tr)"}
+                    $colortextbtnhoverprimary={"var(--light)"}
                     textLabel={true}
                     label={"Compartir"}
                   />
@@ -277,10 +295,10 @@ navigate("checkout", {
                     img={true}
                     icon={"addwishlist"}
                     classs={"button primary"}
-                    colorbtn={"var(--dark)"}
-                    colortextbtnprimary={"var(--light)"}
-                    colorbtnhoverprimary={"var(--bg-primary-tr)"}
-                    colortextbtnhoverprimary={"var(--light)"}
+                    $colorbtn={"var(--dark)"}
+                    $colortextbtnprimary={"var(--light)"}
+                    $colorbtnhoverprimary={"var(--bg-primary-tr)"}
+                    $colortextbtnhoverprimary={"var(--light)"}
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
                     handleClick={handleAddToWishList}

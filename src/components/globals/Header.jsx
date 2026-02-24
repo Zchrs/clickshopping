@@ -1,12 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-hooks/exhaustive-deps */
-import { NavLink, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { NavLink, useNavigate, Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import styled from "styled-components";
-
-import { startChecking } from "../../actions/authActions";
 import { getFile } from "../../reducers/globalReducer";
 import { useStickyHeader } from "../../hooks/useStickyHeader";
 
@@ -18,15 +15,12 @@ import { Avatar } from "./Avatar";
 
 export const Header = () => {
   const user = useSelector((state) => state.auth.user);
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const { t } = useTranslation();
 
   const menuFixed = useStickyHeader(100);
 
-  useEffect(() => {
-    dispatch(startChecking());
-  }, [dispatch]);
+
 
   const buttonsList = [
     { route: "home", text: t("globals.home") },
@@ -42,6 +36,18 @@ export const Header = () => {
           <div className="head-logo">
             <img src={getFile("svg", "logo", "svg")} alt="Logo" />
           </div>
+          <div className="head-social">
+            <h5>Síguenos: </h5>
+              <Link to="https://www.instagram.com/clikshoping.oficial?utm_source=qr&igsh=MXB6aGx2Z3FnMjFvdA==" target="_blank">
+              <img src={getFile("svg", `instagram`, "svg")} alt="" />
+              </Link>
+              <Link to="https://web.facebook.com/people/Clickshopping/100068470897448/" target="_blank">
+              <img src={getFile("svg", `facebook`, "svg")} alt="" />
+              </Link>
+              <Link to="https://vm.tiktok.com/ZS9JoNDJUmHLQ-rczYW/" target="_blank">
+              <img src={getFile("svg", `tiktok`, "svg")} alt="" />
+              </Link>
+          </div>
           <div className="head-btns">
             {!user ? (
               <div className="head-btns-div">
@@ -49,19 +55,19 @@ export const Header = () => {
                   label={t("auth.login")}
                   link={"auth/login"}
                   classs={"button small"}
-                  colorbtnsmall={"var(--secondary)"}
-                  colortextbtnsmall={"var(--light)"}
-                  colorbtnhoversmall={"var(--bg-primary-tr)"}
-                  colortextbtnhoversmall={"white"}
+                  $colorbtnsmall={"var(--secondary)"}
+                  $colorbtntextsmall={"var(--light)"} 
+                  $colorbtnhoversmall={"var(--bg-secondary-semi)"}
+                  $colortextbtnhoversmall={"white"}
                 />
                 <BaseButton
                   label={t("auth.register")}
                   link={"auth/register"}
                   classs={"button small"}
-                  colorbtnsmall={"var(--primary)"}
-                  colortextbtnsmall={"var(--dark)"}
-                  colorbtnhoversmall={"var(--bg-secondary-tr)"}
-                  colortextbtnhoversmall={"white"}
+                  $colorbtnsmall={"var(--primary)"}
+                  $colorbtntextsmall={"var(--light)"}
+                  $colorbtnhoversmall={"var(--primary-semi)"}
+                  $colortextbtnhoversmall={"var(--light)"}
                   width={"fit-content"}
                 />
                 <div>
@@ -171,10 +177,10 @@ export const Header = () => {
             icon={"female"}
               textLabel
               classs={"button primary"}
-              colorbtn={"var(--danger)"}
-              colortextbtnprimary={"var(--light)"}
-              colorbtnhoverprimary={"var(--woman)"}
-              colortextbtnhoverprimary={"white"}
+              $colorbtn={"var(--danger)"}
+              $colortextbtnprimary={"var(--light)"}
+              $colorbtnhoverprimary={"var(--woman)"}
+              $colortextbtnhoverprimary={"white"}
               label="Exclusivo femenino"
               handleClick={() => navigate("/categories/female")}
             />
@@ -461,6 +467,17 @@ const HeaDer = styled.div`
         @media (max-width: 399px) {
           height: 20px;
         }
+      }
+    }
+    &-social{
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      img{
+        width: 30px;
+      }
+      @media (max-width: 920px) {
+        display: none;
       }
     }
 

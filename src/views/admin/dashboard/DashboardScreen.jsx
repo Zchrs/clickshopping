@@ -1,15 +1,10 @@
-import { useEffect } from "react";
-import { useDispatch } from "react-redux";
+
 import styled from 'styled-components';
-import { startCheckingAdmin } from "../../../actions/authActions";
-import { MyChart } from "../../../../index";
+import { MyChart, VisitorsTracker } from "../../../../index";
 
 
 export const DashboardScreen = () => {
-  const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch(startCheckingAdmin());
-  }, [dispatch]);
+
   return (
     <ScreenDashboard className="dashboard">
       <div className="dashboard-container-cards"></div>
@@ -18,7 +13,9 @@ export const DashboardScreen = () => {
           <h2>Ventas semanales</h2>
           <MyChart />
         </div>
-        <div className="dashboard-container-charts"></div>
+        <div className="dashboard-container-charts">
+          <VisitorsTracker />
+        </div>
       </div>
 
       <div className="dashboard-container-contain"></div>

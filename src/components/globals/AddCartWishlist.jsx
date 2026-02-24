@@ -40,7 +40,7 @@ export const AddCartWishlist = ({
   );
 };
 
-const CartWishlist = styled.button`
+const CartWishlist = styled.div`
   z-index: 20;
   border: none;
   outline: none;

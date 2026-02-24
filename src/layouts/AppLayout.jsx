@@ -2,20 +2,10 @@
 import { Footer } from "../components/globals/Footer"
 import { Header } from "../components/globals/Header"
 import { AppRouter } from "../router/AppRouter"
-import { useEffect } from 'react';
-import { useDispatch } from "react-redux";
-import { startChecking } from "../actions/authActions";
 import styled from "styled-components";
 
 
 export const AppLayout = () => {
-    
-    const dispatch = useDispatch();
-
-    useEffect(() => {
-      dispatch(startChecking());
-    }, [dispatch]);
-
 
   return (
     <LayoutApp>

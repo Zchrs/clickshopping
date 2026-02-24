@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { useDispatch } from "react-redux";
-import { startChecking } from "../actions/authActions";
 import styled from'styled-components';
 
 export const AuthLayout = () => {
@@ -17,7 +16,6 @@ export const AuthLayout = () => {
 
   useEffect(() => {
     i18n.changeLanguage(lang);
-    dispatch(startChecking());
   }, [i18n, lang, dispatch]);
 
   return (

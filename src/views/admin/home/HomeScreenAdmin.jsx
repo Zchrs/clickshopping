@@ -74,10 +74,10 @@ export const HomeScreenAdmin = () => {
           <BaseButton 
           handleClick={handleLoginAdmin} 
           classs={"button primary"} 
-          colorbtn={"var(--primary)"}
-          colortextbtnprimary={"var(--light)"}
-          colorbtnhoverprimary={"var(--primary-light)"}
-          colortextbtnhoverprimary={"var(--light)"}
+          $colorbtn={"var(--primary)"}
+          $colortextbtnprimary={"var(--light)"}
+          $colorbtnhoverprimary={"var(--primary-light)"}
+          $colortextbtnhoverprimary={"var(--light)"}
           textLabel={true} 
           label={t('auth.login')}
           />

@@ -230,10 +230,10 @@ export const CardProducts = ({
               img={true} 
               icon={"wallet"} 
               classs={'button primary'} 
-              colorbtn={"var(--bg-primary)"}
-              colortextbtnprimary={"var(--light)"}
-              colorbtnhoverprimary={"var(--bg-primary-tr)"}
-              colortextbtnhoverprimary={"white"}  
+              $colorbtn={"var(--bg-primary)"}
+              $colortextbtnprimary={"var(--light)"}
+              $colorbtnhoverprimary={"var(--bg-primary-tr)"}
+              $colortextbtnhoverprimary={"white"}  
               textLabel={true} 
               label={"Comprar"} />
           </div>)}

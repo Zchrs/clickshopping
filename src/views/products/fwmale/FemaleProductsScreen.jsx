@@ -4,7 +4,6 @@ import { fetchProducts, selectedProduct, setProduct } from "../../../actions/pro
 import { BreadCrumb, CardProducts, Empty, Pagination } from "../../../../index";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { startChecking } from "../../../actions/authActions";
 import { useTranslation } from "react-i18next";
 
 export const FemaleProductsScreen = () => {
@@ -45,7 +44,6 @@ export const FemaleProductsScreen = () => {
   }, [activeTab]);
   
   useEffect(() => {
-    dispatch(startChecking());
     i18n.changeLanguage(lang);
   }, [i18n, lang, dispatch]);
 

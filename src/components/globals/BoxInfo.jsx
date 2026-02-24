@@ -147,10 +147,10 @@ useEffect(() => {
               <BaseButton
                 label={t("auth.login")}
                 classs={"button primary"}
-                colorbtn={"var(--primary)"}
-                colortextbtnprimary={"var(--light)"}
-                colorbtnhoverprimary={"var(--bg-primary-tr)"}
-                colortextbtnhoverprimary={"var(--light)"}
+                $colorbtn={"var(--primary)"}
+                $colortextbtnprimary={"var(--light)"}
+                $colorbtnhoverprimary={"var(--bg-primary-tr)"}
+                $colortextbtnhoverprimary={"var(--light)"}
                 link={"auth/login"}
               />
             )}
@@ -166,19 +166,19 @@ useEffect(() => {
               <BaseButton
                 label={t("auth.login")}
                 classs={"button primary"}
-                colorbtn={"var(--primary)"}
-                colortextbtnprimary={"var(--light)"}
-                colorbtnhoverprimary={"var(--primary-light)"}
-                colortextbtnhoverprimary={"var(--light)"}
+                $colorbtn={"var(--primary)"}
+                $colortextbtnprimary={"var(--light)"}
+                $colorbtnhoverprimary={"var(--primary-semi)"}
+                $colortextbtnhoverprimary={"var(--light)"}
                 link={"auth/login"}
               />
               <BaseButton
                 label={t("auth.register")}
                 classs="button secondary"
-                colorbtn={"var(--secondary)"}
-                colorbtntextsecondary={"var(--tertiary)"}
-                colorbtnhoversecondary={"var(--secondary-semi)"}
-                hovercolorbtntextsecondary={"var(--light)"}
+                $colorbtn={"var(--secondary)"}
+                $colorbtntextsecondary={"var(--tertiary)"}
+                $colorbtnhoversecondary={"var(--secondary-semi)"}
+                $hovercolorbtntextsecondary={"var(--light)"}
                 link={"auth/register"}
               />
             </div>

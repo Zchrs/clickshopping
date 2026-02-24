@@ -6,8 +6,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { useTranslation } from "react-i18next";
 import { Comments, Pagination, CardProductsSmall } from "../../../index";
 import { getFile } from "../../reducers/globalReducer";
-import { startChecking } from "../../actions/authActions";
 import { useProductsSSE } from "../../hooks/useProductsSSE";
+import { Link } from "react-router-dom";
 
 import "../home/home.scss";
 import {
@@ -22,6 +22,8 @@ export const HomeScreen = () => {
   const [loading, setLoading] = useState(false);
   const lang = useSelector((state) => state.langUI.lang);
   const ratings = useSelector((state) => state.product.ratings);
+  const [featuredProduct, setFeaturedProduct] = useState(null);
+  const [otherProductId, setOtherProductId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
 
   const allProducts = useSelector((state) => state.product.productInfo);
@@ -50,28 +52,35 @@ export const HomeScreen = () => {
 
   useProductsSSE();
 
+  useEffect(() => {
+    fetch(import.meta.env.VITE_APP_POST_TURISTS_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ pathname: "/" }),
+    }).catch(() => {});
+  }, []);
+
 useEffect(() => {
   if (!Array.isArray(allProducts) || allProducts.length === 0) return;
 
-  setLaptopsImage((prev) => {
-    if (prev) return prev;
+  const laptop = allProducts.find(
+    (p) => p.category?.toLowerCase() === "audifonos"
+  );
 
-    const laptop = allProducts.find(
-      (p) => p.category?.toLowerCase() === "portatiles"
-    );
+  if (laptop) {
+    setFeaturedProduct(laptop);
+    setLaptopsImage(laptop.images?.[0]);
+  }
 
-    return laptop?.images?.[0] || null;
-  });
+  const other = allProducts.find(
+    (p) => p.category?.toLowerCase() === "variados"
+  );
 
-  setOthersImage((prev) => {
-    if (prev) return prev;
+  if (other) {
+    setOthersImage((prev) => prev || other.images?.[0] || null);
+    setOtherProductId((prev) => prev || other.id);
+  }
 
-    const other = allProducts.find(
-      (p) => p.category?.toLowerCase() === "variados"
-    );
-
-    return other?.images?.[0] || null;
-  });
 }, [allProducts]);
 
 
@@ -86,15 +95,24 @@ useEffect(() => {
           <div className="homescreen-header__contain-item">
             <img src={laptopsImage} alt="" />
             <div className="homescreen-titles">
-              <h2 className="homescreen__h2">{t("globals.takeLookLaptop")}</h2>
+              <h2 className="homescreen__h2">{t("globals.productOfMonth")}</h2>
               <p className="homescreen__p2">
                 {t("globals.takeLookTechTextLap")}
                 <strong className="homescreen__strong">
-                  <a className="homescreen-a" href="">
-                    {" "}
-                    {t("globals.readMore")}
-                  </a>
-                </strong>
+                  {!featuredProduct ? (
+  <span className="homescreen-loading">
+   {" "} Comprar ahora
+  </span>
+) : (
+  <Link
+    className="homescreen-a"
+    to={`/products/${featuredProduct.id}`}
+    onClick={() => dispatch(selectedProduct(featuredProduct))}
+  >
+    {" "} <strong>¡Comprar ahora!</strong>
+  </Link>
+)}
+              </strong>
               </p>
             </div>
           </div>
