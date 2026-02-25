@@ -88,7 +88,7 @@ function App() {
               <Route exact path="/*" element={<AppLayout />}>
                 <Route
                   exact
-                  path="categories/services"
+                  path="categories/fashion"
                   element={<ClothingScreen />}
                 />
                 <Route

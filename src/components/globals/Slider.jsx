@@ -68,8 +68,8 @@ const SliDer = styled.div`
 .slider-container {
     position: relative;
     display: grid;
-    place-content: center;
     // border: green 1px solid;
+    width: 100%;
     gap: 8px;
 
     button{
@@ -106,9 +106,10 @@ const SliDer = styled.div`
   .slider {
     position: relative;
     display: flex;
+    align-content: center;
     overflow: hidden;
     width: 100%; /* Cambiar el ancho del slider según tus necesidades */
-    height: 400px; /* Cambiar la altura del slider según tus necesidades */
+    height: 500px; /* Cambiar la altura del slider según tus necesidades */
   }
   
   .slide {
@@ -117,6 +118,8 @@ const SliDer = styled.div`
     width: 100%;
     height: 100%;
     background-size: cover;
+    place-content: center;
+
     transition: transform 0.5s ease-in-out;
 
     img{

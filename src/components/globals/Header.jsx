@@ -26,7 +26,7 @@ export const Header = () => {
     { route: "home", text: t("globals.home") },
     { route: "categories/books", text: t("globals.foods") },
     { route: "categories/technology", text: t("globals.technology") },
-    { route: "categories/services", text: t("globals.clothing") },
+    { route: "categories/fashion", text: t("globals.clothing") },
   ];
 
   return (

@@ -82,7 +82,7 @@ export const AppRouter = () => {
   return (
       <Routes>
         <Route exact path="/*" element={<HomeScreen />} />
-        <Route exact path="categories/services" element={<ClothingScreen />} />
+        <Route exact path="categories/fashion" element={<ClothingScreen />} />
         <Route exact path="categories/technology" element={<TechnologyScreen />} />
         <Route exact path="categories/books" element={<AlimentsScreen />} />
         <Route exact path="categories/grains" element={<GrainsScreen />} />

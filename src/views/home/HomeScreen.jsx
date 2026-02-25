@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-debugger */
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useTranslation } from "react-i18next";
 import { Comments, Pagination, CardProductsSmall } from "../../../index";
@@ -10,79 +10,71 @@ import { useProductsSSE } from "../../hooks/useProductsSSE";
 import { Link } from "react-router-dom";
 
 import "../home/home.scss";
-import {
-  fetchProducts,
-  selectedProduct,
-  setProduct,
-} from "../../actions/productActions";
+import { selectedProduct } from "../../actions/productActions";
 
 export const HomeScreen = () => {
   const dispatch = useDispatch();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
-  const lang = useSelector((state) => state.langUI.lang);
-  const ratings = useSelector((state) => state.product.ratings);
+
   const [featuredProduct, setFeaturedProduct] = useState(null);
-  const [otherProductId, setOtherProductId] = useState(null);
+  const [adapters, setAdapters] = useState(null);
+  const [otherProduct, setOtherProduct] = useState(null);
+
+  const [laptopsImage, setLaptopsImage] = useState(null);
+  const [adaptersImage, setAdaptersImage] = useState(null);
+  const [othersImage, setOthersImage] = useState(null);
+
   const [currentPage, setCurrentPage] = useState(1);
 
   const allProducts = useSelector((state) => state.product.productInfo);
+  const ratings = useSelector((state) => state.product.ratings);
+
   const rams = allProducts.filter((p) => p.category === "memorias ram");
+
   const hardDisks = allProducts.filter((p) => p.category === "discos duros");
   const motherBoards = allProducts.filter((p) => p.category === "motherboards");
-  const [laptopsImage, setLaptopsImage] = useState(null);
-  const [othersImage, setOthersImage] = useState(null);
 
   const itemsPerPage = 16;
-  const totalPages = Math.ceil(
-    rams.length / itemsPerPage ||
-      hardDisks.lenght / itemsPerPage ||
-      motherBoards.length / itemsPerPage,
-  );
+  const totalPages = Math.ceil(rams.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
+
   const paginatedRams = rams.slice(startIndex, startIndex + itemsPerPage);
-  const paginatedHardDisks = hardDisks.slice(
-    startIndex,
-    startIndex + itemsPerPage,
-  );
-  const paginatedMotherboards = motherBoards.slice(
-    startIndex,
-    startIndex + itemsPerPage,
-  );
+  const paginatedHardDisks = hardDisks.slice(startIndex, startIndex + itemsPerPage);
+  const paginatedMotherboards = motherBoards.slice(startIndex, startIndex + itemsPerPage);
 
   useProductsSSE();
 
   useEffect(() => {
-    fetch(import.meta.env.VITE_APP_POST_TURISTS_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ pathname: "/" }),
-    }).catch(() => {});
-  }, []);
+    if (!Array.isArray(allProducts) || allProducts.length === 0) return;
 
-useEffect(() => {
-  if (!Array.isArray(allProducts) || allProducts.length === 0) return;
+    const laptop = allProducts.find(
+      (p) => p.category?.toLowerCase() === "audifonos"
+    );
 
-  const laptop = allProducts.find(
-    (p) => p.category?.toLowerCase() === "audifonos"
-  );
+    const adapter = allProducts.find(
+      (p) => p.category?.toLowerCase() === "adaptadores"
+    );
 
-  if (laptop) {
-    setFeaturedProduct(laptop);
-    setLaptopsImage(laptop.images?.[0]);
-  }
+    const other = allProducts.find(
+      (p) => p.category?.toLowerCase() === "variados"
+    );
 
-  const other = allProducts.find(
-    (p) => p.category?.toLowerCase() === "variados"
-  );
+    if (laptop) {
+      setFeaturedProduct(laptop);
+      setLaptopsImage(laptop.images?.[0] || null);
+    }
 
-  if (other) {
-    setOthersImage((prev) => prev || other.images?.[0] || null);
-    setOtherProductId((prev) => prev || other.id);
-  }
+    if (adapter) {
+      setAdapters(adapter);
+      setAdaptersImage(adapter.images?.[0] || null);
+    }
 
-}, [allProducts]);
-
+    if (other) {
+      setOtherProduct(other);
+      setOthersImage(other.images?.[0] || null);
+    }
+  }, [allProducts]);
 
   const handleSetProductClick = (product) => {
     dispatch(selectedProduct(product));
@@ -92,218 +84,183 @@ useEffect(() => {
     <section className="homescreen">
       <header className="homescreen-header">
         <div className="homescreen-header__contain">
+
+          {/* PRODUCTO DESTACADO */}
           <div className="homescreen-header__contain-item">
             <img src={laptopsImage} alt="" />
             <div className="homescreen-titles">
-              <h2 className="homescreen__h2">{t("globals.productOfMonth")}</h2>
+              <h2 className="homescreen__h2">
+                {t("globals.productOfMonth")}
+              </h2>
               <p className="homescreen__p2">
                 {t("globals.takeLookTechTextLap")}
-                <strong className="homescreen__strong">
+                <strong className="homescreen__strong">{" "}
                   {!featuredProduct ? (
-  <span className="homescreen-loading">
-   {" "} Comprar ahora
-  </span>
-) : (
-  <Link
-    className="homescreen-a"
-    to={`/products/${featuredProduct.id}`}
-    onClick={() => dispatch(selectedProduct(featuredProduct))}
-  >
-    {" "} <strong>¡Comprar ahora!</strong>
-  </Link>
-)}
-              </strong>
+                    <span className="homescreen-loading">Comprar ahora</span>
+                  ) : (
+                    <Link
+                      className="homescreen-a"
+                      to={`/products/${featuredProduct.id}`}
+                      onClick={() =>
+                        dispatch(selectedProduct(featuredProduct))
+                      }
+                    >
+                     {" "} <strong>{t("globals.buyNow")}</strong>
+                    </Link>
+                  )}
+                </strong>
               </p>
             </div>
           </div>
+
+          {/* ADAPTADORES */}
           <div className="homescreen-header__contain-item1">
             <img
-              src={getFile("img/images/technology", `phones`, "jpeg")}
+              src={getFile("img", "estuches", "jpg")}
               alt=""
             />
             <div className="homescreen-titles-a">
-              <h2 className="homescreen__h3">{t("globals.takeLookTech")}</h2>
+              <h2 className="homescreen__h3">
+                {t("globals.covers")}
+              </h2>
               <p className="homescreen__p3">
-                {t("globals.takeLookTechText")}
+                {t("globals.casesText")}
                 <strong className="homescreen__strong">
-                  <a className="homescreen-a" href="">
-                    {" "}
-                    {t("globals.readMore")}
-                  </a>
+                  <Link className="homescreen-a" to="">
+                   {" "} {t("globals.coversLink")}
+                  </Link>
                 </strong>
               </p>
             </div>
           </div>
+
+          {/* VARIADOS */}
           <div className="homescreen-header__contain-item2">
             <img src={othersImage} alt="" />
             <div className="homescreen-titles-b">
-              <h2 className="homescreen__h4">{t("globals.takeLookGrain")}</h2>
+              <h2 className="homescreen__h4">
+                {t("globals.takeLookGrain")}
+              </h2>
               <p className="homescreen__p4">
-                {t("globals.takeLookGrainText")}
+                {t("globals.adapterText")}
                 <strong className="homescreen__strong">
-                  <a className="homescreen-a" href="">
-                    {" "}
-                    {t("globals.readMore")}
-                  </a>
+                  {!otherProduct ? (
+                    <span className="homescreen-loading">Comprar ahora</span>
+                  ) : (
+                    <Link
+                      className="homescreen-a"
+                      to={`/products/${otherProduct.id}`}
+                      onClick={() =>
+                        dispatch(selectedProduct(otherProduct))
+                      }
+                    >
+                     {" "} <strong>{t("globals.buyNow")}</strong>
+                    </Link>
+                  )}
                 </strong>
               </p>
             </div>
           </div>
+
+          {/* CANASTA */}
           <div className="homescreen-header__contain-item3">
-            <img src={getFile("img/images", `canasta-basica`, "jpg")} alt="" />
+            <img
+              src={getFile("img", "maquillaje", "jpg")}
+              alt=""
+            />
             <div className="homescreen-titles-b">
-              <h2 className="homescreen__h5">{t("globals.takeLookGrocery")}</h2>
+              <h2 className="homescreen__h5">
+                {t("globals.takeLookGrocery")}
+              </h2>
               <p className="homescreen__p5">
                 {t("globals.takeLookGroceryText")}
                 <strong className="homescreen__strong">
                   <a className="homescreen-a" href="">
-                    {" "}
-                    {t("globals.readMore")}
+                    {t("globals.make-up")}
                   </a>
                 </strong>
               </p>
             </div>
           </div>
+
         </div>
       </header>
+
+      {/* RAM */}
       <div className="homescreen__container">
-        <h1 className="homescreen__h1">{t("globals.buyCategory")}</h1>
         <h2>{t("products.ramMemory")}</h2>
         <div className="homescreen__container-contain">
-          {loading ? (
-            <p>{t("globals.emptyProducts")}</p>
-          ) : rams.length === 0 ? (
-            <p>{t("globals.emptyProducts")}</p>
-          ) : (
-            paginatedRams.map((itemL) => (
-              <CardProductsSmall
-                key={itemL.id}
-                productLink={`/products/${itemL.id}`}
-                addToWish={"addwishlist-red"}
-                 img={itemL.images?.[0]} // ✅ imagen principal
-                images={itemL.images} // ✅ PASAR EL ARRAY
-                sellingsText
-                sellings={t("globals.sellings")}
-                priceText
-                previousPrice={itemL.previousPrice}
-                onClick={() => handleSetProductClick(itemL)}
-                prodHover={() => handleSetProductClick(itemL)}
-                description={itemL.description}
-                title={itemL.title}
-                ratingss
-                ratings={ratings}
-                product_id={itemL.id}
-              />
-            ))
-          )}
-        </div>
-        {totalPages.length > itemsPerPage && (
-          <div>
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={setCurrentPage}
-              colorText="dark"
-              arrowPrev="button dark"
-              arrowNext="button dark"
+          {paginatedRams.map((item) => (
+            <CardProductsSmall
+              key={item.id}
+              productLink={`/products/${item.id}`}
+              img={item.images?.[0]}
+              images={item.images}
+              description={item.description}
+              title={item.title}
+              sellings={item.sellings}
+              previousPrice={item.previousPrice}
+              ratings={ratings}
+              addToCart
+              ratingss
+              product_id={item.id}
+              onClick={() => handleSetProductClick(item)}
             />
-          </div>
+          ))}
+        </div>
+
+        {totalPages > 1 && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+            colorText="dark"
+            arrowPrev="button dark"
+            arrowNext="button dark"
+          />
         )}
       </div>
+
+      {/* DISCOS */}
       <div className="homescreen__container">
         <h2>{t("products.hardDisks")}</h2>
         <div className="homescreen__container-contain">
-          {loading ? (
-            <p>{t("globals.emptyProducts")}</p>
-          ) : hardDisks.length === 0 ? (
-            <p>{t("globals.emptyProducts")}</p>
-          ) : (
-            paginatedHardDisks.map((itemC) => (
-              <CardProductsSmall
-                key={itemC.id}
-                productLink={`/products/${itemC.id}`}
-                onClick={() => handleSetProductClick(itemC)}
-                prodHover={() => handleSetProductClick(itemC)}
-                addToWish={"addwishlist-red"}
-                addTocart={"addcart-red"}
-                 img={itemC.images?.[0]}
-                sellingsText={true}
-                sellings={t("globals.sellings")}
-                priceText={true}
-                previousPrice={itemC.previousPrice}
-                productInfo={itemC}
-                jpg="true"
-                description={itemC.description}
-                title={itemC.title}
-                thumbnails={itemC.thumbnails}
-                products="ropa para niños"
-                ratingss={true}
-                ratings={ratings}
-                product_id={itemC.id}
-              />
-            ))
-          )}
-        </div>
-        {totalPages.length > itemsPerPage && (
-          <div>
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={setCurrentPage}
-              colorText="dark"
-              arrowPrev="button dark"
-              arrowNext="button dark"
+          {paginatedHardDisks.map((item) => (
+            <CardProductsSmall
+              key={item.id}
+              productLink={`/products/${item.id}`}
+              img={item.images?.[0]}
+              description={item.description}
+              title={item.title}
+              previousPrice={item.previousPrice}
+              ratings={ratings}
+              ratingss
+              product_id={item.id}
+              onClick={() => handleSetProductClick(item)}
             />
-          </div>
-        )}
+          ))}
+        </div>
       </div>
+
+      {/* MOTHERBOARDS */}
       <div className="homescreen__container">
         <h2>{t("products.motherBoards")}</h2>
         <div className="homescreen__container-contain">
-          {loading ? (
-            <p>{t("globals.emptyProducts")}</p>
-          ) : motherBoards.length === 0 ? (
-            <p>{t("globals.emptyProducts")}</p>
-          ) : (
-            paginatedMotherboards.map((itemCl) => (
-              <CardProductsSmall
-                key={itemCl.id}
-                productLink={`/products/${itemCl.id}`}
-                onClick={() => handleSetProductClick(itemCl)}
-                prodHover={() => handleSetProductClick(itemCl)}
-                addToWish={"addwishlist-red"}
-                addTocart={"addcart-red"}
-                 img={itemCl.images?.[0]}
-                thumbnails={itemCl.images}
-                sellingsText={true}
-                sellings={t("globals.sellings")}
-                priceText={true}
-                previousPrice={itemCl.previousPrice}
-                productInfo={itemCl}
-                jpg="true"
-                description={itemCl.description}
-                beforePrice={itemCl.previousPrice}
-                title={itemCl.name}
-                category={"Celulares"}
-                ratingss={true}
-                ratings={ratings}
-                product_id={itemCl.id}
-              />
-            ))
-          )}
-        </div>
-        {totalPages.length > itemsPerPage && (
-          <div>
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={setCurrentPage}
-              colorText="dark"
-              arrowPrev="button dark"
-              arrowNext="button dark"
+          {paginatedMotherboards.map((item) => (
+            <CardProductsSmall
+              key={item.id}
+              productLink={`/products/${item.id}`}
+              img={item.images?.[0]}
+              description={item.description}
+              title={item.name}
+              previousPrice={item.previousPrice}
+              ratings={ratings}
+              ratingss
+              product_id={item.id}
+              onClick={() => handleSetProductClick(item)}
             />
-          </div>
-        )}
+          ))}
+        </div>
       </div>
 
       <div className="homescreen__container">
