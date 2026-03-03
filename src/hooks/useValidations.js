@@ -31,12 +31,13 @@ export const useValidations = () => {
     previousPrice: useRef(null),
     district: useRef(null),
     category: useRef(null),
+    color: useRef(null),
     furnished: useRef(null),
     admon: useRef(null),
     role: useRef(null),
     description: useRef(null),
     bedRoom: useRef(null),
-    bathRoom: useRef(null),
+    stock: useRef(null),
     diningRoom: useRef(null),
     quantity: useRef(null),
     kitchen: useRef(null),
@@ -274,6 +275,9 @@ export const useValidations = () => {
     errors.category = validateField('category', form.category, null, {
       required: "Debes agregar una categoría"
     });
+    errors.color = validateField('color', form.color, null, {
+      required: "Debes agregar una categoría"
+    });
 
     errors.furnished = validateField('furnished', form.furnished, null, {
       required: "Debes especificar si el inmueble es amoblado"
@@ -291,7 +295,7 @@ export const useValidations = () => {
       required: "Debes seleccionar el número de habitaciones"
     });
 
-    errors.bathRoom = validateField('bathRoom', form.bathRoom, null, {
+    errors.stock = validateField('stock', form.stock, null, {
       required: "Debes seleccionar el número de baños"
     });
 
@@ -303,21 +307,6 @@ export const useValidations = () => {
       required: "Debes seleccionar el número de quantity"
     });
 
-    errors.kitchen = validateField('kitchen', form.kitchen, null, {
-      required: "Debes seleccionar el tipo de cocina"
-    });
-
-    errors.floor = validateField('floor', form.floor, null, {
-      required: "Debes seleccionar el tipo de piso"
-    });
-
-    errors.parking = validateField('parking', form.parking, null, {
-      required: "Debes seleccionar si hay parqueadero"
-    });
-
-    errors.stratum = validateField('stratum', form.stratum, null, {
-      required: "Debes seleccionar el estrato"
-    });
 
     errors.clothing = validateField('clothing', form.clothing, null, {
       required: "Debes seleccionar si tiene zona de lavado ropa"
@@ -461,6 +450,16 @@ export const useValidations = () => {
       required: "Debes ingresar la dirección"
     });
   }
+  if ('category' in form) {
+    errors.category = validateField('category', form.category, null, {
+      required: "Debes ingresar una categoría"
+    });
+  }
+  if ('color' in form) {
+    errors.color = validateField('color', form.color, null, {
+      required: "Debes ingresar uno o varios colores"
+    });
+  }
 
   if ('phone' in form) {
     errors.phone = validateField('phone', form.phone, val => regexPhone.test(val.trim()) && val.trim().length > 11, {
@@ -518,14 +517,9 @@ export const useValidations = () => {
     admon: "Debes especificar si el inmueble incluye administración",
     description: "Debes añadir una descripción",
     bedRoom: "Debes seleccionar el número de habitaciones",
-    bathRoom: "Debes seleccionar el número de baños",
+    stock: "Debes seleccionar el número de baños",
     diningRoom: "Debes seleccionar el número sala comedores comer",
     quantity: "Debes seleccionar el número de quantity",
-    kitchen: "Debes seleccionar el tipo de cocina",
-    floor: "Debes seleccionar el tipo de piso",
-    parking: "Debes seleccionar si hay parqueadero",
-    stratum: "Debes seleccionar el estrato",
-    clothing: "Debes seleccionar si tiene zona de lavado ropa",
     action: "Debes seleccionar una acción"
   };
 

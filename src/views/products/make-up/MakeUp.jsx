@@ -1,58 +1,54 @@
 /* eslint-disable no-unused-vars */
-
-import { fetchProducts, selectedProduct, setProduct } from "../../../actions/productActions";
-import { BreadCrumb, CardProducts, Empty, Pagination } from "../../../../index";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { fetchProducts, selectedProduct } from "../../../actions/productActions";
 import { useTranslation } from "react-i18next";
+import { useDispatch, useSelector } from "react-redux";
+import { CardProducts, Empty, BreadCrumb, Pagination } from "../../../../index";
 
-export const ClothingScreen = () => {
+export const MakeUp = () => {
+  const [activeTab, setActiveTab] = useState("pencilLips");
   const [showFeatures, setShowFeatures] = useState(true);
   const dispatch = useDispatch();
-  const [loading, setLoading] = useState(false);
   const ratings = useSelector((state) => state.product.ratings);
   const lang = useSelector((state) => state.langUI.lang);
   const allProducts = useSelector((state) => state.product.productInfo || []);
-  const { t, i18n } = useTranslation();
   const [currentPage, setCurrentPage] = useState(1);
-  const [activeTab, setActiveTab] = useState("womanJeans");
+
+  const { t, i18n } = useTranslation();
   const itemsPerPage = 24;
-  
+
   /* ✅ FILTROS */
-  const womanJeans = allProducts.filter(p => p.category === "jeans dama");
-  const manJeans = allProducts.filter(p => p.category === "jeans hombre");
-  const shirts = allProducts.filter(p => p.category === "camisas");
-  const womanShirts = allProducts.filter(p => p.category === "blusas dama");
-  const childs = allProducts.filter(p => p.category === "niños");
-  const all = allProducts.filter(p => p.category === "accesorios");
+  const pencilLips = allProducts.filter(p => p.category === "labiales");
+  const watercolors = allProducts.filter(p => p.category === "Acuarelas");
+  const bases = allProducts.filter(p => p.category === "bases");
+  const all = allProducts.filter(p => p.category === "todo");
 
   const productsByTab = {
-    womanJeans,
-    manJeans,
+    pencilLips,
+    watercolors,
+    bases,
     all,
   };
-  
+
   const activeProducts = productsByTab[activeTab] || [];
-  
-  // Productos
+
   /* ✅ PAGINACIÓN DINÁMICA */
   const totalPages = Math.ceil(activeProducts.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedProducts = activeProducts.slice(startIndex, startIndex + itemsPerPage);
 
-
-    /* ✅ RESET DE PAGINACIÓN AL CAMBIAR TAB */
+  /* ✅ RESET DE PAGINACIÓN AL CAMBIAR TAB */
   useEffect(() => {
     setCurrentPage(1);
   }, [activeTab]);
-  
+
   useEffect(() => {
     i18n.changeLanguage(lang);
   }, [i18n, lang, dispatch]);
 
-useEffect(() => {
-  dispatch(fetchProducts());
-}, [dispatch]);
+  useEffect(() => {
+    dispatch(fetchProducts()); // 👈 IMPORTANTE
+  }, [dispatch]);
 
   const handleSetProductClick = (product) => {
     dispatch(selectedProduct(product));
@@ -69,20 +65,17 @@ useEffect(() => {
       {/* 🔘 TABS */}
       <div className="productscreen-features">
         <div className={`productscreen-features-menu ${showFeatures ? "show" : "hide"}`}>
-          <button className={activeTab === "womanJeans" ? "active" : ""} onClick={() => setActiveTab("womanJeans")}>
-            Jeans Dama
+          <button className={activeTab === "pencilLips" ? "active" : ""} onClick={() => setActiveTab("pencilLips")}>
+            Labiales
           </button>
-          <button className={activeTab === "manJeans" ? "active" : ""} onClick={() => setActiveTab("manJeans")}>
-            Jeans Hombre
+          <button className={activeTab === "watercolors" ? "active" : ""} onClick={() => setActiveTab("watercolors")}>
+            Acuarelas
           </button>
-          <button className={activeTab === "womanShirts" ? "active" : ""} onClick={() => setActiveTab("womanShirts")}>
-            Blusas y camisetas Dama 
-          </button>
-          <button className={activeTab === "shirts" ? "active" : ""} onClick={() => setActiveTab("shirts")}>
-            Camisas y camisetas
+          <button className={activeTab === "bases" ? "active" : ""} onClick={() => setActiveTab("bases")}>
+            Bases
           </button>
           <button className={activeTab === "all" ? "active" : ""} onClick={() => setActiveTab("all")}>
-            Todos
+            Todo
           </button>
           <div
             className={`productscreen-features-menu-btn ${showFeatures ? "showBtn" : "hideBtn"}`}
@@ -97,10 +90,9 @@ useEffect(() => {
       <div className="productscreen-container">
         <div className="productscreen-contain">
           <h2 className="h2-light">
-            {activeTab === "womanJeans" && "Jeans Dama"}
-            {activeTab === "manJeans" && "Jeans Hombre"}
-            {activeTab === "womanShirts" && "Blusas y Camisetas Dama"}
-            {activeTab === "shirts" && "Camisas y Camisetas Hombre"}
+            {activeTab === "pencilLips" && "Labiales"}
+            {activeTab === "watercolors" && "Acuarelas"}
+            {activeTab === "bases" && "Bases"}
             {activeTab === "all" && "Todo"}
           </h2>
 
@@ -117,14 +109,14 @@ useEffect(() => {
                   jpg
                   img={itemL.images?.[0]?.img_url}
                   images={itemL.images}
-                  price={itemL.previousPrice}
                   previousPrice={itemL.price}
+                  price={itemL.previousPrice}
                   onClick={() => handleSetProductClick(itemL)}
                   prodHover={() => handleSetProductClick(itemL)}
                   member="10% de descuento para miembros premium"
                   previuosPrice={itemL.previousPrice}
-                  quantity={itemL.quantity}
                   description={itemL.description}
+                  quantity={itemL.quantity}
                   title={itemL.title}
                   ratingss
                   ratings={ratings}
@@ -151,3 +143,4 @@ useEffect(() => {
     </section>
   );
 };
+

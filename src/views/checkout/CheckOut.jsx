@@ -54,7 +54,11 @@ const handlePay = async () => {
     Swal.fire({
       icon: "success",
       title: "Pedido creado",
-      text: res.data.message || "Pedido pendiente de aprobación",
+      text: res.data.message || `
+      Pedido pendiente de aprobación, por motivos de 
+      seguridad, ve a la sección "Pedidos" y envía 
+      el comprobante de pago para proceder con el envío.
+      `,
         customClass: {
           popup: 'swal-custom-popup',
           title: 'custom-title',
@@ -88,10 +92,10 @@ const handlePay = async () => {
         <BaseButton
           textLabel
           classs={"button primary"}
-          colorbtn={"var(--bg-primary)"}
-          colortextbtnprimary={"var(--light)"}
-          colorbtnhoverprimary={"var(--bg-primary-tr)"}
-          colortextbtnhoverprimary={"white"}
+          $colorbtn={"var(--bg-primary)"}
+          $colortextbtnprimary={"var(--light)"}
+          $colorbtnhoverprimary={"var(--bg-primary-tr)"}
+          $colortextbtnhoverprimary={"white"}
           label="Volver al carrito"
           handleClick={() => navigate("/dashboard/my-cart")}
         />
@@ -170,10 +174,10 @@ const handlePay = async () => {
           textLabel
           disabled={paying}
           classs={"button primary"}
-          colorbtn={"var(--bg-primary)"}
-          colortextbtnprimary={"var(--light)"}
-          colorbtnhoverprimary={"var(--bg-primary-tr)"}
-          colortextbtnhoverprimary={"white"}
+          $colorbtn={"var(--bg-primary)"}
+          $colortextbtnprimary={"var(--light)"}
+          $colorbtnhoverprimary={"var(--bg-primary-tr)"}
+          $colortextbtnhoverprimary={"white"}
           handleClick={handlePay}
         />
 

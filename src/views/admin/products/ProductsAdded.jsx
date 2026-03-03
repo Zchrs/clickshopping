@@ -138,8 +138,8 @@ useProductsSSE();
                                   discount="10%"
                                   uptBtn={true}
                                   delBtn={true}
-                                  onUpdate={() => handleUpdate(item)}
-                                  onDelete={() => deleteProduct(item)}
+                                  onUpdate={() => handleUpdate(item.id)}
+                                  onDelete={() => deleteProduct(item.id)}
                                   classs={"productcard background"}
                               />
                           ))

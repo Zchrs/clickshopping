@@ -7,12 +7,12 @@ import { BaseButton } from "../../../../index";
 import { fetchOrders } from "../../../actions/orderActions";
 import { useDispatch, useSelector } from "react-redux";
 
-export const OrdersPending = () => {
+export const PendingSend = () => {
   const allOrders = useSelector((state) => state.order.orderInfo || []);
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
 
-  const pendingOrders = allOrders.filter(o => o.status === "pending aproval");
+  const pendingOrders = allOrders.filter(o => o.status === "pending send");
 
   const handleApprove = async (orderId) => {
     const result = await Swal.fire({
@@ -40,9 +40,9 @@ export const OrdersPending = () => {
         didOpen: () => Swal.showLoading(),
       });
 
-      await axios.put(`${import.meta.env.VITE_APP_API_APPROVE_ORDER_URL}/${orderId}`);
+      await axios.put(`${import.meta.env.VITE_APP_API_APPROVE_SEND_ORDER_URL}/${orderId}`);
 
-      Swal.fire("Aprobado", "El pedido fue aprobado correctamente", "success");
+      Swal.fire("¡Enviado exitosamente!", "El pedido fue aprobado correctamente", "success");
       dispatch(fetchOrders());
     } catch (error) {
       Swal.fire(
@@ -57,35 +57,6 @@ export const OrdersPending = () => {
   useEffect(() => {
     dispatch(fetchOrders()).finally(() => setLoading(false));
   }, []);
-
-  useEffect(() => {
-  const eventSource = new EventSource(
-    `${import.meta.env.VITE_APP_API_URL}/cart/stream`
-  );
-
-  eventSource.addEventListener("order-proof", (event) => {
-    const data = JSON.parse(event.data);
-
-    Swal.fire({
-      icon: "info",
-      title: "Nuevo comprobante recibido",
-      text: `Pedido #${data.orderId} envió comprobante`,
-      timer: 3000,
-      showConfirmButton: false,
-    });
-
-    // 🔥 Actualizar pedidos automáticamente
-    dispatch(fetchOrders());
-  });
-
-  eventSource.onerror = () => {
-    eventSource.close();
-  };
-
-  return () => {
-    eventSource.close();
-  };
-}, []);
 
   if (loading) {
     return (
@@ -113,38 +84,11 @@ export const OrdersPending = () => {
                 <p><strong>Total:</strong> {formatPrice(order.total)}</p>
                 <p><strong>Fecha:</strong> {new Date(order.created_at).toLocaleString()}</p>
               
- <p><strong>Estado: </strong>{order.status}</p>
-  <strong>Comprobante:</strong>
-  {order.img_url ? (
-    <div className="orders-proof-image">
-      <img
-        src={order.img_url}
-        alt={`Comprobante pedido ${order.id}`}
-        style={{
-          width: "200px",
-          marginTop: "10px",
-          borderRadius: "8px",
-          cursor: "pointer"
-        }}
-        onClick={() =>
-          Swal.fire({
-            imageUrl: order.img_url,
-            imageAlt: "Comprobante",
-            showConfirmButton: false,
-            showCloseButton: true,
-          })
-        }
-      />
-    </div>
-  ) : (
-    <p style={{ marginTop: "5px", color: "#888" }}>
-      Sin comprobante aún
-    </p>
-  )}
+ <p><strong>Pendiente: </strong>{order.status}</p>
               <div className="orders-card-actions">
                 <BaseButton
                   textLabel
-                  label="Aprobar"
+                  label="Enviado"
                   icon="check"
                   classs={"button primary"}
                   $colorbtn={"var(--bg-primary)"}
@@ -155,7 +99,7 @@ export const OrdersPending = () => {
                 />
                 <BaseButton
                   textLabel
-                  label="Rechazar"
+                  label="Cancelar envío"
                   icon="check"
                   classs={"button primary"}
                   $colorbtn={"var(--secondary)"}

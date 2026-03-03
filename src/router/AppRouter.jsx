@@ -31,6 +31,8 @@ import {
   ProductsDeleted,
   FemaleProductsScreen,
   WishListScreen,
+  Covers,
+  MakeUp,
 } from "../views/index";
 
 import { 
@@ -90,8 +92,18 @@ export const AppRouter = () => {
         <Route exact path="categories/fruits" element={<FruitsScreen />} />
                         <Route
                           exact
-                          path="categories/female"
-                          element={<FemaleProductsScreen />}
+                          path="categories/vetetables"
+                          element={<VegetablesScreen />}
+                        />
+                        <Route
+                          exact
+                          path="categories/covers"
+                          element={<Covers />}
+                        />
+                        <Route
+                          exact
+                          path="categories/make-up"
+                          element={<MakeUp />}
                         />
       </Routes>
   );

@@ -425,10 +425,10 @@ export const UserCartScreen = () => {
               label={`Pagar (${total})`}
               icon={"pay"}
               classs={"button primary"}
-              colorbtn={"var(--bg-primary)"}
-              colortextbtnprimary={"var(--light)"}
-              colorbtnhoverprimary={"var(--bg-primary-tr)"}
-              colortextbtnhoverprimary={"white"}
+              $colorbtn={"var(--bg-primary)"}
+              $colortextbtnprimary={"var(--light)"}
+              $colorbtnhoverprimary={"var(--bg-primary-tr)"}
+              $colortextbtnhoverprimary={"white"}
               disabled={paying || !selectedIds.length}
               handleClick={handleCheckoutClick}
             />

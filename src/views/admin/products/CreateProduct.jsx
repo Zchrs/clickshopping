@@ -18,6 +18,8 @@ export const CreateProduct = () => {
     price: "",
     previousPrice: "",
     category: "",
+    color: "",
+    stock: "",
     quantity: "",
     description: "",
     img_url: [],
@@ -124,10 +126,36 @@ export const CreateProduct = () => {
           </div>
           <div>
             <BaseInput
+              id="color"
+              name="color"
+              classs={"inputs normal"}
+              placeholder="Colores"
+              inputRef={formRefs.color}
+              value={form.color}
+              onBlur={handleBlur}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div>
+            <BaseInput
+              id="stock"
+              name="stock"
+              classs={"inputs normal"}
+              placeholder="Cantidad de colores"
+              inputRef={formRefs.stock}
+              value={form.stock}
+              onBlur={handleBlur}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div>
+            <BaseInput
               id="quantity"
               name="quantity"
               classs={"inputs normal"}
-              placeholder="Cantidad"
+              placeholder="Cantidad total de producto"
               inputRef={formRefs.quantity}
               value={form.quantity}
               onBlur={handleBlur}

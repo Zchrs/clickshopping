@@ -296,6 +296,10 @@ const ButtonBase = styled.div`
       .button__a {
         cursor: not-allowed;
         background: gray;
+        color: var(--light);
+        &:hover{
+          background: inherit;
+        }
       }
     }
   }

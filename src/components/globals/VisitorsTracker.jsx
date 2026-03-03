@@ -44,7 +44,7 @@ useEffect(() => {
   // Obtener estadísticas del backend
   const fetchStatsFromBackend = async () => {
     try {
-      const url = import.meta.env.VITE_APP_ADMIN_GET_TRAFFIC_URL;
+      const url = import.meta.env.VITE_APP_ADMIN_GET_TURISTS_URL;
       console.log("[VisitorsTracker] Intentando GET →", url);
 
       const res = await fetch(`${url}?pathname=${encodeURIComponent(browserLocation.pathname)}`);

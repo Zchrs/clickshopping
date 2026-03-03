@@ -21,6 +21,8 @@ export const AlimentsScreen = () => {
   /* ✅ FILTROS */
   const booksRecent = allProducts.filter(p => p.category === "recientes");
   const genre = allProducts.filter(p => p.category === "genero");
+  const news = allProducts.filter(p => p.category === "nuevos");
+  const used = allProducts.filter(p => p.category === "usados");
   const all = allProducts.filter(p => p.category === "accesorios");
 
   const productsByTab = {
@@ -72,6 +74,12 @@ useEffect(() => {
           <button className={activeTab === "genre" ? "active" : ""} onClick={() => setActiveTab("genre")}>
             Género
           </button>
+          <button className={activeTab === "news" ? "active" : ""} onClick={() => setActiveTab("news")}>
+            Nuevos
+          </button>
+          <button className={activeTab === "news" ? "active" : ""} onClick={() => setActiveTab("used")}>
+            Usados
+          </button>
           <button className={activeTab === "all" ? "active" : ""} onClick={() => setActiveTab("all")}>
             Todos
           </button>
@@ -90,7 +98,8 @@ useEffect(() => {
           <h2 className="h2-light">
             {activeTab === "booksRecent" && "Agregados recientemente"}
             {activeTab === "genre" && "Género"}
-            {activeTab === "all" && "Todos"}
+            {activeTab === "news" && "Nuevos"}
+            {activeTab === "used" && "Usados"}
           </h2>
 
           <div className="productscreen-cards">

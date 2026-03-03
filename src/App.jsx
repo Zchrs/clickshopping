@@ -32,6 +32,8 @@ import {
   ProductsDeleted,
   FemaleProductsScreen,
   WishListScreen,
+  MakeUp,
+  Covers,
 } from "./views/index";
 import {
   ProductsScreen,
@@ -113,8 +115,13 @@ function App() {
                 />
                 <Route
                   exact
-                  path="categories/fruits"
-                  element={<FruitsScreen />}
+                  path="categories/covers"
+                  element={<Covers />}
+                />
+                <Route
+                  exact
+                  path="categories/make-up"
+                  element={<MakeUp />}
                 />
                 <Route
                   exact

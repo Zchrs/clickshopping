@@ -17,6 +17,11 @@ export * from './products/aliments/vegetables/VegetablesScreen';
 export * from './products/clothing/ClothingScreen';
 export * from './products/technology/TechnologySxreen';
 export * from './products/fwmale/FemaleProductsScreen';
+export * from './products/covers/Covers';
+export * from './products/make-up/MakeUp';
+
+// Checkout
+export * from './checkout/CheckOut';
 
 export * from '../components/globals/DetailProductScreen';
 export * from '../components/globals/CardProductsSmall';

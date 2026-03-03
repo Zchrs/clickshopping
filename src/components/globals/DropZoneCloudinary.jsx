@@ -54,44 +54,63 @@ export const DropZoneCloudinary = ({ id, setImage, name, paymentProof }) => {
     setErrorMessage("");
   };
 
-  const uploadToCloudinary = async () => {
-    if (!file) return;
 
-    setUploadStatus("uploading");
-    setUploadProgress(0);
+const uploadImage = async () => {
+  if (!file) return;
 
-    try {
-      const formData = new FormData();
-      formData.append("file", file);
+  setUploadStatus("uploading");
+  setUploadProgress(0);
+
+  try {
+    const formData = new FormData();
+    formData.append("image", file);
+
+    // 🧠 Detecta entorno
+    const isProduction = import.meta.env.PROD;
+
+    const url = isProduction
+      // 🚀 Producción → Cloudinary
+      ? `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload`
+      // 🧪 Desarrollo → Backend local
+      : import.meta.env.VITE_APP_API_UPDLAD_IMAGE_URL;
+
+    // Solo Cloudinary necesita upload_preset
+    if (isProduction) {
       formData.append(
         "upload_preset",
         import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET
       );
-
-      const res = await axios.post(
-        `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload`,
-        formData,
-        {
-          onUploadProgress: (e) => {
-            const percent = Math.round((e.loaded * 100) / e.total);
-            setUploadProgress(percent);
-          },
-        }
-      );
-
-      const imageData = {
-        url: res.data.secure_url,
-        public_id: res.data.public_id,
-      };
-
-      setImage(imageData);
-      setUploadStatus("success");
-    } catch (error) {
-      console.error(error);
-      setUploadStatus("error");
-      setErrorMessage("Error al subir imagen");
     }
-  };
+
+    const res = await axios.post(url, formData, {
+      headers: !isProduction
+        ? { "Content-Type": "multipart/form-data" }
+        : undefined,
+      onUploadProgress: (e) => {
+        const percent = Math.round((e.loaded * 100) / e.total);
+        setUploadProgress(percent);
+      },
+    });
+
+    const imageData = isProduction
+      ? {
+          url: res.data.secure_url,
+          public_id: res.data.public_id,
+        }
+      : {
+            url: res.data.imageUrl,
+  public_id: null,
+  local: true,
+        };
+
+    setImage(imageData);
+    setUploadStatus("success");
+  } catch (error) {
+    console.error(error);
+    setUploadStatus("error");
+    setErrorMessage("Error al subir imagen");
+  }
+};
 
   const triggerFileInput = () => {
     fileInputRef.current?.click();
@@ -178,19 +197,26 @@ export const DropZoneCloudinary = ({ id, setImage, name, paymentProof }) => {
         </div>
 
         {/* ✅ BOTÓN FUERA DEL DROPZONE */}
-{  paymentProof &&      <BaseButton
-          textLabel
-          label="Enviar comprobante de pago"
-          icon="check"
-          disabled={!file || uploadStatus === "uploading"}
-          onClick={uploadToCloudinary}
-          classs={"button primary"}
-          colorbtn={"var(--primary)"}
-          colortextbtnprimary={"var(--light)"}
-          colorbtnhoverprimary={"var(--primary-semi)"}
-          colortextbtnhoverprimary={"white"}
-        />}
+
       </div>
+       {paymentProof && (
+    <div
+      onClick={(e) => e.stopPropagation()} // 🔥 CLAVE
+    >
+      <BaseButton
+        type="button" // 🔥 CLAVE
+        textLabel={true}
+        label="Cargar imagen"
+        disabled={!file || uploadStatus === "uploading"}
+        handleClick={uploadImage}
+        classs={"button primary"}
+        $colorbtn={"var(--primary)"}
+        $colortextbtnprimary={"var(--light)"}
+        $colorbtnhoverprimary={"var(--primary-semi)"}
+        $colortextbtnhoverprimary={"white"}
+      />
+    </div>
+  )}
     </DropzoneWrapper>
   );
 };
@@ -312,4 +338,5 @@ gap: 10px;
     font-size: 13px;
     color: #c62828;
   }
+
 `;

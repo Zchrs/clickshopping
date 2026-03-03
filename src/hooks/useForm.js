@@ -26,6 +26,8 @@ export const initialForm = {
   price: "",
   previousPrice: "",
   category: "",
+  color: "",
+  stock: "",
   quantity: "",
   description: "",
   img_url: [],
@@ -303,6 +305,8 @@ const handlePhoneChange = (e) => {
       price: form.price,
       previousPrice: form.previousPrice,
       category: form.category,
+      color: form.color,
+      stock: form.stock,
       quantity: form.quantity,
       description: form.description,
       img_url: form.img_url// Asumiendo que img_url es un array de objetos con una propiedad 'url'
@@ -389,6 +393,10 @@ const handlePhoneChange = (e) => {
 };
 
   const deleteProduct = async (id) => {
+        if (!id || typeof id === "object") {
+        console.error("❌ deleteProduct recibió algo inválido:", id);
+        return;
+    }
     try {
         const result = await Swal.fire({
             title: 'Vas a eliminar un producto',

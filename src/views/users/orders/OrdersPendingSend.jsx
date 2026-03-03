@@ -1,18 +1,18 @@
 /* eslint-disable no-unused-vars */
 import { useEffect, useState } from "react";
-import Swal from "sweetalert2";
-import axios from "axios";
-import { formatPrice } from "../../../../globalActions";
+import { formatPrice, getFile } from "../../../../globalActions";
 import { BaseButton } from "../../../../index";
 import { fetchUserOrders } from "../../../actions/orderActions";
 import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+import styled from "styled-components";
 
 export const OrdersPendingSend = () => {
   const allOrders = useSelector((state) => state.order.orderInfo || []);
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
 
-  const pendingOrders = allOrders.filter(o => o.status === "pending");
+  const pendingOrders = allOrders.filter(o => o.status === "pending send");
 
   useEffect(() => {
     dispatch(fetchUserOrders()).finally(() => setLoading(false));
@@ -58,6 +58,18 @@ export const OrdersPendingSend = () => {
                 <p><strong>Total:</strong> {formatPrice(order.total)}</p>
                 <p><strong>Fecha:</strong> {new Date(order.created_at).toLocaleString()}</p>
               </div>
+              <LinK>
+<a
+  href={`https://wa.me/573173595203?text=${encodeURIComponent(
+    `Hola, soy ${order.name || order.user?.name} ${order.lastname || order.user?.lastname} tengo un pedido pendiente (#${order.id}) y necesito ayuda.`
+  )}`}
+  target="_blank"
+  rel="noopener noreferrer"
+>
+  <img src={getFile("svg", "whatsapp-logo", "svg")} alt="WhatsApp" />
+  ¿24 horas y aún pendiente? Escríbenos ahora y juntos lo resolveremos.
+</a>
+              </LinK>
               </div>
             </div>
           ))}
@@ -66,3 +78,20 @@ export const OrdersPendingSend = () => {
     </section>
   );
 };
+
+const LinK = styled.div`
+  a{
+    display: flex;
+    color: var(--dark);
+    align-items: center;
+    width: 100%;
+    height: fit-content;
+    gap: 5px;
+    &:hover{
+      color: var(--primary);
+    }
+  }
+  img{
+    width: 40px;
+  }
+`

@@ -4,6 +4,7 @@ import { OrdersComplete } from "./OrdersComplete";
 import { OrdersPending } from "./OrdersPending";
 import { OrdersCancelled } from "./OrdersCancelled";
 import styled from "styled-components";
+import { PendingSend } from "./PendingSend";
 
 export const PurchasesScreen = () => {
   return (
@@ -13,14 +14,17 @@ export const PurchasesScreen = () => {
       </header>
       <aside className="productsscreen-aside">
         <Tabs
-          defaultActiveKey="pendingsOrders"
+          defaultActiveKey="pendingAprove"
           id="fill-tab-example"
           className="productsscreen-tabs"
           fill>
-                      <Tab eventKey="pendingsOrders" title="Pendientes">
+            <Tab eventKey="pendingAprove" title="Pendientes de aprobación">
             <OrdersPending />
           </Tab>
-          <Tab eventKey="completedOrders" title="Completados">
+          <Tab eventKey="pendingSend" title="Pendientes de envío">
+            <PendingSend />
+          </Tab>
+          <Tab eventKey="completedOrders" title="Completados y enviados">
             <OrdersComplete />
           </Tab>
           <Tab eventKey="cancelledOrders" title="Cancelados">

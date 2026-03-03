@@ -88,6 +88,7 @@ export * from './src/views/admin/users/UserVerifications'
  export * from './src/components/globals/Recovery'
  export * from './src/components/globals/HomeRecovery'
  export * from './src/components/globals/RecoveryPassword'
+ export * from './src/components/globals/VideoModal'
 
  
 
