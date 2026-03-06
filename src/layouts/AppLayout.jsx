@@ -1,6 +1,7 @@
 
 import { Footer } from "../components/globals/Footer"
 import { Header } from "../components/globals/Header"
+import { VideoModal } from "../components/globals/VideoModal";
 import { AppRouter } from "../router/AppRouter"
 import styled from "styled-components";
 
@@ -30,6 +31,7 @@ export const AppLayout = () => {
         <div id='swiper-container'>
         </div>
         </section>
+        <VideoModal videoSrc="pub3"/>
     </LayoutApp>
   )
 }

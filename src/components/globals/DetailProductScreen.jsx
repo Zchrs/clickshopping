@@ -27,11 +27,12 @@ export const DetailProductScreen = ({
   const showLocation = useLocation();
   const product = useSelector((state) => state.product.selectedProduct);
   const productHover = useSelector((state) => state.product.selectedProduct);
-    const [selectedIds, setSelectedIds] = useState([]);
-    const [cartItems, setCartItems] = useState([]);
   const ratings = useSelector((state) => state.product.ratings);
   const user = useSelector((state) => state.auth.user);
   const { formRefs, validateForm } = useValidations();
+    const [guestUser, setGuestUser] = useState(null);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const allProducts = useSelector((state) => state.product.productInfo);
 const productFromStore = useSelector(
@@ -39,15 +40,14 @@ const productFromStore = useSelector(
 );
 
 
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-
   const initialForm = {
     user_id: "",
     product_id: "",
     price: "",
     quantity: "",
   };
+
+  
 
   // console.log(product)
   useEffect(() => {
@@ -63,6 +63,38 @@ const productFromStore = useSelector(
     dispatch(selectedProduct(foundProduct));
   }
 }, [id, allProducts]);
+
+useEffect(() => {
+  if (!user) {
+    try {
+      const guestData = localStorage.getItem("guestUser");
+      console.log("guestData raw:", guestData);
+      
+      if (guestData) {
+        const parsed = JSON.parse(guestData);
+        console.log("guestData parsed:", parsed);
+        setGuestUser(parsed);
+      } else {
+        const guestId = localStorage.getItem("guest_id");
+        if (guestId) {
+          const newGuestUser = {
+            id: guestId,
+            name: "Invitado",
+            role: "guest",
+            guest: true
+          };
+          localStorage.setItem("guestUser", JSON.stringify(newGuestUser));
+          setGuestUser(newGuestUser);
+        }
+      }
+    } catch (error) {
+      console.error("Error al parsear guestUser de localStorage:", error);
+      localStorage.removeItem("guestUser");
+    }
+  } else {
+    setGuestUser(null);
+  }
+}, [user]);
 
   const {
     form,
@@ -95,44 +127,61 @@ const productFromStore = useSelector(
   };
 
 const handleCheckoutClick = () => {
-  if (!user) {
-    Swal.fire({
-      title: "Regístrate",
-      text: "Debes ser cliente registrado para comprar",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Quiero registrarme",
-      cancelButtonText: "Volver",
-      background: "#f0f0f0",
-      customClass: {
-          popup: "swal-custom-popup",
-          title: "custom-title",
-          content: "custom-content",
-          confirmButton: "swal-confirm-btn",
-          cancelButton: "swal-cancel-btn",
-        },
-    }).then((result) => {
-      if (result.isConfirmed) navigate("/auth/register");
+
+  const currentProduct = product || productFromStore;
+
+  if (!currentProduct) {
+    console.log("Producto aún no cargado");
+    return;
+  }
+
+
+  const checkoutData = {
+    guest: !user,
+    user: user || guestUser.id,
+    products: [
+      {
+        product_id: currentProduct.id,
+        name: currentProduct.name,
+        price: currentProduct.previousPrice,
+        quantity: 1,
+        img: currentProduct.images
+      }
+    ]
+  };
+
+    console.log(currentProduct, "desde currentproduct detail products")
+    debugger
+  localStorage.setItem("checkout_data", JSON.stringify(checkoutData));
+
+  if (user) {
+    navigate(`/products/${currentProduct.id}/checkout`, {
+      state: checkoutData
     });
     return;
   }
 
-navigate("checkout", {
-  state: {
-    products: [
-      {
-        product_id: product.id,
-        name: product.name,
-        price: product.price,
-        quantity: 1,
-        img: product.images.img_url, // ✅ string directo
-      },
-    ],
-  },
-});
+  Swal.fire({
+    title: "Compra como invitado",
+    text: "Estás comprando como usuario invitado.",
+    icon: "info",
+    confirmButtonText: "Continuar",
+    showCancelButton: true,
+    customClass: {
+      popup: "swal-custom-popup",
+      title: "custom-title",
+      content: "custom-content",
+      confirmButton: "swal-confirm-btn",
+      cancelButton: "swal-cancel-btn",
+    },
+  }).then((result) => {
+    if (result.isConfirmed) {
+      navigate(`/products/${currentProduct.id}/checkout`, {
+        state: checkoutData
+      });
+    }
+  });
 };
-
-
   const handleMouseEnter = () => {
     if (user) {
       handleSetProductInfo({ user_id, product_id, price, quantity });
@@ -145,32 +194,114 @@ navigate("checkout", {
     }
   };
 
-  const handleAddToCart = (e) => {
-    if (user) {
-      handleSubmitAddCart(e);
-    } else {
-      Swal.fire({
-        title: "Aún no eres nuestro cliente",
-        text: "Regístrate para agregar productos al carrito.",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonText: "Registrarme",
-        cancelButtonText: "Cancelar",
-        background: "#f0f0f0",
-        customClass: {
-          popup: "swal-custom-popup",
-          title: "custom-title",
-          content: "custom-content",
-          confirmButton: "swal-confirm-btn",
-          cancelButton: "swal-cancel-btn",
-        },
-      }).then((result) => {
-        if (result.isConfirmed) {
-          navigate("/auth/register");
-        }
-      });
-    }
+const handleAddToCart = (e) => {
+  e.preventDefault();
+
+  const currentProduct = product || productFromStore;
+
+  if (!currentProduct) {
+    console.log("Producto aún no cargado");
+    return;
+  }
+
+  const productData = {
+    product_id: currentProduct.id,
+    name: currentProduct.name,
+    price: currentProduct.previousPrice,
+    quantity: 1,
+    img: currentProduct.images
   };
+
+  // usuario logueado
+  if (user) {
+    handleSubmitAddCart(productData);
+    return;
+  }
+
+   // ===== LÓGICA PARA INVITADO (LOCALSTORAGE) =====
+  
+  // Obtener o crear guest_id
+  let guestId = localStorage.getItem("guest_id");
+  
+  if (!guestId) {
+    guestId = `guest_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    localStorage.setItem("guest_id", guestId);
+    
+    // También crear/actualizar guestUser
+    const newGuestUser = {
+      id: guestId,
+      name: "Invitado",
+      role: "guest",
+      guest: true,
+      createdAt: new Date().toISOString()
+    };
+    localStorage.setItem("guestUser", JSON.stringify(newGuestUser));
+    setGuestUser(newGuestUser);
+  }
+  
+  // Agregar guest_id al producto
+ productData.guest_id = guestId;
+  
+  // Obtener carrito actual
+  const existingCart = localStorage.getItem("cart");
+  let cart = existingCart ? JSON.parse(existingCart) : [];
+  
+  // Verificar si el producto ya existe en el carrito
+  const existingProductIndex = cart.findIndex(
+    item => item.product_id === currentProduct.id && item.guest_id === guestId
+  );
+  
+  if (existingProductIndex !== -1) {
+    // Si existe, aumentar cantidad
+    cart[existingProductIndex].quantity += 1;
+    
+    Swal.fire({
+      title: "¡Producto actualizado!",
+      text: `${currentProduct.name} ahora tiene cantidad ${cart[existingProductIndex].quantity} en tu carrito`,
+      icon: "success",
+      showConfirmButton: true,
+      confirmButtonText: "Ver carrito",
+      showCancelButton: true,
+      cancelButtonText: "Seguir comprando",
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      background: "#f0f0f0",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        navigate("/dashboard/my-cart"); // Ajusta la ruta según tu app
+      }
+    });
+  } else {
+    // Si no existe, agregarlo
+    cart.push(productData);
+    
+    Swal.fire({
+      title: "¡Producto agregado!",
+      text: `${currentProduct.name} se agregó a tu carrito`,
+      icon: "success",
+      showConfirmButton: true,
+      confirmButtonText: "Ver carrito",
+      showCancelButton: true,
+      cancelButtonText: "Seguir comprando",
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      background: "#f0f0f0",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        navigate("/dashboard/my-cart"); // Ajusta la ruta según tu app
+      }
+    });
+  }
+  
+  // Guardar carrito actualizado
+  localStorage.setItem("cart", JSON.stringify(cart));
+  
+  // Opcional: Disparar evento para actualizar contador en otros componentes
+  window.dispatchEvent(new Event('storage'));
+  
+  console.log("Carrito actualizado:", cart);
+};
+
   const handleAddToWishList = (e) => {
     if (user) {
       handleSubmitAddWishlist(e);
@@ -180,8 +311,6 @@ navigate("checkout", {
         text: "Regístrate para agregar productos a la lista de deseos.",
         icon: "warning",
         showCancelButton: true,
-        // confirmButtonColor: '#990000',
-        // cancelButtonColor: '#a4883e',
         confirmButtonText: "Registrarme",
         cancelButtonText: "Cancelar",
         background: "#f0f0f0",
@@ -260,7 +389,7 @@ navigate("checkout", {
                   img={true}
                   icon={"pay"}
                   handleClick={handleCheckoutClick}
-                  label={"Lo quiero!"}
+                  label={"Comprar"}
                   textLabel={true}
                 />
 

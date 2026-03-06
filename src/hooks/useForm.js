@@ -19,6 +19,7 @@ export const initialForm = {
   lastname: "",
   country: "",
   dialCode: "",
+  zipCode: "",
   phone: "",
   email: "",
   password: "",
@@ -37,6 +38,10 @@ export const initialForm = {
   fullname: "",
   pass: "",
   codeAccess: "",
+  creditCard: "",
+  paymentMethod: "",
+  bank: "",
+  wallet: "",
 };
 
 
@@ -130,6 +135,15 @@ const handlePhoneChange = (e) => {
   });
 };
 
+const handleGuestChange = (value, field) => {
+  setForm((prev) => ({
+    ...prev,
+    [field]: value,
+    ...(field !== "creditCard" && { creditCard: "" }),
+    ...(field !== "bank" && { bank: "" }),
+    ...(field !== "wallet" && { wallet: "" }),
+  }));
+};
   const handleClearCountry = (label, value) => {
     if (label) {
       setSelectedCountry(null);
@@ -535,77 +549,73 @@ const handlePhoneChange = (e) => {
     dispatch(startLogin(form.email, form.password));
   };
 
-  const handleSubmitAddCart = async (e) => {
+const handleSubmitAddCart = async (productData) => {
 
-  
-    const finalFormAddCart = {
-      ...form,
+  setLoading(true);
+
+  try {
+
+    const token = user?.token || null;
+
+    const payload = {
+      product_id: productData.product_id,
+      price: productData.price,
+      quantity: productData.quantity,
+      user_id: user?.id || null,
+      guest_id: localStorage.getItem("guest_id") || null
     };
-    e.preventDefault();
-    setLoading(true);
 
-    try {
-      const token = user.token;
-      const response = await axios.post(
-        `${import.meta.env.VITE_APP_API_POST_CART_URL}/${form.product_id}`,
-        finalFormAddCart,
-        {
-          body: finalFormAddCart,
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-type": "application/json",
-            Accept: "application/json",
-          },
-        }
-      );
-      console.log(response);
-      setLoading(false);
-      setResponse(true);
-      setForm(initialForm);
-      // setTimeout(() => setResponse(false, initialForm, ));
-      setTimeout(
-        () =>
-          setResponse(
-            false,
-            initialForm,
-            Swal.fire({
-              title: '¡Correcto!',
-              text: `Agregaste un producto al carrito!`,
-              icon: 'success',
-              showCancelButton: false,
-              confirmButtonText: 'Volver',
-              cancelButtonText: 'Volver',
-              background: '#f0f0f0',
-              customClass: {
-                popup: 'swal-custom-popup',
-                title: 'custom-title',
-                content: 'custom-content',
-                confirmButton: 'swal-confirm-btn',
-              },
-            })
-          ),
-        200
-      );
-    } catch (error) {
-      Swal.fire({
-        title: 'No se pudo agregar al carrito',
-        text: 'Regresa al producto e inténtalo de nuevo',
-        icon: 'warning',
-        showCancelButton: false,
-        confirmButtonText: 'Volver',
-        cancelButtonText: 'Volver',
-        background: '#f0f0f0',
-        customClass: {
-          popup: 'swal-custom-popup',
-          title: 'custom-title',
-          content: 'custom-content',
-          confirmButton: 'swal-confirm-btn',
+    console.log("PAYLOAD:", payload);
+
+
+    const response = await axios.post(
+      import.meta.env.VITE_APP_API_POST_CART_URL,
+      payload,
+      {
+        headers: {
+          ...(token && { Authorization: `Bearer ${token}` }),
+          "Content-Type": "application/json",
         },
-      })
-      return;
-    }
-  };
+      }
+    );
 
+    console.log(response.data);
+
+    setLoading(false);
+
+Swal.fire({
+  title: "¡Correcto!",
+  text: "Agregaste un producto al carrito!",
+  icon: "success",
+  showCancelButton: true,
+  confirmButtonText: "Ir al carrito",
+  cancelButtonText: "Seguir comprando",
+        customClass: {
+        popup: "swal-custom-popup",
+        title: "custom-title",
+        content: "custom-content",
+        confirmButton: "swal-confirm-btn",
+        cancelButton: "swal-cancel-btn",
+      },
+}).then((result) => {
+  if (result.isConfirmed) {
+    window.location.href = "/my-cart"; // Cambia esta ruta por la URL de tu carrito
+  }
+});
+
+  } catch (error) {
+
+    console.error("ERROR CART:", error.response?.data || error.message);
+
+    setLoading(false);
+
+    Swal.fire({
+      title: "No se pudo agregar al carrito",
+      text: "Regresa al producto e inténtalo de nuevo",
+      icon: "warning",
+    });
+  }
+};
   const handleSubmitAddWishlist = async (e) => {
 
   
@@ -1105,6 +1115,7 @@ const handlePhoneChange = (e) => {
     handleLogin,
     handleLoginAdmin,
     handleSubscribeNewsletter,
+    handleGuestChange,
     handleClearCountry,
     handleUpdateProduct,
     openModal,

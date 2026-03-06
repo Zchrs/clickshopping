@@ -50,7 +50,11 @@ export const useValidations = () => {
     img_url: useRef(null),
     user_id: useRef(null),
     product_id: useRef(null),
-    verifyCode: useRef(null)
+    verifyCode: useRef(null),
+    zipCode: useRef(null),
+    creditCard: useRef(null),
+    bank: useRef(null),
+    wallet: useRef(null)
   };
   
 
@@ -100,6 +104,15 @@ export const useValidations = () => {
     // Validaciones específicas
     errors.country = validateField('country', form.country, null, {
       required: "Debes seleccionar el país"
+    });
+    errors.creditCard = validateField('creditCard', form.creditCard, null, {
+      required: "Debes seleccionar una tarjeta"
+    });
+    errors.bank = validateField('bank', form.bank, null, {
+      required: "Debes seleccionar el banco"
+    });
+    errors.wallet = validateField('wallet', form.wallet, null, {
+      required: "Debes seleccionar una e-wallet"
     });
 
     errors.name = validateField('name', form.name, 
@@ -192,6 +205,9 @@ export const useValidations = () => {
     errors.address = validateField('address', form.address, null, {
       required: "Debes ingresar la dirección"
     });
+    errors.paymentMethod = validateField('paymentMethod', form.paymentMethod, null, {
+      required: "Debes ingresar un método de pago"
+    });
 
     errors.phone = validateField('phone', form.phone, 
       (val) => regexPhone.test(val.trim()) && val.trim().length > 11, {
@@ -232,6 +248,12 @@ export const useValidations = () => {
       (val) => val.length > 5 && regexOnlyNumbers.test(val.trim()), {
         required: "Código de acceso requerido",
         invalid: "Código de acceso incorrecto"
+      }
+    );
+    errors.zipCode = validateField('zipCode', form.zipCode, 
+      (val) => val.length > 5 && regexOnlyNumbers.test(val.trim()), {
+        required: "Código postal requerido",
+        invalid: "Código postal incorrecto"
       }
     );
 
@@ -411,6 +433,11 @@ export const useValidations = () => {
       required: "Debes seleccionar el tipo de documento"
     });
   }
+  if ('zipCode' in form) {
+    errors.zipCode = validateField('zipCode', form.zipCode, null, {
+      required: "Debes seleccionar el tipo de documento"
+    });
+  }
 
   if ('dnaId' in form) {
     errors.dnaId = validateField('dnaId', form.dnaId, val => val.length >= 6, {
@@ -430,6 +457,31 @@ export const useValidations = () => {
     errors.expDate = validateField('expDate', form.expDate, val => val.length >= 6, {
       required: "Fecha de expedición requerida",
       invalid: "Fecha de expedición incorrecta"
+    });
+  }
+
+  if ('creditCard' in form) {
+    errors.creditCard = validateField('creditCard', form.creditCard, val => val.length >= 6, {
+      required: "Tarjeta requerida",
+      invalid: "Debes seleccionar una tarjeta"
+    });
+  }
+  if ('bank' in form) {
+    errors.bank = validateField('bank', form.bank, val => val.length >= 6, {
+      required: "Banco requerido",
+      invalid: "Banco no debe ir en blanco"
+    });
+  }
+  if ('wallet' in form) {
+    errors.wallet = validateField('wallet', form.wallet, val => val.length >= 6, {
+      required: "wallet requerido",
+      invalid: "wallet no debe ir en blanco"
+    });
+  }
+  if ('paymentMethod' in form) {
+    errors.paymentMethod = validateField('paymentMethod', form.paymentMethod, val => val.length >= 6, {
+      required: "Método de pago requerido",
+      invalid: "Falta método de pago"
     });
   }
 

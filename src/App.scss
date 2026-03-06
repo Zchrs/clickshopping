@@ -91,7 +91,7 @@
     }
     &-list{
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(4, 1fr);
       align-content: start;
       gap: 10px;
       @media (max-width: 680px) {
@@ -168,6 +168,13 @@
 // fin estilos de pantalla términos y condiciones y similares
 
 // estilos de pantalla checkout
+.twocolumns{
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  width: 100%;
+  padding: 0 5px;
+  align-items: center;
+}
 .checkout{
   display: grid;
   padding: 25px;
@@ -180,6 +187,17 @@
     align-content: baseline;
     display: grid;
     gap: 10px;
+
+    &-guest{  
+  display: grid;
+  width: 100%;
+  gap: 10px;
+  &-form{
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+  }
+}
     &-info{
       display: flex;
       justify-content: space-between;
@@ -201,7 +219,7 @@
       display: grid;
       gap: 10px;
       img{
-        width: 50%;
+        width: 15%;
         object-fit: cover;
       }
 
@@ -234,6 +252,7 @@
         font-size: 16px;
       }
   }
+
 }
 // fin estilos de pantalla checkout
 
@@ -711,8 +730,8 @@ gap: 7px;
   }
 
   .swal-cancel-btn {
-  background: var(--danger) !important;
-  color: white !important;
+  background: var(--secondary) !important;
+  color: var(--light) !important;
   border-radius: 8px !important;
   padding: 6px 18px !important;
   font-weight: 400 !important;
@@ -720,7 +739,7 @@ gap: 7px;
   transition: all 0.25s ease !important;
 
   &:hover{
-    background: var(--danger-secondary) !important;
+    background: var(--secondary-semi) !important;
   }
 }
 .swal2-loader {

@@ -3,7 +3,6 @@ import { HashRouter, Route, Routes } from "react-router-dom";
 import { AppLayout } from "./layouts/AppLayout";
 import { AuthLayout } from "./layouts/AuthLayout";
 import { DashboardLayout } from "./layouts/DashboardLayout";
-import { useDispatch, useSelector } from "react-redux";
 import { Provider } from "react-redux";
 import { store } from "./store/store";
 import {
@@ -71,7 +70,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.scss";
 import { De } from "react-country-flags-select";
 import { UsersOrdersScreen } from "./views/users/orders/UsersOrdersScreen";
-import { use } from "react";
+import { use, useEffect } from "react";
 
 function App() {
   const storedLang = localStorage.getItem("lang");
@@ -81,6 +80,28 @@ function App() {
   if (storedLang) {
     store.dispatch(changeLang({ lang: storedLang }));
   }
+
+useEffect(() => {
+  // Verificar si ya existe un guest_id
+  let guestId = localStorage.getItem("guest_id");
+  
+  // Si no existe, crear uno nuevo
+  if (!guestId) {
+    guestId = crypto.randomUUID();
+    localStorage.setItem("guest_id", guestId);
+  }
+  
+  // Crear y guardar el objeto guestUser completo
+  const guestUser = {
+    id: guestId,
+    name: "Invitado",
+    role: "guest",
+    guest: true
+  };
+  
+  // Guardar el objeto guestUser en localStorage
+  localStorage.setItem("guestUser", JSON.stringify(guestUser));
+}, []);
 
   return (
     <>

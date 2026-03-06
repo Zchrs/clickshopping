@@ -99,3 +99,38 @@ export const moveFromCartToWishlist = (productId) => async (dispatch, getState) 
 export const clearCart = () => ({
   type: types.CLEAR_CART,
 });
+
+export const fetchCartGuest = async (guestId) => {
+  try {
+    const response = await fetch(`/api/cart/guest/${guestId}`);
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching guest cart:", error);
+    throw error;
+  }
+};
+
+export const removeFromCartGuest = async (productId, guestId) => {
+  try {
+    const response = await fetch(`/api/cart/guest/${guestId}/item/${productId}`, {
+      method: 'DELETE',
+    });
+    return await response.json();
+  } catch (error) {
+    console.error("Error removing from guest cart:", error);
+    throw error;
+  }
+};
+
+export const moveFromCartToWishlistGuest = async (productId, guestId) => {
+  try {
+    const response = await fetch(`/api/cart/guest/${guestId}/move-to-wishlist/${productId}`, {
+      method: 'POST',
+    });
+    return await response.json();
+  } catch (error) {
+    console.error("Error moving to wishlist:", error);
+    throw error;
+  }
+};

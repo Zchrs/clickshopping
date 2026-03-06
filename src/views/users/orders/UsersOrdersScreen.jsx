@@ -44,7 +44,7 @@ export const UsersOrdersScreen = () => {
           id="fill-tab-example"
           fill
         >
-          <Tab eventKey="pendingPayment" title="Pendientes de pago">
+          <Tab eventKey="pendingPayment" title="Pendientes de validación">
             <OrdersPending />
           </Tab>
 

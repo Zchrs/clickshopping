@@ -3,7 +3,7 @@
 import { getFile } from "../../reducers/globalReducer";
 import { NavLink } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { startLogout } from "../../actions/authActions";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -22,11 +22,57 @@ export const Avatar = ({
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const lang = useSelector((state) => state.langUI.lang);
+  const [guestUser, setGuestUser] = useState(null);
   const { t, i18n } = useTranslation();
 
   useEffect(() => {
     i18n.changeLanguage(lang);
   }, [i18n, lang, dispatch]);
+
+useEffect(() => {
+  if (!user) {
+    try {
+      const guestData = localStorage.getItem("guestUser");
+      console.log("guestData raw:", guestData);
+      
+      if (guestData) {
+        const parsed = JSON.parse(guestData);
+        console.log("guestData parsed:", parsed);
+        setGuestUser(parsed);
+      } else {
+        const guestId = localStorage.getItem("guest_id");
+        if (guestId) {
+          const newGuestUser = {
+            id: guestId,
+            name: "Invitado",
+            role: "guest",
+            guest: true
+          };
+          localStorage.setItem("guestUser", JSON.stringify(newGuestUser));
+          setGuestUser(newGuestUser);
+        }
+      }
+    } catch (error) {
+      console.error("Error al parsear guestUser de localStorage:", error);
+      localStorage.removeItem("guestUser");
+    }
+  } else {
+    setGuestUser(null);
+  }
+}, [user]);
+
+// Función para formatear el ID del invitado
+const formatGuestId = (id) => {
+  if (!id) return "";
+  if (id.length <= 10) return id;
+  
+  // Para UUID como "123e4567-e89b-12d3-a456-426614174000"
+  // Mostrará: "123e...4000"
+  const firstPart = id.substring(0, 6);
+  const lastPart = id.substring(id.length - 6);
+  
+  return `${firstPart}...${lastPart}`;
+};
 
   const handleLogout = () => {
     dispatch(startLogout());
@@ -52,11 +98,27 @@ export const Avatar = ({
               {user.name} {user.lastname}
             </strong>
           ) : (
-            <strong className={nameSmall}>Default name</strong>
+            ""
+          )}
+          {guestUser ? (
+            <strong className={nameSmall}>
+              {guestUser.name} {formatGuestId(guestUser.id)}
+            </strong>
+          ) : (
+            ""
           )}
         </span>
         {dropData && (
           <div className="avatar-usersession">
+            {guestUser ? (<>
+            <NavLink to={"/my-cart"}>
+              <i>
+                <img src={getFile("svg", "cart", "svg")} alt="" />
+              </i>
+              {t("dashboard.cart")}
+            </NavLink>
+            </>):("")}
+            {user ? ( <>
             <NavLink to={"/dashboard"}>
               <i>
                 <img src={getFile("svg", "panel-red", "svg")} alt="" />
@@ -69,7 +131,8 @@ export const Avatar = ({
               </i>
               {t("dashboard.orders")}
             </NavLink>
-            <NavLink>
+            
+              <NavLink>
               <i>
                 <img src={getFile("svg", "message", "svg")} alt="" />
               </i>
@@ -112,6 +175,8 @@ export const Avatar = ({
               </i>
               {t("dashboard.logout")}
             </button>
+            </>
+            ):("")}
           </div>
         )}
       </div>

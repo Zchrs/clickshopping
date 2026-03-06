@@ -200,9 +200,11 @@ export const HomeScreen = () => {
               img={item.images?.[0]}
               images={item.images}
               description={item.description}
-              title={item.title}
               sellings={item.sellings}
               previousPrice={item.previousPrice}
+              priceText
+              title={item.name}
+              tittleText
               ratings={ratings}
               addToCart
               ratingss
@@ -234,9 +236,11 @@ export const HomeScreen = () => {
               img={item.images?.[0]}
               images={item.images}
               description={item.description}
-              title={item.title}
+              title={item.name}
+              tittleText
               sellings={item.sellings}
               previousPrice={item.previousPrice}
+              priceText
               ratings={ratings}
               addToCart
               ratingss
@@ -268,8 +272,10 @@ export const HomeScreen = () => {
               productLink={`/products/${item.id}`}
               img={item.images?.[0]}
               description={item.description}
-              title={item.title}
+              title={item.name}
+              tittleText
               previousPrice={item.previousPrice}
+              priceText
               ratings={ratings}
               ratingss
               product_id={item.id}
@@ -290,7 +296,9 @@ export const HomeScreen = () => {
               img={item.images?.[0]}
               description={item.description}
               title={item.name}
+              tittleText
               previousPrice={item.previousPrice}
+              priceText
               ratings={ratings}
               ratingss
               product_id={item.id}
@@ -302,8 +310,8 @@ export const HomeScreen = () => {
 
       <div className="homescreen__container">
         <Comments />
-      </div>4
-      <VideoModal videoSrc="pub3"/>
+      </div>
+      
     </section>
   );
 };

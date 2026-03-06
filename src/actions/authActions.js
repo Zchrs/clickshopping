@@ -29,9 +29,10 @@ export const startLogin = (email, password) => {
           id: body.user.id,
           name: body.user.name,
           lastname: body.user.lastname,
+          email: body.user.email,
           city: body.user.city,
           address: body.user.address,
-          zipCode: body.user.zip_code,
+          zipCode: body.user.zipCode,
         }),
       );
 
@@ -125,9 +126,10 @@ export const startChecking = () => {
           id: body.id,
           name: body.name,
           lastname: body.lastname,
+          email: body.email,
           address: body.address,
           city: body.city,
-          zipCode: body.zip_code,
+          zipCode: body.zipCode,
           role: body.role,
         }),
       );

@@ -23,7 +23,7 @@ export const authReducer = ( state = initialState, action ) => {
                 checking: false
             }
            
-        case types.authCheckingFInish:
+        case types.authCheckingFinish:
             return {
                 ...state,
                 checking: false
@@ -41,6 +41,7 @@ export const authReducer = ( state = initialState, action ) => {
     }
 
 }
+
 export const authReducerAdmin = ( state = initialStateAdmin, action ) => {
 
     switch ( action.type ) {
