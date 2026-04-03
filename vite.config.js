@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react()],
   build: {
     chunkSizeWarningLimit: 100000,
-    outDir: "E:/clickshopping-api/public", // nueva carpeta
+    outDir: "h:/clickshopping-api/public", // nueva carpeta
     emptyOutDir: true, // Establece un valor más alto para el límite de advertencia del tamaño del fragmento
     rollupOptions: {
       output: {

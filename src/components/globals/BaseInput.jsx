@@ -345,6 +345,7 @@ const InputBase = styled.div`
       width: 100%;
       margin: 0;
       padding: 0;
+      gap: 2px;
       align-items: center;
       display: grid;
       background: transparent;
@@ -478,4 +479,51 @@ const InputBase = styled.div`
   background: white;
   padding-right: 8px;
 }
+.options-dropdown{
+  width: 100%;
+  height: fit-content;
+  max-height: 200px;
+  transform: translateY(100%);
+  left: 0;
+  bottom: 0;
+  position: absolute;
+  border: 1px solid var(--trans-primary);
+  z-index: 100;
+  border-radius: 6px;
+  background: var(--secondary-soft);
+  overflow: hidden;
+  overflow-y: scroll;
+}
+.option-item {
+  padding: 5px 10px;
+  transition: all ease .2s;
+  &:hover{
+    transition: all ease .2s;
+    background: #9b9898;
+    color: var(--light);
+    cursor: pointer;
+  }
+}
+ /* Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(155, 155, 155, 0.3) transparent;
+  
+  /* Chrome, Edge, Safari */
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: transparent;
+    margin: 4px 0;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: rgba(155, 155, 155, 0.5);
+    border-radius: 20px;
+    
+    &:hover {
+      background: rgba(120, 120, 120, 0.7);
+    }
+  }
 `;

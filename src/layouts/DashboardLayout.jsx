@@ -110,6 +110,7 @@ const DshbLyt = styled.section`
     &-contain{
         display: grid;
         border-radius: 10px;
+        overflow: hidden;
         // box-shadow: 1px 1px 5px #ebe9e9, -1px -1px 5px #ebe9e9;
     }
 

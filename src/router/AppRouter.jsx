@@ -66,8 +66,9 @@ import { useDispatch } from "react-redux";
 
 import { useEffect } from "react";
 import { startChecking, startCheckingAdmin } from "../actions/authActions";
-import { PublicRoute } from "./PublicRouter";
 import { UsersOrdersScreen } from "../views/users/orders/UsersOrdersScreen";
+import { CartGuestScreen } from "../views/cart/CartGuestScreen";
+import { GuestToUser } from "../views/auth/GuestToUser";
 // import { startChecking } from "../actions/auth";
 // import { useEffect } from "react";
 // import { Page404 } from "../components/Page404";
@@ -105,7 +106,17 @@ export const AppRouter = () => {
                           path="categories/make-up"
                           element={<MakeUp />}
                         />
+                        <Route path="/guest/create-password-guest" element={<GuestToUser />} />
       </Routes>
+  );
+};
+
+export const RouterGuest = () => {
+  return (
+            <Routes>
+              <Route exact path="/"  element={<CartGuestScreen />}/>
+              <Route exact path="checkout" element={<CheckOut />} /> 
+            </Routes>
   );
 };
 

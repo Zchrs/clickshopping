@@ -8,22 +8,27 @@ import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import "../../assets/sass/boxinfo.scss";
 import { fetchCartUser } from "../../actions/cartActions";
-// import styled from "styled-components";
+
+// Constantes para localStorage
+const CART_STORAGE_KEY = "cart";
+const GUEST_USER_KEY = "guestUser";
 
 export const BoxInfo = (props) => {
-  // const user = useSelector((state) => state.auth.user);
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [subtotal, setSubtotal] = useState(0);
   const [total, setTotal] = useState(0);
+  const [guestInfo, setGuestInfo] = useState(null);
+  
   const lang = useSelector((state) => state.langUI.lang);
-  const user = useSelector((state) => state.auth.user);
-  const userId = user?.id;
+  // ✅ Usar la estructura correcta del reducer
+  const { currentUser, isAuthenticated, isGuest } = useSelector((state) => state.auth);
+  
   const { t, i18n } = useTranslation();
+  
   const {
     title,
     titleA,
-    // subtible,
     text,
     textA,
     textB,
@@ -33,7 +38,6 @@ export const BoxInfo = (props) => {
     img,
     textT,
     textU,
-    // linkB,
     emptyCart,
     texts,
     btns,
@@ -47,41 +51,115 @@ export const BoxInfo = (props) => {
     i18n.changeLanguage(lang);
   }, [i18n, lang]);
 
-useEffect(() => {
-  if (!userId) {
-    setCartItems([]);
-    setLoading(false);
-    return;
-  }
+  // ✅ Cargar guestInfo desde localStorage
+  useEffect(() => {
+    if (!isAuthenticated) {
+      try {
+        const guestData = localStorage.getItem(GUEST_USER_KEY);
+        if (guestData) {
+          const parsed = JSON.parse(guestData);
+          setGuestInfo(parsed);
+        } else {
+          const guestId = localStorage.getItem("guest_id");
+          if (guestId) {
+            setGuestInfo({ id: guestId, name: "Invitado", guest: true });
+          } else {
+            setGuestInfo(null);
+          }
+        }
+      } catch (error) {
+        console.error("Error loading guest info:", error);
+        setGuestInfo(null);
+      }
+    } else {
+      setGuestInfo(null);
+    }
+  }, [isAuthenticated]);
 
-  const getCartItems = async () => {
-    try {
-      const items = await fetchCartUser(userId);
-      setCartItems(items);
-      calculateTotals(items);
-    } catch (error) {
-      console.error("Error loading cart items:", error);
-    } finally {
+  // ✅ Cargar carrito (para usuario autenticado O invitado)
+  useEffect(() => {
+    const loadCart = async () => {
+      setLoading(true);
+      
+      try {
+        let items = [];
+        
+        // CASO 1: Usuario autenticado - cargar desde backend
+      if (isAuthenticated && currentUser?.id) {
+  const response = await fetchCartUser(currentUser.id);
+  items = response.items || []; // 🔥 FIX
+}
+        // CASO 2: Usuario invitado - cargar desde localStorage
+        else if (!isAuthenticated && guestInfo?.id) {
+          const storedCart = localStorage.getItem(CART_STORAGE_KEY);
+          if (storedCart) {
+            const parsedCart = JSON.parse(storedCart);
+            // Filtrar solo los items que pertenecen a este guest
+            items = Array.isArray(parsedCart) 
+              ? parsedCart.filter(item => item.guest_id === guestInfo.id)
+              : [];
+          }
+        }
+        
+        setCartItems(items);
+        calculateTotals(items);
+      } catch (error) {
+        console.error("Error loading cart items:", error);
+        setCartItems([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    // Solo cargar si hay usuario autenticado o guestInfo
+    if (isAuthenticated || guestInfo) {
+      loadCart();
+    } else {
+      setCartItems([]);
       setLoading(false);
     }
-  };
-
-  getCartItems();
-}, [userId]);
+  }, [isAuthenticated, currentUser?.id, guestInfo]);
 
   const calculateTotals = (items) => {
     const subtotalValue = items.reduce(
-      (sum, item) => sum + item.price * item.quantity,
+      (sum, item) => sum + (Number(item.price) * Number(item.quantity)),
       0,
     );
-    const totalItemsCount = items.reduce((sum, item) => sum + item.quantity, 0);
-    // Puedes ajustar aquí si hay un costo de envío u otros costos adicionales
+    const totalItemsCount = items.reduce((sum, item) => sum + Number(item.quantity), 0);
     setSubtotal(subtotalValue);
     setTotal(totalItemsCount);
   };
 
+  // ✅ Función para formatear precios
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat('es-CO', {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(price);
+  };
+
+  // ✅ Función para obtener las primeras 3 imágenes del carrito
+  const getCartImages = () => {
+    return cartItems.slice(0, 3).map(item => ({
+      id: item.id || item.product_id,
+      url: item.img_urls?.[0] || (Array.isArray(item.img) ? item.img[0] : item.img) || "",
+      name: item.name
+    }));
+  };
+
+  const cartImages = getCartImages();
+  const remainingCount = cartItems.length > 3 ? cartItems.length - 3 : 0;
+
+  // ✅ Función para formatear ID de invitado
+  const formatGuestId = (id) => {
+    if (!id) return "";
+    if (id.length <= 10) return id;
+    const firstPart = id.substring(0, 6);
+    const lastPart = id.substring(id.length - 6);
+    return `${firstPart}...${lastPart}`;
+  };
+
   return (
-    // <BoxInfoStyle>
     <div className="loginbox">
       <div className="loginbox-subloginbox">
         <img
@@ -97,45 +175,99 @@ useEffect(() => {
           />
         )}
       </div>
+      
       <div className="loginbox__box">
+        {/* ✅ Sección de carrito - AHORA FUNCIONA PARA AMBOS TIPOS DE USUARIO */}
         {emptyCart && (
           <div>
-            <h4>Tienes ({total}) artículos en tu carrito</h4>
+            {isAuthenticated && currentUser ? (
+              <h4 className="loginbox__cart-title">
+                {t("cart.items", "Tienes")} ({total}) {t("cart.itemsCount", "artículos en tu carrito")}
+              </h4>
+            ) : guestInfo ? (
+              <h4 className="loginbox__cart-title">
+                {t("cart.guestItems", "Tienes")} ({total}) {t("cart.itemsCount", "artículos en tu carrito de invitado")}
+                <small className="guest-badge"> {formatGuestId(guestInfo.id)}</small>
+              </h4>
+            ) : (
+              <h4 className="loginbox__cart-title">
+                {t("cart.guest", "Inicia sesión para ver tu carrito")}
+              </h4>
+            )}
+            
             {loading ? (
-              <p>Cargando productos...</p>
+              <p className="loginbox__loading">{t("common.loading", "Cargando...")}</p>
+            ) : !isAuthenticated && !guestInfo ? (
+              <div className="loginbox-empty">
+                <img src={getFile("svg", "login", "svg")} alt="Login Required" />
+                <h2 className="loginbox__h2">{t("cart.loginRequired", "Inicia sesión para ver tu carrito")}</h2>
+              </div>
             ) : !Array.isArray(cartItems) || cartItems.length === 0 ? (
               <div className="loginbox-empty">
                 <img src={getFile("svg", `${img}`, "svg")} alt="Empty Cart" />
-                <h2 className="loginbox__h2">{title}</h2>
+                <h2 className="loginbox__h2">
+                  {isAuthenticated 
+                    ? (title || t("cart.empty", "Tu carrito está vacío"))
+                    : t("cart.guestEmpty", "Tu carrito de invitado está vacío")}
+                </h2>
               </div>
             ) : (
-              <div className="loginbox-flex">
-              {cartItems.map((item) => (
-                <img 
-                  className="loginbox-imgproducts" 
-                  key={item.id} 
-                  src={item.img_urls?.[0]} 
-                  alt={item.name} 
-                />
-              ))}
-              </div>
+              <>
+                <div className="loginbox-flex">
+                  {cartImages.map((item) => (
+                    <img 
+                      className="loginbox-imgproducts" 
+                      key={item.id} 
+                      src={item.url} 
+                      alt={item.name}
+                      onError={(e) => {
+                        e.target.src = getFile("svg", "default-product", "svg");
+                      }}
+                    />
+                  ))}
+                  {remainingCount > 0 && (
+                    <div className="loginbox-more">
+                      <span>+{remainingCount}</span>
+                    </div>
+                  )}
+                </div>
+                
+                {cartItems.length > 0 && (
+                  <div className="loginbox-cart-summary">
+                    <div className="loginbox-cart-total">
+                      <span>{t("cart.subtotal", "Subtotal")}:</span>
+                      <strong>${formatPrice(subtotal)}</strong>
+                    </div>
+                    <NavLink 
+                      to={isAuthenticated ? "/dashboard/my-cart" : "/cart-guest"} 
+                      className="loginbox-a"
+                    >
+                      {t("cart.viewCart", "Ver carrito completo")}
+                    </NavLink>
+                  </div>
+                )}
+              </>
             )}
           </div>
         )}
+
+        {/* ✅ Sección de textos y enlaces */}
         {texts && (
           <div className="loginbox__container">
             <h2 className="loginbox__h4">{titleA}</h2>
             {textB && (
               <div className="loginbox-texts">
-                <NavLink to={"auth/login"} className="loginbox__a">
-                  {text}
+                <NavLink to={isAuthenticated ? "/dashboard" : "/auth/login"} className="loginbox-a">
+                  {isAuthenticated ? t("dashboard.title", "Dashboard") : text}
                 </NavLink>
                 &nbsp;
                 <p className="loginbox__p">{textA}</p>
                 &nbsp;
-                <NavLink to={"auth/register"} className="loginbox__a">
-                  {textB}
-                </NavLink>
+                {!isAuthenticated && (
+                  <NavLink to={"/auth/register"} className="loginbox-a">
+                    {textB}
+                  </NavLink>
+                )}
               </div>
             )}
             {textC && (
@@ -143,7 +275,9 @@ useEffect(() => {
                 <p className="loginbox__p">{textC}</p>
               </div>
             )}
-            {btnlogin && (
+            
+            {/* ✅ Botón de login condicional */}
+            {btnlogin && !isAuthenticated && (
               <BaseButton
                 label={t("auth.login")}
                 classs={"button primary"}
@@ -151,14 +285,36 @@ useEffect(() => {
                 $colortextbtnprimary={"var(--light)"}
                 $colorbtnhoverprimary={"var(--bg-primary-tr)"}
                 $colortextbtnhoverprimary={"var(--light)"}
-                link={"auth/login"}
+                link={"/auth/login"}
               />
             )}
-            {newUser && <p className="loginbox__p2">{textD}</p>}
+            
+            {btnlogin && isAuthenticated && (
+              <BaseButton
+                label={t("dashboard.title", "Ir al Dashboard")}
+                classs={"button primary"}
+                $colorbtn={"var(--primary)"}
+                $colortextbtnprimary={"var(--light)"}
+                $colorbtnhoverprimary={"var(--bg-primary-tr)"}
+                $colortextbtnhoverprimary={"var(--light)"}
+                link={"/dashboard"}
+              />
+            )}
+            
+            {newUser && !isAuthenticated && <p className="loginbox__p2">{textD}</p>}
+            {newUser && isAuthenticated && (
+              <p className="loginbox__p2">
+                {t("auth.welcome", "Bienvenido")} {currentUser?.name}
+              </p>
+            )}
           </div>
         )}
+
+        {/* ✅ Texto adicional */}
         {textT && <p className="loginbox__p">{textU}</p>}
-        {btns && (
+
+        {/* ✅ Botones de login/registro */}
+        {btns && !isAuthenticated && (
           <div className="loginbox__buttons">
             <h3 className="loginbox__h3">{title}</h3>
             <p className="loginbox__p">{text}</p>
@@ -170,7 +326,7 @@ useEffect(() => {
                 $colortextbtnprimary={"var(--light)"}
                 $colorbtnhoverprimary={"var(--primary-semi)"}
                 $colortextbtnhoverprimary={"var(--light)"}
-                link={"auth/login"}
+                link={"/auth/login"}
               />
               <BaseButton
                 label={t("auth.register")}
@@ -179,258 +335,48 @@ useEffect(() => {
                 $colorbtntextsecondary={"var(--tertiary)"}
                 $colorbtnhoversecondary={"var(--secondary-semi)"}
                 $hovercolorbtntextsecondary={"var(--light)"}
-                link={"auth/register"}
+                link={"/auth/register"}
               />
             </div>
           </div>
         )}
+
+        {btns && isAuthenticated && (
+          <div className="loginbox__buttons">
+            <h3 className="loginbox__h3">{t("dashboard.welcome", "Bienvenido de vuelta")}</h3>
+            <p className="loginbox__p">
+              {t("dashboard.loggedAs", "Has iniciado sesión como")} {currentUser?.email}
+            </p>
+            <div className="loginbox__btns">
+              <BaseButton
+                label={t("dashboard.title", "Ir al Dashboard")}
+                classs={"button primary"}
+                $colorbtn={"var(--primary)"}
+                $colortextbtnprimary={"var(--light)"}
+                $colorbtnhoverprimary={"var(--primary-semi)"}
+                $colortextbtnhoverprimary={"var(--light)"}
+                link={"/dashboard"}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* ✅ Redes sociales */}
         {social && (
           <div className="loginbox__social">
             <div className="loginbox__gruops">
-              <h4>{t("auth.sesion")}</h4>
+              <h4>{t("auth.sesion", "O inicia sesión con")}</h4>
               <hr />
             </div>
             <div className="loginbox__social-box">
-              <img src={getFile("svg", `facebook`, "svg")} alt="Facebook" />
-              <img src={getFile("svg", `twitter`, "svg")} alt="Twitter" />
-              <img src={getFile("svg", `linkedin`, "svg")} alt="LinkedIn" />
-              <img src={getFile("svg", `instagram`, "svg")} alt="Instagram" />
+              <img src={getFile("svg", "facebook", "svg")} alt="Facebook" />
+              <img src={getFile("svg", "twitter", "svg")} alt="Twitter" />
+              <img src={getFile("svg", "linkedin", "svg")} alt="LinkedIn" />
+              <img src={getFile("svg", "instagram", "svg")} alt="Instagram" />
             </div>
           </div>
         )}
       </div>
     </div>
-    /* </BoxInfoStyle> */
   );
 };
-
-// const BoxInfoStyle = styled.div`
-// .loginbox {
-//   position: relative;
-//   font-family: 'Quicksand', sans-serif;
-//   cursor: pointer;
-//   transition: all ease .3s;
-//   z-index: 9999;
-
-//   &__container {
-//     display: grid;
-//     height: fit-content;
-//     gap: 8px;
-//   }
-
-//   &__h4 {
-//     font-size: 16px;
-//     font-weight: 600;
-//     text-align: center;
-//   }
-
-//   &__h3 {
-//     font-size: 18px;
-//     font-weight: 400;
-//   }
-
-//   &__h2 {
-//     font-size: 20px;
-//     font-weight: 800;
-//   }
-
-//   &__p {
-//     font-size: 14px;
-//     text-align: center;
-//   }
-
-//   &__p2 {
-//     text-align: center;
-//     font-size: 12px;
-//     padding: 6px;
-//     height: 50px;
-//   }
-
-//   &__a {
-//     font-size: 14px;
-//     text-decoration: none;
-//     color: var(primary);
-//     cursor: pointer;
-
-//     &:hover {
-//       text-decoration: underline;
-//       color: black;
-//     }
-//   }
-
-//   &-empty {
-//     display: grid;
-//     place-items: center;
-//     opacity: .5;
-
-//     h2 {
-//       opacity: .5;
-//     }
-//   }
-
-//   &-texts {
-//     display: flex;
-//     text-align: center;
-//     justify-content: center;
-//   }
-
-//   &-textsa {
-//     display: flex;
-//     text-align: center;
-//     height: 40px;
-//   }
-
-//   &__buttons {
-//     display: grid;
-//     gap: 10px;
-//   }
-
-//   &__btns {
-//     display: grid;
-//     gap: 8px;
-//   }
-
-//   &-img {
-//     height: 18px;
-//     filter: grayscale(100%);
-//     transition: all ease .3s;
-//   }
-
-//   &:hover &-img {
-//     transition: all ease .3s;
-//     filter:
-//       invert(41%)
-//       sepia(98%)
-//       saturate(1865%)
-//       hue-rotate(177deg)
-//       brightness(100%)
-//       contrast(101%);
-//   }
-
-//   &__img {
-//     display: block;
-//     height: 6px;
-//     transition: all ease .3s;
-//     filter: grayscale(100%);
-//   }
-
-//   &:hover &__img {
-//     transform: rotateZ(180deg);
-//     transition: all ease .3s;
-//     filter:
-//       invert(41%)
-//       sepia(98%)
-//       saturate(1865%)
-//       hue-rotate(177deg)
-//       brightness(100%)
-//       contrast(101%);
-//   }
-
-//   &-subloginbox {
-//     display: flex;
-//     gap: 5px;
-//     align-items: center;
-//   }
-
-//   &__box {
-//     display: grid;
-//     gap: 8px;
-//     z-index: 9999;
-//     position: absolute;
-//     background: white;
-//     cursor: default;
-//     overflow: hidden;
-//     border-radius: 0px 0px 10px 10px;
-//     transition: all ease .5s;
-//     box-shadow: gray 1px 2px 4px;
-//     width: 0px;
-//     height: 0;
-//     padding: 0px;
-//     right: 0;
-
-//     @media (max-width: 600px) {
-//       left: -45px;
-//       z-index: 9999;
-//     }
-//   }
-
-//   &:hover &__box {
-//     transition: all ease .5s;
-//     animation: boxes .5s ease;
-//     width: 270px;
-//     height: fit-content;
-//     padding: 16px;
-//     z-index: 9999;
-//   }
-
-//   &__social {
-//     display: grid;
-//     gap: 10px;
-//     place-items: center;
-
-//     h4 {
-//       font-weight: 600;
-//     }
-
-//     &-box {
-//       display: flex;
-//       gap: 8px;
-
-//       img {
-//         height: 30px;
-//       }
-//     }
-//   }
-
-//   &__gruops {
-//     position: relative;
-//     display: grid;
-//     margin: 0 auto;
-//     place-items: center;
-
-//     hr {
-//       position: absolute;
-//       bottom: -8px;
-//       z-index: -1;
-//       border: 1px solid #72737656;
-//       width: 170%;
-//     }
-
-//     h4 {
-//       font-size: 16px;
-//       z-index: 10;
-//       margin: 0 auto;
-//       padding: 0 15px;
-//       width: fit-content;
-//       background: white;
-//       border-radius: 20px;
-//       text-align: center;
-//       color: black;
-
-//     }
-//   }
-// }
-
-// @keyframes boxes {
-//   0% {
-//     width: 1px;
-//     padding: 0px;
-//     height: 0px;
-//   }
-
-//   50% {
-//     width: 1px;
-//     padding: 0px;
-//   }
-
-//   80% {
-//     width: 1px;
-//     padding: 0px;
-//   }
-
-//   100% {
-//     width: 100%;
-//     padding: 0px;
-//   }
-// }
-// `

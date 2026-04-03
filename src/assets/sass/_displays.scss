@@ -8,9 +8,10 @@
 }
 .flex-s {
     display: flex;
-    width: 100%;
+    width: fit-content;
     gap: 7px;
     background: transparent;
+    align-items: center;
 }
 .flex-sc {
     display: flex;
@@ -57,6 +58,14 @@
     @media (max-width: 768px) {
         grid-template-columns: 1fr;
         padding: 0 20px;
+    }
+}
+.grid-2fr {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    @media (max-width: 1025px) {
+        grid-template-columns: 1fr;
     }
 }
 .grid-custom{

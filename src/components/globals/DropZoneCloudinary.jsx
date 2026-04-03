@@ -22,6 +22,7 @@ export const DropZoneCloudinary = ({ id, setImage, name, paymentProof }) => {
 
   const handleDrop = (e) => {
     e.preventDefault();
+    e.stopPropagation();
     setActive(false);
     if (e.dataTransfer.files?.length) {
       validateFile(e.dataTransfer.files[0]);
@@ -54,65 +55,61 @@ export const DropZoneCloudinary = ({ id, setImage, name, paymentProof }) => {
     setErrorMessage("");
   };
 
+  const uploadImage = async () => {
+    if (!file) return;
 
-const uploadImage = async () => {
-  if (!file) return;
+    setUploadStatus("uploading");
+    setUploadProgress(0);
 
-  setUploadStatus("uploading");
-  setUploadProgress(0);
+    try {
+      const formData = new FormData();
+      formData.append("image", file);
 
-  try {
-    const formData = new FormData();
-    formData.append("image", file);
+      const isProduction = import.meta.env.PROD;
 
-    // 🧠 Detecta entorno
-    const isProduction = import.meta.env.PROD;
+      const url = isProduction
+        ? `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload`
+        : import.meta.env.VITE_APP_API_UPDLAD_IMAGE_URL;
 
-    const url = isProduction
-      // 🚀 Producción → Cloudinary
-      ? `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload`
-      // 🧪 Desarrollo → Backend local
-      : import.meta.env.VITE_APP_API_UPDLAD_IMAGE_URL;
+      if (isProduction) {
+        formData.append(
+          "upload_preset",
+          import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET
+        );
+      }
 
-    // Solo Cloudinary necesita upload_preset
-    if (isProduction) {
-      formData.append(
-        "upload_preset",
-        import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET
-      );
-    }
+      const res = await axios.post(url, formData, {
+        headers: !isProduction
+          ? { "Content-Type": "multipart/form-data" }
+          : undefined,
+        onUploadProgress: (e) => {
+          const percent = Math.round((e.loaded * 100) / e.total);
+          setUploadProgress(percent);
+        },
+      });
 
-    const res = await axios.post(url, formData, {
-      headers: !isProduction
-        ? { "Content-Type": "multipart/form-data" }
-        : undefined,
-      onUploadProgress: (e) => {
-        const percent = Math.round((e.loaded * 100) / e.total);
-        setUploadProgress(percent);
-      },
-    });
-
-    const imageData = isProduction
-      ? {
-          url: res.data.secure_url,
-          public_id: res.data.public_id,
-        }
-      : {
+      const imageData = isProduction
+        ? {
+            url: res.data.secure_url,
+            public_id: res.data.public_id,
+          }
+        : {
             url: res.data.imageUrl,
-  public_id: null,
-  local: true,
-        };
+            public_id: null,
+            local: true,
+          };
 
-    setImage(imageData);
-    setUploadStatus("success");
-  } catch (error) {
-    console.error(error);
-    setUploadStatus("error");
-    setErrorMessage("Error al subir imagen");
-  }
-};
+      setImage(imageData);
+      setUploadStatus("success");
+    } catch (error) {
+      console.error(error);
+      setUploadStatus("error");
+      setErrorMessage("Error al subir imagen");
+    }
+  };
 
-  const triggerFileInput = () => {
+  const triggerFileInput = (e) => {
+    e.stopPropagation();
     fileInputRef.current?.click();
   };
 
@@ -122,6 +119,16 @@ const uploadImage = async () => {
     setImage(null);
     setUploadStatus("idle");
     setUploadProgress(0);
+  };
+
+  // ✅ Determinar si el botón debe estar deshabilitado
+  const isUploadDisabled = !file || uploadStatus === "uploading" || uploadStatus === "success";
+
+  // ✅ Texto dinámico del botón
+  const getButtonLabel = () => {
+    if (uploadStatus === "uploading") return "Subiendo...";
+    if (uploadStatus === "success") return "Imagen subida ✓";
+    return "Cargar imagen";
   };
 
   return (
@@ -196,40 +203,41 @@ const uploadImage = async () => {
           )}
         </div>
 
-        {/* ✅ BOTÓN FUERA DEL DROPZONE */}
-
+        {/* ✅ Botón fuera del dropzone con control de estado */}
+        {paymentProof && (
+          <div className="button-wrapper">
+            <BaseButton
+              type="button"
+              textLabel={true}
+              label={getButtonLabel()}
+              disabled={isUploadDisabled}
+              handleClick={uploadImage}
+              classs={"button primary"}
+              $colorbtn={uploadStatus === "success" ? "var(--success)" : "var(--primary)"}
+              $colortextbtnprimary={"var(--light)"}
+              $colorbtnhoverprimary={"var(--primary-semi)"}
+              $colortextbtnhoverprimary={"white"}
+            />
+          </div>
+        )}
       </div>
-       {paymentProof && (
-    <div
-      onClick={(e) => e.stopPropagation()} // 🔥 CLAVE
-    >
-      <BaseButton
-        type="button" // 🔥 CLAVE
-        textLabel={true}
-        label="Cargar imagen"
-        disabled={!file || uploadStatus === "uploading"}
-        handleClick={uploadImage}
-        classs={"button primary"}
-        $colorbtn={"var(--primary)"}
-        $colortextbtnprimary={"var(--light)"}
-        $colorbtnhoverprimary={"var(--primary-semi)"}
-        $colortextbtnhoverprimary={"white"}
-      />
-    </div>
-  )}
     </DropzoneWrapper>
   );
 };
 
-
 const DropzoneWrapper = styled.div`
-
   width: 100%;
 
   .dropzone {
     display: grid;
-gap: 10px;
+    gap: 10px;
     width: 100%;
+  }
+
+  .button-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
   }
 
   .dropzone-area {
@@ -338,5 +346,4 @@ gap: 10px;
     font-size: 13px;
     color: #c62828;
   }
-
 `;

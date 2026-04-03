@@ -5,8 +5,7 @@ import { useSelector } from 'react-redux';
 
 export const HeaderAdmin = () => {
 
-  const { fullname } = useSelector((state) => state.authAdmin.admin);
-  
+  const admin = useSelector((state) => state.authAdmin.admin);
 
   return (
     <AdminHeader className="header">
@@ -16,10 +15,10 @@ export const HeaderAdmin = () => {
         <div className="header-dashavt">
           <AvatarAdmin 
           dropData={true} 
-          nameAdm={fullname} 
+          nameAdm={admin.name + " " + admin.lastname} 
           img={"default-avatar"} 
           avtsmall={true} 
-          clas={"avatar tumb"} />
+          clas={"avtadm tumb"} />
         </div>
     </AdminHeader>
   )

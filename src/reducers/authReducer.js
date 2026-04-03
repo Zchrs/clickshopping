@@ -2,88 +2,83 @@
 import { types } from "../types/types";
 
 const initialState = {
-    checking: true,
-    // uid: null,
-    // name: null
-}
+  checking: true,
+  user: null,
+  isAuthenticated: false,
+  currentUser: null,
+};
+
 const initialStateAdmin = {
-    checking: true,
-    // uid: null,
-    // name: null
-}
+  checking: true,
+  admin: null,
+  isAuthenticated: false,
+};
 
-export const authReducer = ( state = initialState, action ) => {
+export const authReducer = (state = initialState, action) => {
+  switch (action.type) {
+    // Login usuario normal
+    case types.authLogin:
+      return {
+        ...state,
+        checking: false,
+        user: action.payload,
+        isAuthenticated: true,
+        currentUser: action.payload,
+      };
 
-    switch ( action.type ) {
-        
-        case types.authLogin:
-            return {
-                ...state,
-                ...action. payload,
-                checking: false
-            }
-           
-        case types.authCheckingFinish:
-            return {
-                ...state,
-                checking: false
-            }
+    // Logout usuario normal
+    case types.authLogout:
+      return {
+        ...initialState,
+        checking: false,
+      };
 
-        case types.authLogout:
-            return {
-                checking: true,
-                state: initialState
-            }
+    // Finalizar checking
+    case types.authCheckingFinish:
+      return {
+        ...state,
+        checking: false,
+      };
 
+    // Set guest (invitado)
+    case types.authSetGuest:
+      return {
+        ...state,
+        checking: false,
+        user: null,
+        isAuthenticated: false,
+        isGuest: true,
+        currentUser: action.payload,
+      };
 
-        default:
-            return state;
-    }
+    default:
+      return state;
+  }
+};
 
-}
+export const authReducerAdmin = (state = initialStateAdmin, action) => {
+  switch (action.type) {
+    case types.authAdminLogin:
+      return {
+        ...state,
+        checking: false,
+        admin: action.payload.admin,
+        isAuthenticated: true,
+      };
 
-export const authReducerAdmin = ( state = initialStateAdmin, action ) => {
+    case types.authAdminLogout:
+      return {
+        ...initialStateAdmin,
+        checking: false,
+      };
 
-    switch ( action.type ) {
-        
-        case types.authAdminLogin:
-            return {
-                ...state,
-                ...action. payload,
-                checking: false
-            }
-           
-        case types.adminCheckingFinish:
-            return {
-                ...state,
-                checking: false
-            }
+    case types.adminCheckingFinish:
+      return {
+        ...state,
+        checking: false,
+      };
 
-        case types.authAdminLogout:
-            return {
-                checking: true,
-                state: initialStateAdmin
-            }
-
-
-        default:
-            return state;
-    }
-
-}
-
-export const authReducerActions = ( state = {}, action ) => {
-    switch (action.type) {
-        case types.authLogin:
-            return {
-                ...state,
-                checking: false,
-                ...action.payload
-            }
-        case types.logout:
-            return {}
-    
-        default:
-            return state;
-    }
-}
+    default:
+      return state;
+  }
+};

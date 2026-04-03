@@ -18,8 +18,12 @@ export const Recovery = () => {
     rePassword: "",
   };
 
-  const { form, errors, handleChange, handleBlur, handleChangePassword, handleVerifyCode,
-handleRequestCode } = useForm(
+  const { form, errors, 
+    handleChange, 
+    handleBlur, 
+    handleChangePassword, 
+    handleVerifyCode,
+    handleRequestCode } = useForm(
     initialRecoveryForm,
     initialForm,
     validateForm,
@@ -114,10 +118,11 @@ const handleCodeVerified = async (e) => {
                 handleClick={handleCodeVerified}
               classs={"button secondary"}
               textLabel={true}
-              colorbtn={"var(--bg-secondary)"}
-              colortextbtnsecondary={"--bg-primary"}
-              colorbtnhoversecondary={"var(--bg-secondary-tr)"}
-              hovercolorbtntextsecondary={"--bg-primary"}
+              $colorbtn={"var(--dark)"}
+              $colorbtntextsecondary={"var(--light)"}
+              $colorbtnhoversecondary={"var(--secondary)"}
+              $colorbtntexthoversecondary={"var(--light)"}
+              $hovercolorbtntextsecondary={"var(--dark)"}
               label="Enviar"
             />
         </div>
@@ -166,12 +171,15 @@ const handleCodeVerified = async (e) => {
       handleChangePassword(e);
     }
   }}
-  classs={"button primary"}
   textLabel={true}
-  $colorbtn={"var(--primary)"}
-  $colortextbtnsecondary={"--light"}
-  $colorbtnhoversecondary={"var(--bg-secondary-tr)"}
-  $hovercolorbtntextsecondary={"--bg-primary"}
+  classs={"button outline"}
+$outline={true}
+$borderbtn={"var(--light)"}
+$colorbtnoutline = "transparent"
+$colortextbtnoutline = "var(--light)"
+$colortextbtnhoveroutline = "var()"
+$hovercolorbtnoutline = "var(--primary-semi)"
+$borderbtnhoveroutline = "var(--light)"
   label="Restablecer contraseña"
 />
           </div>
@@ -197,7 +205,7 @@ const RecoverySection = styled.section`
     height: 100%;
     display: grid;
     gap: 25px;
-    color: var(--bg-tertiary);
+    color: var(--light);
     &-form {
       width: 100%;
       display: grid;

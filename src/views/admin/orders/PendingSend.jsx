@@ -17,10 +17,10 @@ export const PendingSend = () => {
       <OrdersList
         title="Pedidos pendientes de envío"
         orders={allOrders}
-        statusFilter="pending send"
+        statusFilter="pending shipment"
         approveUrl={import.meta.env.VITE_APP_API_APPROVE_SEND_ORDER_URL}
         enableStream
-        labelBtn={"Enviar"}
+        labelBtn={"Enviar pedido"}
         streamUrl={`${import.meta.env.VITE_APP_API_URL}/orders/stream`}
         onAfterAction={() => dispatch(fetchOrders())}
         confirmTextBtn={"Aprobar envío"}

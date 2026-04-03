@@ -19,7 +19,7 @@ export const OrdersComplete = () => {
           <OrdersList
             title="Pedidos completados y enviados"
             orders={allOrders}
-            statusFilter="approved"
+            statusFilter="shipped"
             enableStream
             streamUrl={`${import.meta.env.VITE_APP_API_URL}/orders/stream`}
             onAfterAction={() => dispatch(fetchOrders())}

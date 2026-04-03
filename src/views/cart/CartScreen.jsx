@@ -2,76 +2,129 @@
 /* eslint-disable no-debugger */
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchCartUser, moveFromCartToWishlist, removeFromCart } from "../../actions/cartActions";
 import { BaseButton, CardProductCart, Empty } from "../../../index";
 import styled from "styled-components";
 import { formatPrice } from "../../../globalActions";
 import Swal from "sweetalert2";
 import { useTranslation } from "react-i18next";
-
+import { cartService } from "../../services/cartService";
 
 export const CartScreen = () => {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [subtotal, setSubtotal] = useState(0);
   const [total, setTotal] = useState(0);
-  const { id } = useSelector((state) => state.auth.user);
+  
+  // Usar currentUser del reducer que tiene toda la info
+  const { currentUser, isAuthenticated, isGuest } = useSelector((state) => state.auth);
+  
+  console.log("Estado de auth:", { currentUser, isAuthenticated, isGuest });
+  console.log("ID del usuario:", currentUser?.id);
+
   const lang = useSelector((state) => state.langUI.lang);
   const { t, i18n } = useTranslation();
   const dispatch = useDispatch();
-  const userId = id;
 
+  // Cargar items del carrito
   useEffect(() => {
-    const getCartItems = async () => {
+    const loadCartItems = async () => {
+      setLoading(true);
+      
       try {
-        if (userId && typeof userId === "string" && userId.trim() !== "") {
-          const items = await fetchCartUser(userId);
-          setCartItems(items);
-          calculateTotals(items);
-        } else {
-          console.error("User ID is invalid or missing");
+        // Solo cargar si es usuario autenticado (no invitado)
+        if (!isAuthenticated || !currentUser?.id) {
+          console.log("No hay usuario autenticado o es invitado");
+          setCartItems([]);
+          calculateTotals([]);
+          return;
         }
+
+        console.log("Cargando carrito para usuario:", currentUser.id);
+        
+        // Llamar a la API
+        const items = await cartService.getCart(currentUser.id);
+        console.log("Items del carrito:", items);
+        
+        setCartItems(items);
+        calculateTotals(items);
+        
       } catch (error) {
         console.error("Error loading cart items:", error);
+        Swal.fire({
+          title: "Error",
+          text: error.message || "No se pudo cargar el carrito",
+          icon: "error",
+          customClass: {
+            popup: "swal-custom-popup",
+            title: "custom-title",
+            content: "custom-content",
+            confirmButton: "swal-confirm-btn",
+          },
+        });
+        setCartItems([]);
+        calculateTotals([]);
       } finally {
         setLoading(false);
       }
     };
 
-    getCartItems();
-  }, [userId]);
+    loadCartItems();
+  }, [isAuthenticated, currentUser?.id]); // Dependencias correctas
 
-  const handleRemoveFromCart = async (productId, name) => {
+  const handleRemoveFromCart = async (cartItemId, name) => {
     const result = await Swal.fire({
       title: 'Vas a eliminar un producto',
-      html: `¡Estás seguro que deseas eliminar <strong>${name}</strong> del carrito?`,
+      html: `¿Estás seguro que deseas eliminar <strong>${name}</strong> del carrito?`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Confirmar',
       cancelButtonText: 'Volver',
       background: '#f0f0f0',
       customClass: {
-        popup: 'custom-popup',
+        popup: 'swal-custom-popup',
         title: 'custom-title',
         content: 'custom-content',
-        confirmButton: 'custom-confirm-button',
-        cancelButton: 'custom-cancel-button',
+        confirmButton: 'swal-confirm-btn',
+        cancelButton: 'swal-cancel-btn',
       },
     });
 
     if (result.isConfirmed) {
-      await dispatch(removeFromCart(productId));
-      // Después de eliminar el producto del carrito, recargar los elementos del carrito
-      const items = await fetchCartUser(userId);
-      setCartItems(items);
-      calculateTotals(items);
+      try {
+        await cartService.removeFromCart(cartItemId);
+        
+        // Recargar carrito
+        const items = await cartService.getCart(currentUser.id);
+        setCartItems(items);
+        calculateTotals(items);
+        
+        Swal.fire({
+          title: '¡Eliminado!',
+          text: `${name} ha sido eliminado del carrito`,
+          icon: 'success',
+          timer: 1500,
+          showConfirmButton: false,
+        });
+      } catch (error) {
+        Swal.fire({
+          title: 'Error',
+          text: error.message || 'No se pudo eliminar el producto',
+          icon: 'error',
+          customClass: {
+            popup: 'swal-custom-popup',
+            title: 'custom-title',
+            content: 'custom-content',
+            confirmButton: 'swal-confirm-btn',
+          },
+        });
+      }
     }
   };
 
-  const handleMoveToWishlist = async (productId, name) => {
+  const handleMoveToWishlist = async (cartItemId, name) => {
     try {
       const result = await Swal.fire({
-        title: 'Enviando a lista de deseos',
+        title: 'Mover a lista de deseos',
         html: `¿Estás seguro que deseas mover <strong>${name}</strong> a la lista de deseos?`,
         icon: 'warning',
         showCancelButton: true,
@@ -79,69 +132,79 @@ export const CartScreen = () => {
         cancelButtonText: 'Volver',
         background: '#f0f0f0',
         customClass: {
-          popup: 'custom-popup',
+          popup: 'swal-custom-popup',
           title: 'custom-title',
           content: 'custom-content',
-          confirmButton: 'custom-confirm-button',
-          cancelButton: 'custom-cancel-button',
+          confirmButton: 'swal-confirm-btn',
+          cancelButton: 'swal-cancel-btn',
         },
       });
 
       if (result.isConfirmed) {
-        await dispatch(moveFromCartToWishlist(productId));
-
-        Swal.fire({
-          title: '¡Hecho!',
-          html: `¡<strong>${name}</strong>, se ha enviado a la lista de deseos!`,
-          icon: 'success',
-          showCancelButton: false,
-          cancelButtonText: 'Volver',
-          background: '#f0f0f0',
-          customClass: {
-            popup: 'custom-popup',
-            title: 'custom-title',
-            content: 'custom-content',
-            confirmButton: 'custom-confirm-button',
-            cancelButton: 'custom-cancel-button',
-          },
-        });
-
-        // Después de mover el producto al wishlist, recargar los elementos del carrito
-        const items = await fetchCartUser(userId);
+        await cartService.moveToWishlist(cartItemId);
+        
+        // Recargar carrito
+        const items = await cartService.getCart(currentUser.id);
         setCartItems(items);
         calculateTotals(items);
+        
+        Swal.fire({
+          title: '¡Movido!',
+          text: `${name} se ha movido a la lista de deseos`,
+          icon: 'success',
+          timer: 1500,
+          showConfirmButton: false,
+        });
       }
     } catch (error) {
-      console.error('Error deleting product:', error.response?.data || error.message);
       Swal.fire({
         title: 'Error',
-        text: 'Hubo un error al intentar mover el producto.',
+        text: error.message || 'Hubo un error al mover el producto',
         icon: 'error',
-        background: '#f0f0f0',
         customClass: {
-          popup: 'custom-popup',
+          popup: 'swal-custom-popup',
           title: 'custom-title',
           content: 'custom-content',
-          confirmButton: 'custom-confirm-button',
+          confirmButton: 'swal-confirm-btn',
         },
       });
-      throw error.response?.data || error.message;
     }
   };
 
   const calculateTotals = (items) => {
     const subtotalValue = items.reduce(
-      (sum, item) => sum + item.price * item.quantity,
+      (sum, item) => sum + (Number(item.price) * Number(item.quantity)),
       0
     );
-    const totalItemsCount = items.reduce((sum, item) => sum + item.quantity, 0);
-    // Puedes ajustar aquí si hay un costo de envío u otros costos adicionales
+    const totalItemsCount = items.reduce((sum, item) => sum + Number(item.quantity), 0);
+    
     setSubtotal(subtotalValue);
     setTotal(totalItemsCount);
   };
 
+  // Si es invitado, mostrar mensaje diferente
+  if (isGuest) {
+    return (
+      <MyCart>
+        <div className="mycart">
+          <div className="guest-message">
+            <h2>Modo Invitado</h2>
+            <p>Los invitados no tienen carrito en base de datos.</p>
+            <p>Por favor <a href="/auth/login">inicia sesión</a> para ver tu carrito.</p>
+          </div>
+        </div>
+      </MyCart>
+    );
+  }
+
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <MyCart>
+        <div className="loading-container">
+          <p>Cargando carrito...</p>
+        </div>
+      </MyCart>
+    );
   }
 
   return (
@@ -150,13 +213,15 @@ export const CartScreen = () => {
         <div className="mycart-contain">
           <div className="mycart-contain-header">
             <h2>Mi carrito ({total})</h2>
+            {currentUser && (
+              <small className="user-info">
+                Usuario: {currentUser.name} {currentUser.lastname}
+              </small>
+            )}
           </div>
           <div className="mycart-contain-items">
-            {loading ? (
-              <p>Cargando productos...</p>
-            ) : !Array.isArray(cartItems) || cartItems.length === 0 ? (
-                <Empty img="empty" message={t("globals.emptyProducts")} />
-              
+            {!Array.isArray(cartItems) || cartItems.length === 0 ? (
+              <Empty img="empty" message={t("globals.emptyProducts")} />
             ) : (
               cartItems.map((item) => (
                 <CardProductCart
@@ -166,11 +231,11 @@ export const CartScreen = () => {
                       ? item.img_urls[0]
                       : ""
                   }
-                  price={`COP $${item.price}`}
+                  price={`COP $${formatPrice(item.price)}`}
                   name={item.name}
                   quantity={item.quantity}
-                  onRemove={() => handleRemoveFromCart(item.product_id, item.name)}
-                  onWishlist={() => handleMoveToWishlist(item.product_id, item.name)}
+                  onRemove={() => handleRemoveFromCart(item.id, item.name)}
+                  onWishlist={() => handleMoveToWishlist(item.id, item.name)}
                 />
               ))
             )}
@@ -183,33 +248,35 @@ export const CartScreen = () => {
             <strong>${formatPrice(subtotal)}</strong>
           </div>
           <div className="mycart-flex">
-            <p>Envío: </p>
-            <strong>0</strong>
+            <p>Envío:</p>
+            <strong>$0</strong>
           </div>
           <div className="mycart-flex">
-            <p>Total:</p> <strong>${formatPrice(subtotal)}</strong>
+            <p>Total:</p> 
+            <strong>${formatPrice(subtotal)}</strong>
           </div>
           <BaseButton
             textLabel={true}
             label={`Pagar (${total})`}
             icon={"pay"}
             classs={'button primary'} 
-            colorbtn={"var(--bg-primary)"}
-            colortextbtnprimary={"var(--light)"}
-            colorbtnhoverprimary={"var(--bg-primary-tr)"}
-            colortextbtnhoverprimary={"white"}  
+            $colorbtn={"var(--bg-primary)"}
+            $colortextbtnprimary={"var(--light)"}
+            $colorbtnhoverprimary={"var(--bg-primary-tr)"}
+            $colortextbtnhoverprimary={"white"}  
+            disabled={!isAuthenticated || cartItems.length === 0}
           />
           <div>
             <h5>Entrega Rápida</h5>
             <p className="texts txsm">
               Cupón de descuento de COP $50.000 por entrega tardía,
-              nos tomamos muy en serio las entregas a tiempo,
+              nos tomamos muy en serio las entregas a tiempo.
             </p>
           </div>
           <div>
             <h5>Seguridad y privacidad</h5>
             <p className="texts txsm">
-            Pagos seguros - Datos personales seguros
+              Pagos seguros - Datos personales seguros
             </p>
           </div>
         </section>
@@ -220,6 +287,38 @@ export const CartScreen = () => {
 
 const MyCart = styled.div`
   display: grid;
+
+  .loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+    font-size: 18px;
+    color: #666;
+  }
+
+  .guest-message {
+    text-align: center;
+    padding: 40px;
+    background: #f5f5f5;
+    border-radius: 8px;
+    margin: 20px;
+    
+    h2 {
+      color: #ff9800;
+      margin-bottom: 15px;
+    }
+    
+    p {
+      margin: 10px 0;
+    }
+    
+    a {
+      color: #1976d2;
+      text-decoration: underline;
+      font-weight: bold;
+    }
+  }
 
   .mycart {
     display: grid;
@@ -242,7 +341,6 @@ const MyCart = styled.div`
       box-shadow: 1px 1px 3px #ebe9e9, -1px -1px 3px #ebe9e9;
       border-radius: 0px 10px 10px 0px;
       padding: 15px;
-
     }
 
     &-contain {
@@ -259,6 +357,12 @@ const MyCart = styled.div`
         width: 100%;
         height: fit-content;
         padding: 10px;
+        
+        .user-info {
+          color: #666;
+          font-size: 14px;
+          margin-top: 5px;
+        }
       }
 
       &-items {
@@ -267,10 +371,9 @@ const MyCart = styled.div`
       }
     }
 
-    &-flex{
+    &-flex {
       display: flex;
       justify-content: space-between;
     }
   }
 `;
-

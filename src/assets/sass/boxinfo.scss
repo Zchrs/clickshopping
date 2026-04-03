@@ -46,10 +46,10 @@
     height: 50px;
   }
 
-  &__a {
+  &-a {
     font-size: 14px;
     text-decoration: none;
-    color: var(primary);
+    color: var(--primary);
     cursor: pointer;
 
     &:hover {

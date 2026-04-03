@@ -6,7 +6,7 @@ import { MyChart, VisitorsTracker } from "../../../../index";
 export const DashboardScreen = () => {
 
   return (
-    <ScreenDashboard className="dashboard">
+    <ScreenDashboard className="dashboard-container">
       <div className="dashboard-container-cards"></div>
       <div className="dashboard-container-box">
         <div className="dashboard-container-charts">
@@ -27,18 +27,19 @@ const ScreenDashboard = styled.section`
    display: grid;
     width: 100%;
     gap: 25px;
-
+    
+    
     .dashboard-container{
-        display: grid;
-        width: 100%;
-        border-radius: 10px;
-        height: fit-content;
-        gap: 25px;
-    }
-        .dashboard-container-cards{
-            display: flex;
-            gap: 15px;
-            box-shadow: 
+      display: grid;
+      width: 100%;
+      border-radius: 10px;
+      height: fit-content;
+      gap: 25px;
+      }
+      .dashboard-container-cards{
+        display: flex;
+        gap: 15px;
+        box-shadow: 
             rgb(190, 188, 188) 1px 1px 3px, 
             rgb(190, 188, 188) -1px -1px 3px;
             background: white;
@@ -46,7 +47,10 @@ const ScreenDashboard = styled.section`
             width: 100%;
             height: fit-content;
             padding: 25px;
-        }
+            @media (max-width: 720px) {
+              display: grid;
+            }
+          }
         .dashboard-container-charts{
             border-radius: 10px;
             box-shadow: 
@@ -64,6 +68,9 @@ const ScreenDashboard = styled.section`
             border-radius: 10px;
             width: 100%;
             height: fit-content;
+            @media (max-width: 720px) {
+              grid-template-columns: 1fr;
+            }
         }
         
         .dashboard-container-contain{

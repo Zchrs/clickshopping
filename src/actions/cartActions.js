@@ -56,22 +56,38 @@ export const fetchCartUser = async (user_id) => {
 };
 
 // Acción para eliminar un producto del carrito
-export const removeFromCart = (productId) => async (dispatch, getState) => {
-  const { id: userId } = getState().auth.user;
- 
-  try {
-    // Llamada a la API para eliminar el producto del carrito
-    await axios.delete(`${import.meta.env.VITE_APP_API_DELETE_CART_URL}/${productId}`, {
-      data: { user_id: userId, product_id: productId }
-    });
+export const removeFromCart = (itemData) => async (dispatch, getState) => {
 
-    // Despachar la acción para actualizar el estado en Redux
-    dispatch({
-      type: types.REMOVE_FROM_CART,
-      payload: productId,
-    });
+  try {
+    const { auth } = getState();
+    const token = auth.user?.token || localStorage.getItem("user");
+
+    if (!token) {
+      throw new Error("No hay token de autenticación");
+    }
+
+    const { product_id, variant_id } = itemData;
+
+    const { data } = await axios.delete(
+      `${import.meta.env.VITE_APP_API_DELETE_CART_URL}`,
+      {
+        headers: {
+          'x-token': token, // 🔥 CLAVE
+          'Content-Type': 'application/json'
+        },
+        data: {
+          product_id,
+          variant_id: variant_id || null
+        }
+      }
+    );
+
+    return data;
+
   } catch (error) {
-    console.error('Error al eliminar el producto del carrito:', error);
+    console.error("❌ Error en removeFromCart:", error);
+    console.error("Respuesta:", error.response?.data);
+    throw error;
   }
 };
 

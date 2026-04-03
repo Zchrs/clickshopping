@@ -7,31 +7,35 @@ import { BaseButton } from "./BaseButton";
 import { useDispatch, useSelector } from "react-redux";
 import { clearProduct, selectedProduct } from "../../actions/productActions";
 import { AddCartWishlist } from "./AddCartWishlist";
-import { useNavigate } from "react-router-dom";
-// import { addToCart as addToCartAction } from "../actions/cartActions";
+import { Link, useNavigate } from "react-router-dom";
+import ReactDOM from "react-dom/client";
 import Swal from "sweetalert2";
-import { useForm, initialForm } from "../../hooks/useForm";
+import { useForm } from "../../hooks/useForm";
 
 
 import { Rating } from "./Rating";
-// import { Image } from "@imagekit/react";
+import { DetailProductSwal } from "./DetailProductSwal";
+import { useState } from "react";
 
 export const CardProducts = ({
-  name,
+  title,
   classs,
   description,
   member,
   img,
+  images,
   user_id,
   product_id,
   prodHover,
+  colors,
+  descriptionText,
   prodLeave,
   preview,
   price,
   previousPrice,
   discount,
   productLink,
-  thumbnails,
+  onClick,
   quantity,
   ratingss,
   ratings,
@@ -41,6 +45,7 @@ export const CardProducts = ({
 }) => {
   const user = useSelector((state) => state.auth.user);
   const productHover = useSelector((state) => state.product.selectedProduct);
+    const [activeColor, setActiveColor] = useState(null);
   const isProduction = import.meta.env.MODE === "production";
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -50,6 +55,7 @@ export const CardProducts = ({
     user_id: "",
     product_id: "",
     price: "",
+    colors: "",
     quantity: "",
   };
   
@@ -61,7 +67,49 @@ export const CardProducts = ({
     handleSubmitAddWishlist,
     setForm
   } = useForm(initialForm);
-  
+
+
+  // modal de descripción y seleccion de colores
+  const showProductModal = async (product) => {
+  let selectedColor = null;
+  let root = null;
+
+  await Swal.fire({
+    html: `<div id="swal-product-root"></div>`,
+    showConfirmButton: false,
+    showCloseButton: true,
+    width: "100%",
+        customClass: {
+          popup: "swal-custom-popup",
+          title: "swal-custom-title",
+          content: "swal-custom-content",
+        },
+    didOpen: () => {
+      const container = document.getElementById("swal-product-root");
+      root = ReactDOM.createRoot(container);
+
+      root.render(
+        <DetailProductSwal
+          product={product}
+          onConfirm={(color) => {
+            if (product.colors?.length > 1 && !color) {
+              Swal.showValidationMessage("Selecciona un color");
+              return;
+            }
+
+            selectedColor = color;
+            Swal.close();
+          }}
+        />
+      );
+    },
+    didClose: () => {
+      if (root) root.unmount(); // 🔥 evitar memory leak
+    },
+  });
+
+  return selectedColor;
+};
 
   // Cuando quieras establecer el estado del producto
   const handleSetProductInfo = (e) => {
@@ -75,6 +123,7 @@ export const CardProducts = ({
       user_id: user.id, // Assuming you want to set the user_id as well
       product_id: productHover.id,
       price: productHover.price,
+      colors: productHover.colors,
       quantity: 1, // You can set a default quantity or manage it as needed
     }));
   };
@@ -89,64 +138,72 @@ export const CardProducts = ({
 
   const handleMouseEnter = () => {
     if (user) {
-      handleSetProductInfo({ user_id, product_id, price, quantity });
+      handleSetProductInfo({ user_id, product_id, price, colors, quantity });
     }
   };
 
   const handleMouseLeave = () => {
     if (user) {
-      handleCLearProduct({ user_id, product_id, price, quantity });
+      handleCLearProduct({ user_id, product_id, price, colors, quantity });
     }
   };
 
-  const handleAddToCart = (e) => {
-    if (user) {
-      handleSubmitAddCart(e);
-    } else {
-      Swal.fire({
-        title: "Aún no eres nuestro cliente",
-        text: "Regístrate para agregar productos al carrito.",
-        icon: "warning",
-        showCancelButton: true,
-        // confirmButtonColor: '#990000',
-        // cancelButtonColor: '#a4883e',
-        confirmButtonText: "Registrarme",
-        cancelButtonText: "Cancelar",
-        background: "#f0f0f0",
-        customClass: {
-          popup: "custom-popup",
-          title: "custom-title",
-          content: "custom-content",
-          confirmButton: "custom-confirm-button",
-          cancelButton: "custom-cancel-button",
-        },
-      }).then((result) => {
-        if (result.isConfirmed) {
-          navigate("/users/auth/register");
-        }
-      });
-    }
-  };
+const handleAddToCart = async (e) => {
+  e.preventDefault();
+
+const productData = {
+  id: product_id,
+  name: title,
+  price: price,
+  previousPrice: previousPrice,
+  images: images?.length ? images : [img], // ✅ FIX REAL
+  img_url: img, // 🔥 FIX
+  description: descriptionText,
+  colors: colors,
+};
+
+  const hasMultipleColors =
+    Array.isArray(colors) && colors.length > 1;
+
+  let selectedColor = activeColor;
+
+  // ✅ SI TIENE VARIOS COLORES → ABRIR MODAL
+  if (hasMultipleColors && !selectedColor) {
+    selectedColor = await showProductModal(productData);
+
+    if (!selectedColor) return; // usuario canceló
+  }
+
+  // ✅ SI SOLO HAY UN COLOR → AUTOSELECCIÓN
+  if (!hasMultipleColors && colors?.length === 1) {
+    selectedColor = colors[0];
+  }
+
+  // 🔥 GUARDAR COLOR EN ESTADO (opcional)
+  setActiveColor(selectedColor);
+
+  // ✅ ENVIAR AL HOOK
+  handleSubmitAddCart(productData, 1, selectedColor);
+};
+
   const handleAddToWishList = (e) => {
     if (user) {
       handleSubmitAddWishlist(e);
     } else {
       Swal.fire({
-        title: "Aún no eres nuestro cliente",
+        title: "Debes registrarte",
         text: "Regístrate para agregar productos a la lista de deseos.",
         icon: "warning",
         showCancelButton: true,
-        // confirmButtonColor: '#990000',
-        // cancelButtonColor: '#a4883e',
         confirmButtonText: "Registrarme",
         cancelButtonText: "Cancelar",
         background: "#f0f0f0",
         customClass: {
-          popup: "custom-popup",
-          title: "custom-title",
-          content: "custom-content",
-          confirmButton: "custom-confirm-button",
-          cancelButton: "custom-cancel-button",
+          popup: "swal-custom-popup",
+          title: "swal-custom-title",
+          content: "swal-custom-content",
+          confirmButton: "swal-confirm-btn",
+          cancelButton: "swal-cancel-btn",
         },
       }).then((result) => {
         if (result.isConfirmed) {
@@ -186,29 +243,24 @@ export const CardProducts = ({
           <div className="productcard-contain">
              {!isProduction ? (
     // 🧪 DESARROLLO → imagen local
-    <img
-      loading="lazy"
-      src={img}
-      alt={name}
-    />
-  ) : (
-    // 🚀 PRODUCCIÓN → ImageKit
-    // <Image
-    //   path={img}
-    //   transformation={[
-    //     { width: 400, height: 300 }
-    //   ]}
-    //   loading="lazy"
-    //   alt={name}
-    // />
+    <Link onMouseEnter={prodHover} onClick={onClick} to={productLink}>
       <img
-    loading="lazy"
-    src={img}
-    alt={name}
-    onError={(e) => {
-      e.target.src = "/img/no-image.png";
-    }}
-  />
+        loading="lazy"
+        src={img}
+        alt={title}
+      />
+    </Link>
+  ) : (
+      <Link>
+        <img
+            loading="lazy"
+            src={img}
+            alt={title}
+            onError={(e) => {
+            e.target.src = "/img/no-image.png";
+            }}
+          />
+      </Link>
   )}
           </div>
         </div>
@@ -239,13 +291,14 @@ export const CardProducts = ({
           </div>)}
 
           <p className="productcard__p"> {description} </p>
-          <p className="productcard__quantity"> {name} </p>
+          <p className="productcard__quantity"> {title} </p>
           <p className="productcard__quantity"> {quantity} Disponibles</p>
           <h2 className="productcard__h2">
-            {formatPrice(previousPrice)} <span className="productcard-span"> {discount} </span>
+            {formatPrice(price)}
+             <span className="productcard-span"> {discount} </span>
           </h2>
           <div className="productcard-group">
-            <p className="productcard__p2">{formatPrice(price)}</p>
+            <p className="productcard__p2">{formatPrice(previousPrice)}</p>
           </div>
           <p className="productcard__p3"> {member} </p>
           {ratingss && <Rating ratings={ratings} productID={product_id} userID={user ? user.id : null} />}
@@ -260,7 +313,6 @@ export const CardProducts = ({
             </div>
           )}
         </div>
-        {/* Resto del código */}
       </section>
     </ProductCard>
   );

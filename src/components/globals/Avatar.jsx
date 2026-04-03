@@ -3,10 +3,10 @@
 import { getFile } from "../../reducers/globalReducer";
 import { NavLink } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useState } from "react";
 import { startLogout } from "../../actions/authActions";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 
 export const Avatar = ({
@@ -18,165 +18,176 @@ export const Avatar = ({
   classWhite,
   nameSmall,
 }) => {
-  const user = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const lang = useSelector((state) => state.langUI.lang);
-  const [guestUser, setGuestUser] = useState(null);
   const { t, i18n } = useTranslation();
+  
+  // Usar la estructura correcta del reducer
+  const { currentUser, isAuthenticated } = useSelector((state) => state.auth);
+  
+  const [guestUser, setGuestUser] = useState(null);
 
   useEffect(() => {
     i18n.changeLanguage(lang);
-  }, [i18n, lang, dispatch]);
+  }, [i18n, lang]);
 
-useEffect(() => {
-  if (!user) {
-    try {
-      const guestData = localStorage.getItem("guestUser");
-      console.log("guestData raw:", guestData);
-      
-      if (guestData) {
-        const parsed = JSON.parse(guestData);
-        console.log("guestData parsed:", parsed);
-        setGuestUser(parsed);
-      } else {
-        const guestId = localStorage.getItem("guest_id");
-        if (guestId) {
-          const newGuestUser = {
-            id: guestId,
-            name: "Invitado",
-            role: "guest",
-            guest: true
-          };
-          localStorage.setItem("guestUser", JSON.stringify(newGuestUser));
-          setGuestUser(newGuestUser);
+  // Cargar guestUser solo si no hay usuario autenticado
+  useEffect(() => {
+    if (!isAuthenticated) {
+      try {
+        const guestData = localStorage.getItem("guestUser");
+        if (guestData) {
+          const parsed = JSON.parse(guestData);
+          setGuestUser(parsed);
+        } else {
+          setGuestUser(null);
         }
+      } catch (error) {
+        console.error("Error al parsear guestUser:", error);
+        setGuestUser(null);
       }
-    } catch (error) {
-      console.error("Error al parsear guestUser de localStorage:", error);
-      localStorage.removeItem("guestUser");
+    } else {
+      setGuestUser(null);
     }
-  } else {
-    setGuestUser(null);
-  }
-}, [user]);
+  }, [isAuthenticated]);
 
-// Función para formatear el ID del invitado
-const formatGuestId = (id) => {
-  if (!id) return "";
-  if (id.length <= 10) return id;
-  
-  // Para UUID como "123e4567-e89b-12d3-a456-426614174000"
-  // Mostrará: "123e...4000"
-  const firstPart = id.substring(0, 6);
-  const lastPart = id.substring(id.length - 6);
-  
-  return `${firstPart}...${lastPart}`;
-};
+  // Función para formatear el ID del invitado
+  const formatGuestId = (id) => {
+    if (!id) return "";
+    if (id.length <= 10) return id;
+
+    const firstPart = id.substring(0, 6);
+    const lastPart = id.substring(id.length - 6);
+    return `${firstPart}...${lastPart}`;
+  };
 
   const handleLogout = () => {
     dispatch(startLogout());
     navigate("/auth/login");
   };
 
+  // Determinar qué nombre mostrar
+  const getDisplayName = () => {
+    if (isAuthenticated && currentUser) {
+      const nameParts = [];
+      if (currentUser.name) nameParts.push(currentUser.name);
+      if (currentUser.lastname) nameParts.push(currentUser.lastname);
+      return nameParts.join(" ") || "Usuario";
+    }
+    
+    if (guestUser) {
+      return `${guestUser.name || "Invitado"} ${formatGuestId(guestUser.id)}`;
+    }
+    
+    return "";
+  };
+
+  const displayName = getDisplayName();
+
   return (
     <AvaTar>
       <div className={clas}>
         {avtMedium && (
           <div className="avatar-default">
-            <img src={getFile("png", `${img}`, "png")} alt="" />
+            <img src={getFile("png", `${img}`, "png")} alt="Avatar" />
           </div>
         )}
         {avtsmall && (
           <div className="tumb-default">
-            <img src={getFile("png", `${img}`, "png")} alt="" />
+            <img src={getFile("png", `${img}`, "png")} alt="Avatar" />
           </div>
         )}
+        
         <span className={classWhite}>
-          {user ? (
-            <strong className={nameSmall}>
-              {user.name} {user.lastname}
-            </strong>
-          ) : (
-            ""
-          )}
-          {guestUser ? (
-            <strong className={nameSmall}>
-              {guestUser.name} {formatGuestId(guestUser.id)}
-            </strong>
-          ) : (
-            ""
-          )}
+          <strong className={nameSmall}>{displayName}</strong>
         </span>
+
         {dropData && (
           <div className="avatar-usersession">
-            {guestUser ? (<>
-            <NavLink to={"/my-cart"}>
-              <i>
-                <img src={getFile("svg", "cart", "svg")} alt="" />
-              </i>
-              {t("dashboard.cart")}
-            </NavLink>
-            </>):("")}
-            {user ? ( <>
-            <NavLink to={"/dashboard"}>
-              <i>
-                <img src={getFile("svg", "panel-red", "svg")} alt="" />
-              </i>
-              {t("dashboard.dashboard")}
-            </NavLink>
-            <NavLink>
-              <i>
-                <img src={getFile("svg", "order-red", "svg")} alt="" />
-              </i>
-              {t("dashboard.orders")}
-            </NavLink>
-            
-              <NavLink>
-              <i>
-                <img src={getFile("svg", "message", "svg")} alt="" />
-              </i>
-              {t("dashboard.messages")}
-            </NavLink>
-            <NavLink>
-              <i>
-                <img src={getFile("svg", "currency", "svg")} alt="" />
-              </i>
-              {t("dashboard.currency")}
-            </NavLink>
-            <NavLink>
-              <i>
-                <img src={getFile("svg", "wallet", "svg")} alt="" />
-              </i>
-              {t("dashboard.payment")}
-            </NavLink>
-            <NavLink>
-              <i>
-                <img src={getFile("svg", "wishlist", "svg")} alt="" />
-              </i>
-              {t("dashboard.wishlist")}
-            </NavLink>
-            <NavLink>
-              <i>
-                <img src={getFile("svg", "coupon", "svg")} alt="" />
-              </i>
-              {t("dashboard.coupons")}
-            </NavLink>
-            <div className="avatar-box">
-              <NavLink>{t("dashboard.loginSeller")}</NavLink>
-              <NavLink>{t("dashboard.buyerProtect")}</NavLink>
-              <NavLink>{t("dashboard.support")}</NavLink>
-              <NavLink>{t("dashboard.disputes")}</NavLink>
-              <NavLink>{t("dashboard.ipr")}</NavLink>
-            </div>
-            <button onClick={handleLogout}>
-              <i>
-                <img src={getFile("svg", "off", "svg")} alt="" />
-              </i>
-              {t("dashboard.logout")}
-            </button>
-            </>
-            ):("")}
+            {/* Usuario invitado */}
+            {!isAuthenticated && guestUser && (
+              <>
+                <NavLink to="/cart-guest">
+                  <i>
+                    <img src={getFile("svg", "cart", "svg")} alt="Cart" />
+                  </i>
+                  {t("dashboard.cart")}
+                </NavLink>
+              </>
+            )}
+
+            {/* Usuario autenticado */}
+            {isAuthenticated && currentUser && (
+              <>
+                <NavLink to="/dashboard">
+                  <i>
+                    <img src={getFile("svg", "panel-red", "svg")} alt="Dashboard" />
+                  </i>
+                  {t("dashboard.dashboard")}
+                </NavLink>
+                
+                <NavLink to="/dashboard/orders">
+                  <i>
+                    <img src={getFile("svg", "order-red", "svg")} alt="Orders" />
+                  </i>
+                  {t("dashboard.orders")}
+                </NavLink>
+                
+                <NavLink to="/dashboard/my-messages">
+                  <i>
+                    <img src={getFile("svg", "message", "svg")} alt="Messages" />
+                  </i>
+                  {t("dashboard.messages")}
+                </NavLink>
+                
+                <NavLink to="/dashboard/currency">
+                  <i>
+                    <img src={getFile("svg", "currency", "svg")} alt="Currency" />
+                  </i>
+                  {t("dashboard.currency")}
+                </NavLink>
+                
+                <NavLink to="/dashboard/payment-methods">
+                  <i>
+                    <img src={getFile("svg", "wallet", "svg")} alt="Payment" />
+                  </i>
+                  {t("dashboard.payment")}
+                </NavLink>
+                
+                <NavLink to="/dashboard/wishlist">
+                  <i>
+                    <img src={getFile("svg", "wishlist", "svg")} alt="Wishlist" />
+                  </i>
+                  {t("dashboard.wishlist")}
+                </NavLink>
+                
+                <NavLink to="/dashboard/coupons">
+                  <i>
+                    <img src={getFile("svg", "coupon", "svg")} alt="Coupons" />
+                  </i>
+                  {t("dashboard.coupons")}
+                </NavLink>
+
+                <div className="avatar-box">
+                  <NavLink to="/seller/login">{t("dashboard.loginSeller")}</NavLink>
+                  <NavLink to="/buyer-protection">{t("dashboard.buyerProtect")}</NavLink>
+                  <NavLink to="/support">{t("dashboard.support")}</NavLink>
+                  <NavLink to="/disputes">{t("dashboard.disputes")}</NavLink>
+                  <NavLink to="/ipr">{t("dashboard.ipr")}</NavLink>
+                </div>
+
+                <button onClick={handleLogout}>
+                  <i>
+                    <img src={getFile("svg", "off", "svg")} alt="Logout" />
+                  </i>
+                  {t("dashboard.logout")}
+                </button>
+              </>
+            )}
+
+            {/* Si no hay usuario ni invitado, no mostrar nada */}
+            {!isAuthenticated && !guestUser && null}
           </div>
         )}
       </div>

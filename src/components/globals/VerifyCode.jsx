@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable no-debugger */
 import styled from "styled-components";
 import { getFile } from "../../../globalActions";
@@ -7,107 +8,71 @@ import { useEffect, useState } from "react";
 import { NotFound } from "./NotFound";
 
 export const VerifyCode = () => {
-  const { userId } = useParams();
+  const { token } = useParams(); // ⚠️ CAMBIADO: ahora usamos 'token' en lugar de 'userId'
   const navigate = useNavigate();
 
   // 🔹 Estados
-  const [token, setToken] = useState("");
+  const [verificationToken, setVerificationToken] = useState(token || "");
   const [status, setStatus] = useState("loading"); 
   const [verificationStatus, setVerificationStatus] = useState(false);
   const [apiResponse, setApiResponse] = useState(null);
   const [loadingAction, setLoadingAction] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  // 🔹 Obtener token + estado
-  
+  // 🔹 Verificar token al cargar el componente
   useEffect(() => {
-    if (!userId) {
-      setStatus("invalid");
-      setErrorMessage("No se proporcionó un ID de usuario válido");
-      return;
-    }
+    const verifyToken = async () => {
+      if (!token) {
+        setStatus("invalid");
+        setErrorMessage("No se proporcionó un token de verificación");
+        return;
+      }
 
-    // Validar que userId tenga formato correcto (UUID)
-    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-    if (!uuidRegex.test(userId)) {
-      setStatus("invalid");
-      setErrorMessage("El formato del ID de usuario no es válido");
-      return;
-    }
-
-    const fetchTokenAndStatus = async () => {
       try {
         setStatus("loading");
-        setErrorMessage("");
-
-        // 1️⃣ Obtener token
         
-        const tokenRes = await fetch(
-          `${import.meta.env.VITE_APP_API_CLIENTS_GET_TOKEN_URL}/${userId}`
+        // Llamar a tu API para verificar el token
+        const response = await fetch(
+          `${import.meta.env.VITE_APP_API_CLIENTS_VERIFY_URL}/${token}`
         );
 
-        const tokenData = await tokenRes.json();
-
-        if (!tokenRes.ok) {
+        if (!response.ok) {
           setStatus("invalid");
-          setErrorMessage(tokenData.message || "Error al obtener el token");
+          setErrorMessage("Token inválido o expirado");
           return;
         }
 
-        if (!tokenData.success || !tokenData.token) {
-          setStatus("invalid");
-          setErrorMessage("Token no encontrado para este usuario");
-          return;
-        }
-
-        setToken(tokenData.token);
-        setStatus("valid");
-
-        // 2️⃣ Verificar estado (solo si tenemos token)
-        try {
-          const statusRes = await fetch(
-            `${import.meta.env.VITE_APP_API_CLIENTS_VERIFY_STATUS_URL}/${tokenData.token}`
-          );
-
-          const statusData = await statusRes.json();
-
-          if (statusRes.ok && statusData.success) {
-            setVerificationStatus(Boolean(statusData.isVerified));
+        const data = await response.json();
+        
+        if (data.success) {
+          setStatus("valid");
+          setVerificationToken(token);
+          // Si la API devuelve si ya está verificado
+          if (data.isVerified) {
+            setVerificationStatus(true);
           }
-        } catch (statusError) {
-          console.warn("⚠️ Error al verificar estado:", statusError);
-          // No marcamos como inválido solo por esto
+        } else {
+          setStatus("invalid");
+          setErrorMessage(data.message || "Token inválido");
         }
-
       } catch (error) {
-        console.error("❌ Error en verificación:", error);
+        console.error("Error verificando token:", error);
         setStatus("invalid");
-        setErrorMessage("Error de conexión al servidor");
+        setErrorMessage("Error de conexión");
       }
     };
 
-    fetchTokenAndStatus();
-  }, [userId]);
+    verifyToken();
+  }, [token]);
 
-  // 🔹 Verificar correo
+  // 🔹 Confirmar verificación
   const handleVerify = async () => {
-    if (!token) {
-      setApiResponse({
-        success: false,
-        message: "No hay token disponible para verificar"
-      });
-      return;
-    }
-
     try {
       setLoadingAction(true);
-      setErrorMessage("");
-
-      console.log("🔐 Verificando token:", token);
 
       const response = await fetch(
         `${import.meta.env.VITE_APP_API_CLIENTS_VERIFY_URL}/${token}`,
-        { 
+        {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
@@ -116,10 +81,8 @@ export const VerifyCode = () => {
       );
 
       const data = await response.json();
-      console.log("✅ Respuesta verificación:", data);
-      
       setApiResponse(data);
-      
+
       if (data.success) {
         setVerificationStatus(true);
         // Redirigir al login después de 3 segundos
@@ -127,9 +90,8 @@ export const VerifyCode = () => {
           navigate("/login");
         }, 3000);
       }
-
     } catch (error) {
-      console.error("❌ Error en verificación:", error);
+      console.error("Error:", error);
       setApiResponse({
         success: false,
         message: "Error al verificar el correo"
@@ -141,7 +103,7 @@ export const VerifyCode = () => {
 
   // 🔹 Función para copiar enlace
   const copyToClipboard = () => {
-    const link = `${import.meta.env.VITE_APP_API_CLIENTS_VERIFY_URL}/${token}`;
+    const link = `${window.location.origin}/verify/${token}`;
     navigator.clipboard.writeText(link);
     alert("Enlace copiado al portapapeles");
   };
@@ -219,15 +181,15 @@ export const VerifyCode = () => {
             {!verificationStatus && !apiResponse?.success && (
               <>
                 <BaseButton
-                                classs={"button outline"}
-              textLabel={true}
-              $outline={true}
-              $borderbtn={"var(--light)"}
-              $colorbtnoutline = "transparent"
-              $colortextbtnoutline = "var(--light)"
-              $colortextbtnhoveroutline = "var()"
-              $hovercolorbtnoutline = "var(--primary-semi)"
-              $borderbtnhoveroutline = "var(--light)"
+                  classs={"button outline"}
+                  textLabel={true}
+                  $outline={true}
+                  $borderbtn={"var(--light)"}
+                  $colorbtnoutline="transparent"
+                  $colortextbtnoutline="var(--light)"
+                  $colortextbtnhoveroutline="var()"
+                  $hovercolorbtnoutline="var(--primary-semi)"
+                  $borderbtnhoveroutline="var(--light)"
                   width="100%"
                   height="50px"
                   label={loadingAction ? "Verificando..." : "Confirmar correo"}
@@ -238,8 +200,8 @@ export const VerifyCode = () => {
                 <div className="verify-box">
                   <p>O copia y pega este link:</p>
                   <div className="verify-box">
-                    <strong>
-                      {`${import.meta.env.VITE_APP_API_CLIENTS_VERIFY_URL}/${token}`}
+                    <strong className="verify-link">
+                      {`${window.location.origin}/verify/${token}`}
                     </strong>
                     <button onClick={copyToClipboard} className="verify-btn">
                       📋 Copiar

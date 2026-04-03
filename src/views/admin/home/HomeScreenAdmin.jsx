@@ -22,7 +22,7 @@ export const HomeScreenAdmin = () => {
   
   const initialForm = {
     email: "",
-    pass: "",
+    password: "",
   };
 
 
@@ -59,10 +59,10 @@ export const HomeScreenAdmin = () => {
           placeholder={t('auth.yourPass')}
           onBlur={handleBlur}
           onChange={handleChangeAdmin}
-          formRefs={formRefs.pass}
-          value={form.pass}
-          id="pass"
-          name="pass" 
+          formRefs={formRefs.password}
+          value={form.password}
+          id="password"
+          name="password" 
           isPassword
           
           />

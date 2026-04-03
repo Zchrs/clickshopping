@@ -79,7 +79,8 @@ export const MultiDropZone = ({ id, setImages, name, type }) => {
 
   // URLs según entorno
   const UPLOAD_URL = isProduction
-    ? import.meta.env.VITE_APP_API_HOSTINGER_UPLOAD_URL // producción
+    // ? import.meta.env.VITE_APP_API_HOSTINGER_UPLOAD_URL // producción
+    ? import.meta.env.VITE_APP_API_UPLOAD_IMAGES_PROPERTIES_URL // producción
     : import.meta.env.VITE_APP_API_UPLOAD_IMAGES_PROPERTIES_URL; // desarrollo
 
   const formData = new FormData();

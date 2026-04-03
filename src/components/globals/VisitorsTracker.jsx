@@ -32,7 +32,7 @@ const [devices, setDevices] = useState([]);
     default: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=320&q=80",
   };
 
-  // Registrar heartbeat (POST)
+  // Registrar heartbeat (POST) b
 useEffect(() => {
   fetchStatsFromBackend();
 
@@ -45,11 +45,8 @@ useEffect(() => {
   const fetchStatsFromBackend = async () => {
     try {
       const url = import.meta.env.VITE_APP_ADMIN_GET_TURISTS_URL;
-      console.log("[VisitorsTracker] Intentando GET →", url);
 
       const res = await fetch(`${url}?pathname=${encodeURIComponent(browserLocation.pathname)}`);
-
-      console.log("[VisitorsTracker] Status:", res.status, res.statusText);
 
       if (!res.ok) {
         const errorText = await res.text().catch(() => "Sin cuerpo de error");
@@ -58,7 +55,6 @@ useEffect(() => {
       }
 
       const data = await res.json();
-      console.log("[VisitorsTracker] Datos recibidos del backend:", data);
 
       // Actualizamos solo lo que venga del backend
       setConnectedVisitors(data.activeCount || data.connectedVisitors || 0);

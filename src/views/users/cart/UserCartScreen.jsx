@@ -33,10 +33,12 @@ export const UserCartScreen = () => {
     const getCartItems = async () => {
       try {
         if (userId && typeof userId === "string" && userId.trim() !== "") {
-          const items = await fetchCartUser(userId);
-          setCartItems(items);
-          setSelectedIds([]);
-          calculateTotals(items, []);
+          const response = await fetchCartUser(userId);
+const items = response.items || [];
+
+setCartItems(items);
+setSelectedIds([]);
+calculateTotals(items, []);
         }
       } catch (error) {
         console.error("Error loading cart items:", error);
@@ -85,72 +87,79 @@ export const UserCartScreen = () => {
   /* -------------------- HELPERS -------------------- */
 
   const reloadCart = async () => {
-    const items = await fetchCartUser(userId);
-    setCartItems(items);
-    setSelectedIds([]);
-    calculateTotals(items, []);
+   const response = await fetchCartUser(userId);
+const items = response.items || [];
+
+setCartItems(items);
+setSelectedIds([]);
+calculateTotals(items, []);
   };
 
   /* -------------------- SINGLE ACTIONS -------------------- */
 
-  const handleRemoveFromCart = async (productId, name) => {
-    const result = await Swal.fire({
-      title: "Vas a eliminar un producto",
-      html: `¿Estás seguro que deseas eliminar <strong>${name}</strong> del carrito?`,
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Confirmar",
-      cancelButtonText: "Volver",
-      background: "#f0f0f0",
-      customClass: {
-        popup: "swal-custom-popup",
-        title: "custom-title",
-        content: "custom-content",
-        confirmButton: "swal-confirm-btn",
-        cancelButton: "swal-cancel-btn",
-      },
-    });
+const handleRemoveFromCart = async (productId, variantId, name) => {
+  const result = await Swal.fire({
+    title: "Vas a eliminar un producto",
+    html: `¿Estás seguro que deseas eliminar <strong>${name}</strong> del carrito?`,
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: "Confirmar",
+    cancelButtonText: "Volver",
+    background: "#f0f0f0",
+    customClass: {
+      popup: "swal-custom-popup",
+      title: "custom-title",
+      content: "custom-content",
+      confirmButton: "swal-confirm-btn",
+      cancelButton: "swal-cancel-btn",
+    },
+  });
 
-    if (!result.isConfirmed) return;
+  if (!result.isConfirmed) return;
+
+  Swal.fire({
+    title: "Eliminando...",
+    allowOutsideClick: false,
+    didOpen: () => Swal.showLoading(),
+  });
+
+  try {
+    // ✅ Enviar ambos IDs
+    const response = await dispatch(removeFromCart({ 
+      product_id: productId,
+      variant_id: variantId 
+    }));
 
     Swal.fire({
-      title: "Eliminando...",
-      allowOutsideClick: false,
-      didOpen: () => Swal.showLoading(),
-    });
-
-    try {
-      const response = await dispatch(removeFromCart(productId));
-
-      Swal.fire({
-        icon: "success",
-        title: "¡Listo!",
-        text:
-          response?.payload?.message ||
-          response?.message ||
-          "Producto eliminado correctamente",
-        confirmButtonText: "Aceptar",
-              customClass: {
+      icon: "success",
+      title: "¡Listo!",
+      text: response?.payload?.message || "Producto eliminado correctamente",
+      confirmButtonText: "Aceptar",
+      customClass: {
         popup: "swal-custom-popup",
         title: "swal-custom-title",
         content: "swalcustom-content",
         confirmButton: "swal-confirm-btn",
       },
-      });
+    });
 
-      reloadCart();
-    } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text:
-          error?.response?.data?.error ||
-          error?.message ||
-          "No se pudo eliminar el producto",
-        confirmButtonText: "Aceptar",
-      });
-    }
-  };
+    reloadCart();
+  } catch (error) {
+    console.error("❌ Error eliminando producto:", error);
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: error?.response?.data?.error || "No se pudo eliminar el producto",
+      confirmButtonText: "Aceptar",
+      customClass: {
+        popup: "swal-custom-popup",
+        title: "swal-custom-title",
+        content: "swalcustom-content",
+        confirmButton: "swal-confirm-btn",
+      },
+    });
+  }
+};
 
   const handleMoveToWishlist = async (productId, name) => {
     try {
@@ -392,7 +401,11 @@ export const UserCartScreen = () => {
                     name={item.name}
                     quantity={item.quantity}
                     onRemove={() =>
-                      handleRemoveFromCart(item.product_id, item.name)
+                     handleRemoveFromCart(
+          item.product_id,      // ✅ product_id
+          item.variant_id,      // ✅ variant_id (puede ser null)
+          item.name
+        )
                     }
                     onWishlist={() =>
                       handleMoveToWishlist(item.product_id, item.name)
@@ -477,6 +490,7 @@ const MyCart = styled.div`
       box-shadow: 1px 1px 3px #ebe9e9, -1px -1px 3px #e9ebeb;
       border-radius: 0px 10px 10px 0px;
       padding: 10px;
+      gap: 10px;
     }
 
     &-summary {
@@ -502,6 +516,7 @@ const MyCart = styled.div`
         align-items: center;
         justify-content: space-between;
         background: white;
+        gap: 5px;
         border-radius: 0px;
         box-shadow: 1px 1px 3px #e9ebeb , -1px -1px 3px #e9ebeb;
         width: 100%;
@@ -526,6 +541,7 @@ const MyCart = styled.div`
     &-flex{
       display: flex;
       justify-content: space-between;
+      gap: 10px;
     }
   }
 

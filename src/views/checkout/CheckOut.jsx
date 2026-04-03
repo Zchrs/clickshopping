@@ -1,3 +1,4 @@
+/* eslint-disable no-debugger */
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/no-unescaped-entities */
 
@@ -12,6 +13,7 @@ import { BaseCheckbox, BaseInput } from "../../../index";
 import { useForm } from "../../hooks/useForm";
 import { useValidations } from "../../hooks/useValidations";
 import banksData from "../../../banks.json";
+import { useSlugify } from "../../reducers/useSlugify";
 
 export const CheckOut = () => {
   const location = useLocation();
@@ -26,55 +28,74 @@ export const CheckOut = () => {
   const [paying, setPaying] = useState(false);
   const [paymentMethodState, setPaymentMethodState] = useState("");
 
-  const isGuest = locationState?.guest || false;
-  const currentUser = isGuest ? locationState.user : authUser;
-
   const products = locationState?.products || [];
-  console.log(products, "constante products");
 
   const subtotal = products.reduce((sum, p) => sum + p.price * p.quantity, 0);
+
 
   const initialForm = {
     name: "",
     lastname: "",
     email: "",
     address: "",
+    state: "",
     city: "",
+    phone: "",
     zipCode: "",
-    paymentMethod: ""
+    paymentMethod: "",
+    creditCard: "",
+    accountNumber: "",
+    bank: "",
+    wallet: "",
   };
 
   const { form, setForm, handleChange, handleBlur, handleGuestChange } =
     useForm(initialForm, validateForm);
 
-const handlePaymentMethod = (method) => {
-  setPaymentMethodState(method);
+  const handlePaymentMethod = (method) => {
+    setPaymentMethodState(method);
 
-  setForm({
-    ...form,
-    creditCard: "",
-    bank: "",
-    wallet: "",
-  });
-};
+    setForm({
+      ...form,
+      creditCard: "",
+      bank: "",
+      wallet: "",
+    });
+  };
 
   const isGuestInfoComplete = () => {
-    return (
+    const basicData =
       form.name &&
       form.lastname &&
       form.email &&
       form.address &&
+      form.state &&
       form.city &&
-      form.zipCode &&
-      (form.creditCard || form.bank || form.wallet)
-    );
+      form.zipCode;
+
+    if (!basicData) return false;
+
+    // Validación según método de pago
+    if (paymentMethodState === "card") {
+      return form.creditCard && form.cardNumber;
+    }
+
+    if (paymentMethodState === "bank") {
+      return form.bank && form.accountNumber;
+    }
+
+    if (paymentMethodState === "wallet") {
+      return form.wallet && form.moneybrokerAccount;
+    }
+
+    return false;
   };
 
   const bankOptions = banksData.colombia_financial_entities.banks.map(
     (bank) => ({
       value: bank,
       label: bank,
-    })
+    }),
   );
 
   const moneyBrokersOptions =
@@ -89,12 +110,32 @@ const handlePaymentMethod = (method) => {
       label: b,
     }));
 
-  const handlePay = async () => {
-    if (!currentUser) {
-      Swal.fire("Debes iniciar sesión", "Inicia sesión para pagar", "warning");
-      return;
-    }
+  const guestUser = (() => {
+    try {
+      const guest = localStorage.getItem("guestUser");
+      if (guest) return JSON.parse(guest);
 
+      const guestId = localStorage.getItem("guest_id");
+      if (guestId) {
+        return {
+          id: guestId,
+          name: "Invitado",
+          role: "guest",
+          guest: true,
+        };
+      }
+
+      return null;
+    } catch (err) {
+      console.error("Error leyendo invitado:", err);
+      return null;
+    }
+  })();
+
+  const isGuest = locationState?.guest || !authUser;
+  const currentUser = isGuest ? guestUser : authUser;
+
+  const handlePay = async () => {
     if (!products.length) {
       Swal.fire("Carrito vacío", "No hay productos para pagar", "info");
       return;
@@ -105,6 +146,12 @@ const handlePaymentMethod = (method) => {
         icon: "warning",
         title: "Faltan datos",
         text: "Debes llenar el formulario para continuar",
+        customClass: {
+          popup: "swal-custom-popup",
+          title: "custom-title",
+          content: "custom-content",
+          confirmButton: "swal-confirm-btn",
+        },
       });
       return;
     }
@@ -114,64 +161,104 @@ const handlePaymentMethod = (method) => {
     Swal.fire({
       title: "Procesando pedido...",
       allowOutsideClick: false,
+      customClass: {
+        popup: "swal-custom-popup",
+        title: "custom-title",
+        content: "custom-content",
+        confirmButton: "swal-confirm-btn",
+      },
       didOpen: () => Swal.showLoading(),
     });
 
     try {
+      // Construir payment_data según el método seleccionado
+      let payment_data = {};
+
+      if (paymentMethodState === "card") {
+        payment_data = {
+          cardNumber: form.cardNumber,
+          creditCard: form.creditCard,
+        };
+      } else if (paymentMethodState === "bank") {
+        payment_data = {
+          accountNumber: form.accountNumber,
+          bank: form.bank,
+        };
+      } else if (paymentMethodState === "wallet") {
+        payment_data = {
+          moneybrokerAccount: form.moneybrokerAccount,
+          wallet: form.wallet,
+        };
+      }
+
       const payload = {
-        user_id: currentUser.id,
-        product_ids: products.map((p) => p.product_id),
+        user_id: authUser?.id || null,
+        is_guest: isGuest,
+        paymentMethod: paymentMethodState,
+        products: products.map((p) => ({
+          id: p.product_id || p.id,
+          product_id: p.product_id || p.id,
+          quantity: p.quantity,
+          price: p.price,
+        })),
+        payment_data: payment_data,
       };
 
-if (isGuest) {
+      if (isGuest) {
+        payload.guest_info = {
+          id: currentUser?.id,
+          name: form.name,
+          lastname: form.lastname,
+          email: form.email,
+          address: form.address,
+          state: form.state,
+          city: form.city,
+          phone: form.phone,
+          zipCode: form.zipCode,
+        };
+      }
 
-  let paymentMethod = "";
-
-  if (paymentMethodState === "card") {
-    paymentMethod = form.creditCard;
-  }
-
-  if (paymentMethodState === "bank") {
-    paymentMethod = form.bank;
-  }
-
-  if (paymentMethodState === "wallet") {
-    paymentMethod = form.wallet;
-  }
-
-  payload.guest_info = {
-    name: form.name,
-    lastname: form.lastname,
-    email: form.email,
-    address: form.address,
-    city: form.city,
-    zipCode: form.zipCode,
-    paymentMethod
-  };
-
-  payload.is_guest = true;
-}
+      console.log("Enviando payload:", payload);
 
       const res = await axios.post(
         import.meta.env.VITE_APP_API_PAY_ORDER_URL,
-        payload
+        payload,
       );
 
       Swal.fire({
         icon: "success",
         title: "Pedido creado",
         text: res.data.message,
+        customClass: {
+          popup: "swal-custom-popup",
+          title: "custom-title",
+          content: "custom-content",
+          confirmButton: "swal-confirm-btn",
+        },
       });
 
       if (isGuest) {
+        localStorage.removeItem("guest_cart");
+        localStorage.removeItem("guestUser");
+        localStorage.removeItem("guest_id");
         navigate("/");
       } else {
         navigate("/dashboard/orders");
       }
     } catch (error) {
+      console.error("Error en pago:", error);
       Swal.fire({
         icon: "error",
-        text: error?.response?.data?.error || "No se pudo crear el pedido",
+        text:
+          error?.response?.data?.message ||
+          error?.response?.data?.error ||
+          "No se pudo crear el pedido",
+        customClass: {
+          popup: "swal-custom-popup",
+          title: "custom-title",
+          content: "custom-content",
+          confirmButton: "swal-confirm-btn",
+        },
       });
     } finally {
       setPaying(false);
@@ -212,6 +299,7 @@ if (isGuest) {
                   value={form.name}
                   onChange={handleChange}
                   onBlur={handleBlur}
+                  required
                 />
               </div>
 
@@ -226,6 +314,7 @@ if (isGuest) {
                   value={form.lastname}
                   onChange={handleChange}
                   onBlur={handleBlur}
+                  required
                 />
               </div>
             </div>
@@ -242,6 +331,7 @@ if (isGuest) {
                   value={form.email}
                   onChange={handleChange}
                   onBlur={handleBlur}
+                  required
                   isEmail
                 />
               </div>
@@ -257,11 +347,26 @@ if (isGuest) {
                   value={form.address}
                   onChange={handleChange}
                   onBlur={handleBlur}
+                  required
                 />
               </div>
             </div>
 
             <div className="checkout-left-guest-form">
+              <div className="twocolumns">
+                Departamento
+                <BaseInput
+                  inputRef={formRefs.state}
+                  classs={"inputs normal"}
+                  name="state"
+                  id="state"
+                  placeholder="Departamento"
+                  value={form.state}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  required
+                />
+              </div>
               <div className="twocolumns">
                 Ciudad:
                 <BaseInput
@@ -273,9 +378,27 @@ if (isGuest) {
                   value={form.city}
                   onChange={handleChange}
                   onBlur={handleBlur}
+                  required
                 />
               </div>
+            </div>
 
+            <div className="checkout-left-guest-form">
+              <div className="twocolumns">
+                Número de teléfono:
+                <BaseInput
+                  inputRef={formRefs.phone}
+                  classs={"inputs normal"}
+                  name="phone"
+                  id="phone"
+                  placeholder="Teléfono"
+                  value={form.phone}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  required
+                  isNumber
+                />
+              </div>
               <div className="twocolumns">
                 Código postal:
                 <BaseInput
@@ -287,11 +410,12 @@ if (isGuest) {
                   value={form.zipCode}
                   onChange={handleChange}
                   onBlur={handleBlur}
+                  required
                   isNumber
                 />
               </div>
             </div>
-
+            {/* 
             <div className="checkout-left-guest">
               <h2>Métodos de pago</h2>
 
@@ -370,7 +494,7 @@ if (isGuest) {
                   />
                 )}
               </div>
-            </div>
+            </div> */}
           </form>
         ) : (
           <>
@@ -405,23 +529,145 @@ if (isGuest) {
           </>
         )}
 
-        <div className="checkout-left-boxproducts">
+        <div className="checkout-left-guest">
+          <h2>Métodos de pago</h2>
+
+          <div className="twocolumns">
+            <label className="flex-s">
+              <BaseCheckbox
+                modelValue={paymentMethodState === "card"}
+                valueChange={() => handlePaymentMethod("card")}
+              />
+              Tarjetas
+            </label>
+            {paymentMethodState === "card" && (
+              <div className="twocolumns">
+                <BaseInput
+                  inputRef={formRefs.creditCard}
+                  isSearchableSelect
+                  isSelect
+                  classs={"inputs normal"}
+                  name="creditCard"
+                  id="creditCard"
+                  options={creditCardsOptions}
+                  value={form.creditCard}
+                  onChange={(e) =>
+                    handleGuestChange(e.target.value, "creditCard")
+                  }
+                  onBlur={handleBlur}
+                  required
+                />
+                <BaseInput
+                  inputRef={formRefs.cardNumber}
+                  classs={"inputs normal"}
+                  name="cardNumber"
+                  id="cardNumber"
+                  placeholder="Número de tarjeta"
+                  value={form.cardNumber}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  required
+                />
+              </div>
+            )}
+          </div>
+
+          <div className="twocolumns">
+            <label className="flex-s">
+              <BaseCheckbox
+                modelValue={paymentMethodState === "bank"}
+                valueChange={() => handlePaymentMethod("bank")}
+              />
+              Bancos
+            </label>
+            {paymentMethodState === "bank" && (
+              <div className="twocolumns">
+                <BaseInput
+                  inputRef={formRefs.bank}
+                  isSearchableSelect
+                  isSelect
+                  classs={"inputs normal"}
+                  name="bank"
+                  id="bank"
+                  options={bankOptions}
+                  value={form.bank}
+                  onChange={(e) => handleGuestChange(e.target.value, "bank")}
+                  onBlur={handleBlur}
+                  required
+                />
+                <BaseInput
+                  inputRef={formRefs.accountNumber}
+                  classs={"inputs normal"}
+                  name="accountNumber"
+                  id="accountNumber"
+                  placeholder="Número de cuenta"
+                  value={form.accountNumber}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  required
+                />
+              </div>
+            )}
+          </div>
+
+          <div className="twocolumns">
+            <label className="flex-s">
+              <BaseCheckbox
+                modelValue={paymentMethodState === "wallet"}
+                valueChange={() => handlePaymentMethod("wallet")}
+              />
+              Moneybrokers
+            </label>
+            {paymentMethodState === "wallet" && (
+              <div className="twocolumns">
+                <BaseInput
+                  inputRef={formRefs.wallet}
+                  isSearchableSelect
+                  isSelect
+                  classs={"inputs normal"}
+                  name="wallet"
+                  id="wallet"
+                  options={moneyBrokersOptions}
+                  value={form.wallet}
+                  onChange={(e) => handleGuestChange(e.target.value, "wallet")}
+                  onBlur={handleBlur}
+                  required
+                />
+                <BaseInput
+                  inputRef={formRefs.moneybrokerAccount}
+                  classs={"inputs normal"}
+                  name="moneybrokerAccount"
+                  id="moneybrokerAccount"
+                  placeholder="Número de cuenta"
+                  value={form.moneybrokerAccount}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  required
+                />
+              </div>
+            )}
+          </div>
+        </div>
+        <div key={products[0].id} className="checkout-left-boxproducts">
           {products.map((item) => (
             <div key={item.product_id} className="checkout-left-img">
-              {console.log(item, "desde el map")}
               <img
                 src={
-                  item.img ||
-                  item.image ||
-                  item.img_url ||
-                  "/images/no-image.png"
+                  Array.isArray(item.img)
+                    ? item.img[0]
+                    : item.img ||
+                      item.image ||
+                      item.img_url?.[0] ||
+                      item.img_urls?.[0] ||
+                      item.images?.[0] ||
+                      "/images/no-image.png"
                 }
                 alt={item.name}
               />
 
               <div className="checkout-left-img-info">
                 <h3>{item.name}</h3>
-                <strong>{formatPrice(item.previousPrice)}</strong>
+                <strong>{formatPrice(item.price)}</strong>
 
                 <div className="checkout-left-info">
                   Cantidad: {item.quantity}

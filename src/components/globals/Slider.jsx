@@ -1,19 +1,35 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
-import { useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
+export const Slider = ({ activeColor, colorImageMap, normalizeColor }) => {
 
-export const Slider = () => {
-  const productThumbs = useSelector(
-    state => state.product.selectedProduct?.images || []
-  );
+  const product = useSelector(state => state.product.selectedProduct);
+
+  const productThumbs = product?.images;
 
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  if (!productThumbs.length) return null;
+useEffect(() => {
+  if (!activeColor || !colorImageMap) return;
+
+  const key = normalizeColor(activeColor);
+  const mappedImage = colorImageMap[key];
+
+  if (!mappedImage) return;
+
+  const index = productThumbs.findIndex(
+    (img) => img === mappedImage
+  );
+
+  if (index !== -1) {
+    setCurrentIndex(index);
+  }
+}, [activeColor, colorImageMap]);
+
+  if (!productThumbs || !productThumbs.length) return null;
 
   const goToIndex = (index) => {
     setCurrentIndex(index);
@@ -30,6 +46,8 @@ export const Slider = () => {
     if (index >= productThumbs.length) index = 0;
     setCurrentIndex(index);
   };
+
+
 
   return (
     <SliDer>
@@ -68,7 +86,7 @@ const SliDer = styled.div`
 .slider-container {
     position: relative;
     display: grid;
-    // border: green 1px solid;
+    align-content: start;
     width: 100%;
     gap: 8px;
 

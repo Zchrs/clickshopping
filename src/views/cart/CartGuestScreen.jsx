@@ -2,71 +2,157 @@
 /* eslint-disable no-debugger */
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchCartGuest, removeFromCartGuest, moveFromCartToWishlistGuest } from "../../actions/cartActions";
-import { BaseButton, CardProductCart, Empty } from "../../../index";
+import {
+  BaseButton,
+  CardProductCart,
+  Empty,
+  BaseCheckbox,
+} from "../../../index";
 import styled from "styled-components";
 import { formatPrice } from "../../../globalActions";
 import Swal from "sweetalert2";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
+
+// Constantes para localStorage
+const CART_STORAGE_KEY = "cart";
+const GUEST_USER_KEY = "guestUser";
 
 export const CartGuestScreen = () => {
   const [cartItems, setCartItems] = useState([]);
+  console.log(cartItems)
   const [loading, setLoading] = useState(true);
-  const [subtotal, setSubtotal] = useState(0);
-  const [total, setTotal] = useState(0);
-  const guestId = localStorage.getItem("guest_id"); // Obtener guestId del localStorage
+  const [selectedIds, setSelectedIds] = useState([]);
+  const [lastCheckedIndex, setLastCheckedIndex] = useState(null);
+  const [guestInfo, setGuestInfo] = useState(null);
+
+  const navigate = useNavigate();
   const lang = useSelector((state) => state.langUI.lang);
   const { t, i18n } = useTranslation();
 
+  // Obtener estado de autenticación del reducer
+  const { isAuthenticated, currentUser } = useSelector((state) => state.auth);
+
+  // Calcular totals basado en items seleccionados
+  const selectedItems = cartItems.filter((item) =>
+    selectedIds.includes(item.product_id || item.id),
+  );
+
+  const selectedSubtotal = selectedItems.reduce(
+    (sum, item) => sum + Number(item.price) * Number(item.quantity || 1),
+    0,
+  );
+
+  const selectedCount = selectedItems.reduce(
+    (sum, item) => sum + Number(item.quantity || 1),
+    0,
+  );
+
+  const allSelected =
+    cartItems.length > 0 && selectedIds.length === cartItems.length;
+
+  // Cargar guestInfo al iniciar (solo si no hay usuario autenticado)
   useEffect(() => {
-    const getCartItems = async () => {
+    if (!isAuthenticated) {
       try {
-        if (guestId && typeof guestId === "string" && guestId.trim() !== "") {
-          const items = await fetchCartGuest(guestId);
-          setCartItems(items);
-          calculateTotals(items);
+        const guestData = localStorage.getItem(GUEST_USER_KEY);
+        if (guestData) {
+          const parsed = JSON.parse(guestData);
+          setGuestInfo(parsed);
         } else {
-          console.error("Guest ID is invalid or missing");
+          setGuestInfo(null);
         }
       } catch (error) {
-        console.error("Error loading cart items:", error);
+        console.error("Error loading guest info:", error);
+        setGuestInfo(null);
+      }
+    } else {
+      // Si hay usuario autenticado, redirigir al carrito de usuario
+      navigate("/dashboard/my-cart");
+    }
+  }, [isAuthenticated, navigate]);
+
+  // Cargar carrito desde localStorage
+  useEffect(() => {
+    const loadCartFromStorage = () => {
+      try {
+        setLoading(true);
+
+        const storedCart = localStorage.getItem(CART_STORAGE_KEY);
+
+        if (!storedCart) {
+          setCartItems([]);
+          return;
+        }
+
+        const parsedCart = JSON.parse(storedCart);
+
+        if (!Array.isArray(parsedCart)) {
+          setCartItems([]);
+          return;
+        }
+
+        // 🔹 FILTRAR SOLO PRODUCTOS DEL INVITADO ACTUAL
+        const filteredCart = guestInfo?.id
+          ? parsedCart.filter((item) => item.guest_id === guestInfo.id)
+          : [];
+
+        setCartItems(filteredCart);
+      } catch (error) {
+        console.error("Error loading cart:", error);
+        setCartItems([]);
       } finally {
         setLoading(false);
       }
     };
 
-    getCartItems();
-  }, [guestId]);
+    if (guestInfo) {
+      loadCartFromStorage();
+    }
+  }, [guestInfo]);
+
+  // Guardar carrito en localStorage cuando cambie
+  useEffect(() => {
+    if (!loading) {
+      try {
+        localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cartItems));
+      } catch (error) {
+        console.error("Error saving cart to localStorage:", error);
+      }
+    }
+  }, [cartItems, loading]);
 
   const handleRemoveFromCart = async (productId, name) => {
     const result = await Swal.fire({
-      title: 'Vas a eliminar un producto',
-      html: `¡Estás seguro que deseas eliminar <strong>${name}</strong> del carrito?`,
-      icon: 'warning',
+      title: "Vas a eliminar un producto",
+      html: `¿Estás seguro que deseas eliminar <strong>${name}</strong> del carrito?`,
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonText: 'Confirmar',
-      cancelButtonText: 'Volver',
-      background: '#f0f0f0',
+      confirmButtonText: "Confirmar",
+      cancelButtonText: "Volver",
+      background: "#f0f0f0",
       customClass: {
-        popup: 'custom-popup',
-        title: 'custom-title',
-        content: 'custom-content',
-        confirmButton: 'custom-confirm-button',
-        cancelButton: 'custom-cancel-button',
+        popup: "swal-custom-popup",
+        title: "custom-title",
+        content: "custom-content",
+        confirmButton: "swal-confirm-btn",
+        cancelButton: "swal-cancel-btn",
       },
     });
 
     if (result.isConfirmed) {
-      await removeFromCartGuest(productId, guestId);
-      // Después de eliminar el producto del carrito, recargar los elementos del carrito
-      const items = await fetchCartGuest(guestId);
-      setCartItems(items);
-      calculateTotals(items);
-      
+      const updatedCart = cartItems.filter(
+        (item) => (item.product_id || item.id) !== productId,
+      );
+
+      setCartItems(updatedCart);
+      // Remover de seleccionados si estaba seleccionado
+      setSelectedIds((prev) => prev.filter((id) => id !== productId));
+
       Swal.fire({
-        title: '¡Eliminado!',
+        title: "¡Eliminado!",
         html: `<strong>${name}</strong> ha sido eliminado del carrito`,
-        icon: 'success',
+        icon: "success",
         timer: 1500,
         showConfirmButton: false,
       });
@@ -76,91 +162,211 @@ export const CartGuestScreen = () => {
   const handleMoveToWishlist = async (productId, name) => {
     try {
       const result = await Swal.fire({
-        title: 'Enviando a lista de deseos',
+        title: "Enviando a lista de deseos",
         html: `¿Estás seguro que deseas mover <strong>${name}</strong> a la lista de deseos?`,
-        icon: 'warning',
+        icon: "warning",
         showCancelButton: true,
-        confirmButtonText: 'Confirmar',
-        cancelButtonText: 'Volver',
-        background: '#f0f0f0',
+        confirmButtonText: "Confirmar",
+        cancelButtonText: "Volver",
+        background: "#f0f0f0",
         customClass: {
-          popup: 'custom-popup',
-          title: 'custom-title',
-          content: 'custom-content',
-          confirmButton: 'custom-confirm-button',
-          cancelButton: 'custom-cancel-button',
+          popup: "swal-custom-popup",
+          title: "custom-title",
+          content: "custom-content",
+          confirmButton: "swal-confirm-btn",
+          cancelButton: "swal-cancel-btn",
         },
       });
 
       if (result.isConfirmed) {
-        await moveFromCartToWishlistGuest(productId, guestId);
+        const wishlistKey = guestInfo?.id
+          ? `guest_wishlist_${guestInfo.id}`
+          : "guest_wishlist";
+        const currentWishlist = JSON.parse(
+          localStorage.getItem(wishlistKey) || "[]",
+        );
+
+        const productToMove = cartItems.find(
+          (item) => (item.product_id || item.id) === productId,
+        );
+
+        if (productToMove) {
+          const existsInWishlist = currentWishlist.some(
+            (item) => (item.product_id || item.id) === productId,
+          );
+
+          if (!existsInWishlist) {
+            const updatedWishlist = [...currentWishlist, productToMove];
+            localStorage.setItem(wishlistKey, JSON.stringify(updatedWishlist));
+          }
+
+          const updatedCart = cartItems.filter(
+            (item) => (item.product_id || item.id) !== productId,
+          );
+
+          setCartItems(updatedCart);
+          setSelectedIds((prev) => prev.filter((id) => id !== productId));
+        }
 
         Swal.fire({
-          title: '¡Hecho!',
-          html: `¡<strong>${name}</strong> se ha enviado a la lista de deseos!`,
-          icon: 'success',
+          title: "¡Hecho!",
+          html: `<strong>${name}</strong> se ha enviado a la lista de deseos`,
+          icon: "success",
           showCancelButton: false,
-          confirmButtonText: 'Volver',
-          background: '#f0f0f0',
+          confirmButtonText: "Volver",
+          background: "#f0f0f0",
           customClass: {
-            popup: 'custom-popup',
-            title: 'custom-title',
-            content: 'custom-content',
-            confirmButton: 'custom-confirm-button',
+            popup: "swal-custom-popup",
+            title: "custom-title",
+            content: "custom-content",
+            confirmButton: "swal-confirm-btn",
           },
         });
-
-        // Después de mover el producto al wishlist, recargar los elementos del carrito
-        const items = await fetchCartGuest(guestId);
-        setCartItems(items);
-        calculateTotals(items);
       }
     } catch (error) {
-      console.error('Error moving product:', error.response?.data || error.message);
+      console.error("Error moving product:", error);
       Swal.fire({
-        title: 'Error',
-        text: 'Hubo un error al intentar mover el producto.',
-        icon: 'error',
-        background: '#f0f0f0',
+        title: "Error",
+        text: "Hubo un error al intentar mover el producto.",
+        icon: "error",
+        background: "#f0f0f0",
         customClass: {
-          popup: 'custom-popup',
-          title: 'custom-title',
-          content: 'custom-content',
-          confirmButton: 'custom-confirm-button',
+          popup: "swal-custom-popup",
+          title: "custom-title",
+          content: "custom-content",
+          confirmButton: "swal-confirm-btn",
         },
       });
     }
   };
 
-  const calculateTotals = (items) => {
-    const subtotalValue = items.reduce(
-      (sum, item) => sum + item.price * item.quantity,
-      0
-    );
-    const totalItemsCount = items.reduce((sum, item) => sum + item.quantity, 0);
-    setSubtotal(subtotalValue);
-    setTotal(totalItemsCount);
-  };
-
   const handleCheckout = () => {
-    // Redirigir al checkout o mostrar modal de registro/login
+    if (selectedItems.length === 0) {
+      Swal.fire({
+        title: "Selecciona productos",
+        text: "Debes seleccionar al menos un producto para continuar",
+        icon: "warning",
+        customClass: {
+          popup: "swal-custom-popup",
+          title: "custom-title",
+          content: "custom-content",
+          confirmButton: "swal-confirm-btn",
+        },
+      });
+      return;
+    }
+
+    if (!guestInfo?.id) {
+      Swal.fire({
+        title: "Error",
+        text: "No se encontró información del invitado",
+        icon: "error",
+        customClass: {
+          popup: "swal-custom-popup",
+          title: "custom-title",
+          content: "custom-content",
+          confirmButton: "swal-confirm-btn",
+        },
+      });
+      return;
+    }
+    const checkoutProducts = selectedItems.map((item) => ({
+      product_id: item.product_id || item.id,
+      name: item.name,
+      price: Number(item.price),
+      quantity: Number(item.quantity || 1),
+
+      // ✅ NORMALIZADO
+      img:
+        item.img_urls?.[0] ||
+        item.img_url?.[0] ||
+        (Array.isArray(item.img) ? item.img[0] : item.img) ||
+        item.image ||
+        "",
+    }));
+
+    const checkoutData = {
+      guest: true,
+      guest_id: guestInfo.id,
+      products: checkoutProducts,
+      subtotal: Number(selectedSubtotal),
+    };
+
+    localStorage.setItem("checkout_data", JSON.stringify(checkoutData));
+
     Swal.fire({
-      title: '¿Quieres continuar?',
-      html: 'Para finalizar tu compra, necesitas <strong>iniciar sesión</strong> o <strong>registrarte</strong>',
-      icon: 'info',
+      title: "Compra como invitado",
+      text: "Estás comprando como usuario invitado.",
+      icon: "info",
       showCancelButton: true,
-      confirmButtonText: 'Iniciar sesión',
-      cancelButtonText: 'Seguir como invitado',
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
+      confirmButtonText: "Continuar",
+      cancelButtonText: "Cancelar",
+      customClass: {
+        popup: "swal-custom-popup",
+        title: "custom-title",
+        content: "custom-content",
+        confirmButton: "swal-confirm-btn",
+        cancelButton: "swal-cancel-btn",
+      },
     }).then((result) => {
       if (result.isConfirmed) {
-        window.location.href = "/login";
-      } else {
-        window.location.href = "/checkout-guest";
+        navigate("/cart-guest/checkout", {
+          state: checkoutData,
+        });
       }
     });
   };
+
+  const formatGuestId = (id) => {
+    if (!id) return "";
+    if (id.length <= 10) return id;
+
+    const firstPart = id.substring(0, 6);
+    const lastPart = id.substring(id.length - 6);
+
+    return `${firstPart}...${lastPart}`;
+  };
+
+  const clearCart = () => {
+    setCartItems([]);
+    setSelectedIds([]);
+    localStorage.removeItem(CART_STORAGE_KEY);
+  };
+
+  const toggleSelectAll = () => {
+    if (allSelected) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(cartItems.map((item) => item.product_id || item.id));
+    }
+  };
+
+  const toggleOne = (productId, index, checked, shiftKey) => {
+    if (shiftKey && lastCheckedIndex !== null && index !== lastCheckedIndex) {
+      const start = Math.min(lastCheckedIndex, index);
+      const end = Math.max(lastCheckedIndex, index);
+      const rangeIds = cartItems
+        .slice(start, end + 1)
+        .map((item) => item.product_id || item.id);
+
+      setSelectedIds((prev) =>
+        checked
+          ? Array.from(new Set([...prev, ...rangeIds]))
+          : prev.filter((id) => !rangeIds.includes(id)),
+      );
+    } else {
+      setSelectedIds((prev) =>
+        checked ? [...prev, productId] : prev.filter((id) => id !== productId),
+      );
+    }
+
+    setLastCheckedIndex(index);
+  };
+
+  // Si hay usuario autenticado, no mostrar nada (redirige en useEffect)
+  if (isAuthenticated) {
+    return null;
+  }
 
   if (loading) {
     return (
@@ -171,7 +377,9 @@ export const CartGuestScreen = () => {
               <h2>Mi carrito de invitado</h2>
             </div>
             <div className="mycart-contain-items">
-              <p>Cargando productos...</p>
+              <div className="loading-spinner">
+                <p>Cargando productos...</p>
+              </div>
             </div>
           </div>
         </div>
@@ -184,73 +392,129 @@ export const CartGuestScreen = () => {
       <div className="mycart">
         <div className="mycart-contain">
           <div className="mycart-contain-header">
-            <h2>Mi carrito de invitado ({total})</h2>
-            <small className="guest-badge">Modo invitado</small>
+            <div className="header-top">
+              <h2>Mi carrito de invitado ({cartItems.length})</h2>
+              {guestInfo && (
+                <div className="guest-info">
+                  <small className="guest-badge">Modo invitado</small>
+                  <small className="guest-name">
+                    <strong>Bienvenido</strong>, {formatGuestId(guestInfo.id)}
+                  </small>
+                </div>
+              )}
+            </div>
+
+            {cartItems.length > 0 && (
+              <div className="select-all-container">
+                <BaseCheckbox
+                  id="select-all"
+                  modelValue={allSelected}
+                  valueChange={toggleSelectAll}
+                />
+                <span className="select-all-label">Seleccionar todos</span>
+                <span className="selected-count">
+                  ({selectedIds.length} de {cartItems.length} seleccionados)
+                </span>
+              </div>
+            )}
           </div>
+
           <div className="mycart-contain-items">
-            {loading ? (
-              <p>Cargando productos...</p>
-            ) : !Array.isArray(cartItems) || cartItems.length === 0 ? (
+            {!Array.isArray(cartItems) || cartItems.length === 0 ? (
               <Empty img="empty" message={t("globals.emptyProducts")} />
             ) : (
-              cartItems.map((item) => (
-                <CardProductCart
-                  key={item.id}
-                  img={
-                    item.img_urls && item.img_urls.length > 0
-                      ? item.img_urls[0]
-                      : ""
-                  }
-                  price={`COP $${formatPrice(item.price)}`}
-                  name={item.name}
-                  quantity={item.quantity}
-                  onRemove={() => handleRemoveFromCart(item.product_id, item.name)}
-                  onWishlist={() => handleMoveToWishlist(item.product_id, item.name)}
-                />
-              ))
+              cartItems.map((item, index) => {
+                const productId = item.product_id || item.id;
+                const isSelected = selectedIds.includes(productId);
+
+                return (
+                  <div
+                    key={productId || `temp-${index}`}
+                    className="mycart-contain-item">
+                    <div>
+                      <BaseCheckbox
+                        id={`select-${productId}`}
+                        modelValue={isSelected}
+                        valueChange={(checked, e) =>
+                          toggleOne(productId, index, checked, e?.shiftKey)
+                        }
+                      />
+                        </div>
+                    <CardProductCart
+                      img={
+                        item.img_urls && item.img_urls.length > 0
+                        ? item.img_urls[0]
+                          : Array.isArray(item.img) && item.img.length > 0
+                          ? item.img[0]
+                            : item.img || ""
+                      }
+                      price={`COP $${formatPrice(Number(item.price))}`}
+                      color={item.color}
+                      name={item.name}
+                      quantity={Number(item.quantity || 1)}
+                      onRemove={() =>
+                        handleRemoveFromCart(productId, item.name)
+                      }
+                      onWishlist={() =>
+                        handleMoveToWishlist(productId, item.name)
+                      }
+                      />
+                  </div>
+                );
+              })
             )}
           </div>
         </div>
+
         <section className="mycart-summary">
           <h3>Resumen</h3>
           <div className="mycart-flex">
+            <p>Productos seleccionados:</p>
+            <strong>{selectedCount}</strong>
+          </div>
+          <div className="mycart-flex">
             <p>Subtotal:</p>
-            <strong>${formatPrice(subtotal)}</strong>
+            <strong>${formatPrice(selectedSubtotal)}</strong>
           </div>
           <div className="mycart-flex">
             <p>Envío:</p>
-            <strong>${formatPrice(0)}</strong>
+            <strong>$0</strong>
           </div>
-          <div className="mycart-flex">
-            <p>Total:</p> 
-            <strong>${formatPrice(subtotal)}</strong>
+          <div className="mycart-flex total">
+            <p>Total a pagar:</p>
+            <strong>${formatPrice(selectedSubtotal)}</strong>
           </div>
-          
+
           <div className="guest-message">
             <p className="texts txsm">
-              <span className="info-icon">ℹ️</span> 
-              Como invitado, tus productos se guardarán temporalmente. 
-              <strong> Inicia sesión para guardar tu carrito permanentemente.</strong>
+              <span className="info-icon">ℹ️</span>
+              Como invitado, tus productos se guardarán temporalmente en este
+              dispositivo.
+              <strong>
+                {" "}
+                Inicia sesión para guardar tu carrito permanentemente.
+              </strong>
             </p>
           </div>
 
           <BaseButton
             textLabel={true}
-            label={`Pagar (${total})`}
+            label={`Pagar (${selectedCount})`}
             icon={"pay"}
-            classs={'button primary'} 
-            colorbtn={"var(--bg-primary)"}
-            colortextbtnprimary={"var(--light)"}
-            colorbtnhoverprimary={"var(--bg-primary-tr)"}
-            colortextbtnhoverprimary={"white"}  
-            onClick={handleCheckout}
+            classs={"button primary"}
+            $colorbtn={"var(--bg-primary)"}
+            $colortextbtnprimary={"var(--light)"}
+            $colorbtnhoverprimary={"var(--bg-primary-tr)"}
+            $colortextbtnhoverprimary={"white"}
+            handleClick={handleCheckout}
+            disabled={selectedItems.length === 0}
           />
-          
+
           <div>
             <h5>Entrega Rápida</h5>
             <p className="texts txsm">
-              Cupón de descuento de COP $50.000 por entrega tardía,
-              nos tomamos muy en serio las entregas a tiempo.
+              Cupón de descuento de COP $50.000 por entrega tardía, nos tomamos
+              muy en serio las entregas a tiempo.
             </p>
           </div>
           <div>
@@ -267,6 +531,14 @@ export const CartGuestScreen = () => {
 
 const MyCart = styled.div`
   display: grid;
+  padding: 25px;
+  .loading-spinner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+    color: #666;
+  }
 
   .mycart {
     display: grid;
@@ -286,9 +558,22 @@ const MyCart = styled.div`
       height: fit-content;
       gap: 15px;
       background: white;
-      box-shadow: 1px 1px 3px #ebe9e9, -1px -1px 3px #ebe9e9;
+      box-shadow:
+        1px 1px 3px #ebe9e9,
+        -1px -1px 3px #ebe9e9;
       border-radius: 0px 10px 10px 0px;
       padding: 15px;
+
+      .total {
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 2px solid #eee;
+        font-size: 18px;
+
+        strong {
+          color: var(--primary);
+        }
+      }
     }
 
     &-contain {
@@ -300,28 +585,74 @@ const MyCart = styled.div`
       &-header {
         display: grid;
         background: white;
-        border-radius: 0px;
-        box-shadow: 1px 1px 3px #ebe9e9, -1px -1px 3px #ebe9e9;
+        border-radius: 10px 10px 0 0;
+        box-shadow:
+          1px 1px 3px #ebe9e9,
+          -1px -1px 3px #ebe9e9;
         width: 100%;
         height: fit-content;
         padding: 15px;
-        position: relative;
-        
-        .guest-badge {
-          background: #ff9800;
-          color: white;
-          padding: 4px 8px;
-          border-radius: 4px;
-          font-size: 12px;
-          font-weight: bold;
-          width: fit-content;
-          margin-top: 5px;
+        gap: 10px;
+
+        .header-top {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: 10px;
+
+          h2 {
+            margin: 0;
+            font-size: 20px;
+          }
+
+          .guest-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            .guest-badge {
+              background: #ff9800;
+              color: white;
+              padding: 4px 8px;
+              border-radius: 4px;
+              font-size: 12px;
+              font-weight: bold;
+            }
+
+            .guest-name {
+              color: #666;
+              font-size: 14px;
+            }
+          }
+        }
+
+        .select-all-container {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 10px 0 5px;
+          border-bottom: 1px solid #eee;
+
+          .select-all-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            cursor: pointer;
+          }
+
+          .selected-count {
+            font-size: 12px;
+            color: #666;
+            margin-left: auto;
+          }
         }
       }
 
-      &-items {
-        display: grid;
-        gap: 15px;
+      &-item {
+        display: flex;
+        align-content: start;
+        gap: 5px;
       }
     }
 
@@ -337,17 +668,17 @@ const MyCart = styled.div`
     padding: 10px;
     border-radius: 4px;
     margin: 10px 0;
-    
+
     .texts {
       margin: 0;
       display: flex;
       align-items: center;
       gap: 8px;
-      
+
       .info-icon {
         font-size: 18px;
       }
-      
+
       strong {
         color: #ff9800;
         display: block;

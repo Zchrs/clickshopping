@@ -17,25 +17,35 @@ export const startLogin = (email, password) => {
       "POST",
     );
 
-
     const body = await res.json();
+    
     if (body.ok) {
-      localStorage.setItem("id", body.user.id);
-      localStorage.setItem("role", body.user.role);
-      localStorage.setItem("tokenUser", body.user.token);
-      localStorage.setItem("tokenUser-init-date", new Date().getTime());
-      dispatch(
-        loginSuccess({
-          id: body.user.id,
-          name: body.user.name,
-          lastname: body.user.lastname,
-          email: body.user.email,
-          city: body.user.city,
-          address: body.user.address,
-          zipCode: body.user.zipCode,
-        }),
-      );
+      // ✅ Estructura correcta del usuario
+      const userData = {
+        id: body.user.id,
+        name: body.user.name,
+        lastname: body.user.lastname,
+        email: body.user.email,
+        city: body.user.city || "",
+        address: body.user.address || "",
+        zipCode: body.user.zipCode || "",
+        state: body.user.state || "",
+        country: body.user.country || "Colombia",
+        role: body.user.role,
+        token: body.user.token
+      };
 
+      // ✅ Guardar en localStorage con claves consistentes
+      localStorage.setItem("idUser", body.user.id);
+      localStorage.setItem("role", body.user.role);
+      localStorage.setItem("tokenUser", body.user.token); // 🔥 Clave: "tokenUser"
+      localStorage.setItem("tokenUser-init-date", new Date().getTime());
+      localStorage.setItem("user", JSON.stringify(userData)); // 🔥 Clave: "user"
+
+      // Dispatch al reducer
+      dispatch(loginSuccess(userData));
+
+      // SweetAlert de éxito
       let timerInterval;
       Swal.fire({
         title: "¡Correcto!",
@@ -43,7 +53,6 @@ export const startLogin = (email, password) => {
         icon: "success",
         showCancelButton: false,
         confirmButtonText: "Ok",
-        cancelButtonText: "Volver",
         background: "#f0f0f0",
         customClass: {
           popup: "custom-popup",
@@ -59,14 +68,10 @@ export const startLogin = (email, password) => {
             timeLeft--;
             if (timeLeft < 0) {
               clearInterval(timerInterval);
-              Swal.close(); // Cierra el SweetAlert automáticamente cuando el contador llega a 0
+              Swal.close();
             }
           }, 1000);
         },
-        // willClose: () => {
-        //   clearInterval(timerInterval);
-        //   window.location.href = `${import.meta.env.VITE_APP_API_DASHBOARD_USER}`;
-        // }
       });
     } else {
       Swal.fire({
@@ -83,12 +88,8 @@ export const startLogin = (email, password) => {
           htmlContainer: "swal-text",
           confirmButton: "swal-confirm-btn",
         },
-      }).then((result) => {
-        if (result.isConfirmed) {
-          return;
-        }
       });
-      body.msg;
+      
       dispatch(checkingFinish());
     }
   };
@@ -96,7 +97,7 @@ export const startLogin = (email, password) => {
 
 export const loginSuccess = (user) => ({
   type: types.authLogin,
-  payload: { user },
+  payload: user ,
 });
 
 export const startLogout = () => {
@@ -106,47 +107,91 @@ export const startLogout = () => {
   };
 };
 
+export const restoreSession = () => {
+  return (dispatch) => {
+    try {
+      // ✅ Usar las claves correctas
+      const token = localStorage.getItem("tokenUser");
+      const userStr = localStorage.getItem("user");
+      
+      console.log("🔍 Restaurando sesión - Token existe:", !!token);
+      console.log("🔍 Restaurando sesión - User existe:", !!userStr);
+      
+      if (token && userStr) {
+        const user = JSON.parse(userStr);
+        console.log("✅ Sesión restaurada para usuario:", user.id);
+        dispatch(loginSuccess(user));
+      } else {
+        console.log("⚠️ No hay sesión para restaurar");
+        dispatch(checkingFinish());
+      }
+    } catch (error) {
+      console.error("❌ Error restoring session:", error);
+      dispatch(checkingFinish());
+    }
+  };
+};
 const logout = () => ({ type: types.authLogout });
 
 const checkingFinish = () => ({ type: types.authCheckingFinish });
 
 export const startChecking = () => {
   return async (dispatch) => {
-    const res = await fetchWithToken("users/auth/renew");
-    const body = await res.json();
+    try {
+      const token = localStorage.getItem("tokenUser");
+      
+      if (!token) {
+        dispatch(checkingFinish());
+        return;
+      }
 
-    if (body.ok) {
-      localStorage.setItem("id", body.id);
-      localStorage.setItem("role", body.role);
-      localStorage.setItem("tokenUser", body.token);
-      localStorage.setItem("tokenUser-init-date", new Date().getTime());
+      const res = await fetchWithToken("users/auth/renew");
+      const body = await res.json();
 
-      dispatch(
-        loginSuccess({
+      console.log("🔍 Renew response:", body);
+
+      if (body.ok) {
+        const userData = {
           id: body.id,
           name: body.name,
           lastname: body.lastname,
           email: body.email,
-          address: body.address,
-          city: body.city,
-          zipCode: body.zipCode,
+          address: body.address || "",
+          city: body.city || "",
+          zipCode: body.zipCode || "",
+          state: body.state || "",
+          country: body.country || "Colombia",
           role: body.role,
-        }),
-      );
-    } else {
-      console.log(body.msg);
+          token: body.token
+        };
+
+
+        // ✅ Guardar con claves consistentes
+        localStorage.setItem("idUser", body.id);
+        localStorage.setItem("role", body.role);
+        localStorage.setItem("tokenUser", body.token);
+        localStorage.setItem("tokenUser-init-date", new Date().getTime());
+        localStorage.setItem("user", JSON.stringify(userData));
+
+        dispatch(loginSuccess(userData));
+      } else {
+        console.log("⚠️ Renew falló:", body.msg);
+        localStorage.removeItem("tokenUser");
+        localStorage.removeItem("user");
+        dispatch(checkingFinish());
+      }
+    } catch (error) {
+      console.error("❌ Error en startChecking:", error);
       dispatch(checkingFinish());
     }
-    // debugger
   };
 };
-
 // acciones para login admins
-export const startLoginAdmin = (email, pass) => {
+export const startLoginAdmin = (email, password) => {
   return async (dispatch) => {
     const res = await fetchWithoutTokenAdmin(
       "admin/auth/login",
-      { email, pass },
+      { email, password },
       "POST",
     );
     Swal.fire({
@@ -170,7 +215,9 @@ export const startLoginAdmin = (email, pass) => {
       localStorage.setItem("tokenAdmin-init-date", new Date().getTime());
       dispatch(
         loginAdminSuccess({
-          fullname: body.admin.fullname,
+          id: body.admin.id,
+          name: body.admin.name,
+          lastname: body.admin.lastname,
         }),
       );
       let timerInterval;
@@ -256,7 +303,9 @@ export const startCheckingAdmin = () => {
 
       dispatch(
         loginAdminSuccess({
-          fullname: body.fullname,
+          id: body.id,
+          name: body.name,
+          lastname: body.lastname,
         }),
       );
     } else {

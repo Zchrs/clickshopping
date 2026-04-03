@@ -8,24 +8,25 @@ export const OrdersPending = () => {
   const allOrders = useSelector((state) => state.order.orderInfo || []);
   const dispatch = useDispatch();
 
-    useEffect(() => {
+  useEffect(() => {
     dispatch(fetchOrders());
   }, []);
  
   return (
     <section className="section-grid">
-    <OrdersList
-      title="Pedidos pendientes"
-      orders={allOrders}
-      statusFilter="pending aproval"
-      approveUrl={import.meta.env.VITE_APP_API_APPROVE_ORDER_URL}
-      enableStream
-      labelBtn={"Aprobar"}
-      streamUrl={`${import.meta.env.VITE_APP_API_URL}/orders/stream`}
-      onAfterAction={() => dispatch(fetchOrders())}
-      confirmTextBtn={"Aprobar pedido"}
-      cancelTextBtn={"Volver"}
-    />
+      <OrdersList
+        title="Pedidos pendientes"
+        orders={allOrders}
+        statusFilter="pending approval"
+        approveUrl={import.meta.env.VITE_APP_API_APPROVE_ORDER_URL}
+        enableStream
+        labelBtn={"Aprobar"}
+        streamUrl={`${import.meta.env.VITE_APP_API_URL}/orders/stream`}
+        onAfterAction={() => dispatch(fetchOrders())}
+        confirmTextBtn={"Aprobar pedido"}
+        showRejectButton
+        cancelTextBtn={"Volver"}
+      />
     </section>
   );
 };

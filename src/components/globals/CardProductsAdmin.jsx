@@ -70,9 +70,9 @@ export const CardProductsAdmin = ({
           <p className="productcard__p"> {description} </p>
           <p className="productcard__title"> {title} </p>
           <p className="productcard__quantity"> {quantity} Disponibles</p>
-          <h2 className="productcard__h2">${formatPrice(previousPrice)} </h2>
+          <h2 className="productcard__h2">${ formatPrice(price)} </h2>
           <div className="productcard-group">
-            <p className="productcard__p2">${formatPrice(price)}
+            <p className="productcard__p2">${formatPrice(previousPrice)}
               <span style={{ color: '#EC3337' }}> {discount} </span>
             </p>
           </div>

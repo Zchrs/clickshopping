@@ -1,28 +1,36 @@
 /* eslint-disable no-debugger */
 /* eslint-disable no-unused-vars */
 import styled from "styled-components";
-import { initialForm, useForm } from "../../../hooks/useForm";
+import { useForm } from "../../../hooks/useForm";
 import { useTranslation } from "react-i18next";
 import { useState, useEffect } from "react";
-import { BaseButton, BaseInput, MultiDropZone, MultiDropZoneCloudinary } from "../../../../index";
-import { MultiDropZoneImageKit } from "../../../components/globals/MultiDropZoneImageKit";
+import {
+  BaseButton,
+  BaseInput,
+  MultiDropZone,
+  MultiDropZoneCloudinary,
+} from "../../../../index";
 import { useValidations } from "../../../hooks/useValidations";
+import { useSelector } from "react-redux";
 
 export const CreateProduct = () => {
   const { t } = useTranslation();
   const { formRefs, validateForm } = useValidations();
   const [isFormComplete, setIsFormComplete] = useState(null);
+  const admin = useSelector((state) => state.authAdmin.admin);
 
   const initialForm = {
     name: "",
     price: "",
     previousPrice: "",
     category: "",
-    color: "",
+    subCategory: "",
+    sellerId: admin.id,
+    brand: "",
     stock: "",
-    quantity: "",
     description: "",
     img_url: [],
+    variants: [{ name: "", stock: "" }],
   };
 
   const {
@@ -34,89 +42,111 @@ export const CreateProduct = () => {
     setForm,
     handleChange,
     handleBlur,
+    addVariant,
+    removeVariant,
     handleSubmitProduct,
     handleSetImages,
     handleImagesChange,
+    handleVariantChange,
   } = useForm(initialForm, validateForm);
 
+  /* =========================
+     VALIDACIÓN FORM
+  ========================= */
   useEffect(() => {
-    // Verificar si todos los campos del formulario están llenos
-    const isFormFilled = Object.values(form).every((value) => value !== "");
-    // Actualizar el estado de completitud del formulario
-    // console.log("Formulario vacío:", form);
+    const isFormFilled = Object.entries(form)
+      .filter(([key]) => key !== "img_url")
+      .every(([_, value]) => value !== "");
+
     setIsFormComplete(isFormFilled);
-    
   }, [form]);
 
+  useEffect(() => {
+    const totalStock = form.variants.reduce((acc, v) => {
+      const stock = Number(v.stock) || 0;
+      return acc + stock;
+    }, 0);
+
+    setForm((prev) => ({
+      ...prev,
+      stock: totalStock,
+    }));
+  }, [form.variants]);
+
+  /* =========================
+     PRECIO AUTOMÁTICO
+  ========================= */
   const applyDiscount10 = (value) => {
-  const num = Number(value);
-  if (isNaN(num)) return "";
-  return Math.round(num * 0.9);
-};
+    const num = Number(value);
+    if (isNaN(num)) return "";
+    return Math.round(num * 0.9);
+  };
 
   const handlePriceChange = (e) => {
-  const { value } = e.target;
-  
-  setForm((prev) => ({
-    ...prev,
-    price: value,
-    previousPrice: applyDiscount10(value),
-  }));
-};
+    const { value } = e.target;
+
+    setForm((prev) => ({
+      ...prev,
+      price: applyDiscount10(value),
+      previousPrice: value,
+    }));
+  };
+
+  /* =========================
+     VARIANTS (COLORES)
+  ========================= */
 
   return (
     <section className="sections">
       <ProductUpload className="uploadproducts">
         <h2 className="uploadproducts-h2">Agregar producto</h2>
-        <form className="uploadproducts-form" encType="multipart/form-data">
-          <div>
+
+        <form className="uploadproducts-form">
+          {/* NOMBRE + PRECIO */}
+          <div className="grid-4fr">
             <BaseInput
               id="name"
               name="name"
-              classs={"inputs normal"}
               placeholder="Nombre del producto"
+              classs={"inputs normal"}
               inputRef={formRefs.name}
               value={form.name}
               onBlur={handleBlur}
               onChange={handleChange}
               required
             />
-          </div>
-          <div>
+
             <BaseInput
               id="price"
               name="price"
-              classs={"inputs normal"}
               placeholder="Precio"
+              classs={"inputs normal"}
               inputRef={formRefs.price}
               value={form.price}
               onBlur={handleBlur}
-              onChange={handlePriceChange}
-              isNumber={true}
+              onChange={handleChange}
+              isNumber
               required
             />
-          </div>
-          <div>
+
             <BaseInput
               id="previousPrice"
               name="previousPrice"
-              classs={"inputs normal"}
               placeholder="Precio anterior"
+              classs={"inputs normal"}
               inputRef={formRefs.previousPrice}
               value={form.previousPrice}
+              onChange={handlePriceChange}
               onBlur={handleBlur}
-              onChange={handleChange}
-              isNumber={true}
               required
-              readOnly
+              isNumber
             />
-          </div>
-          <div>
+
             <BaseInput
               id="category"
               name="category"
-              classs={"inputs normal"}
               placeholder="Categoría"
+              classs={"inputs normal"}
               inputRef={formRefs.category}
               value={form.category}
               onBlur={handleBlur}
@@ -124,90 +154,178 @@ export const CreateProduct = () => {
               required
             />
           </div>
-          <div>
+
+          {/* SUBCATEGORIA + MARCA + STOCK */}
+          <div className="grid-4fr">
             <BaseInput
-              id="color"
-              name="color"
+              id="subCategory"
+              name="subCategory"
+              placeholder="Subcategoría"
               classs={"inputs normal"}
-              placeholder="Colores"
-              inputRef={formRefs.color}
-              value={form.color}
+              inputRef={formRefs.subCategory}
+              value={form.subCategory}
               onBlur={handleBlur}
               onChange={handleChange}
-              required
             />
-          </div>
-          <div>
+
+            <BaseInput
+              id="brand"
+              name="brand"
+              placeholder="Marca"
+              classs={"inputs normal"}
+              inputRef={formRefs.brand}
+              value={form.brand}
+              onBlur={handleBlur}
+              onChange={handleChange}
+            />
+
             <BaseInput
               id="stock"
               name="stock"
+              placeholder="Stock general"
               classs={"inputs normal"}
-              placeholder="Cantidad de colores"
               inputRef={formRefs.stock}
               value={form.stock}
               onBlur={handleBlur}
               onChange={handleChange}
+              isNumber
+              disabled
               required
             />
           </div>
+
+          {/* =========================
+              VARIANTES (COLORES)
+          ========================= */}
           <div>
-            <BaseInput
-              id="quantity"
-              name="quantity"
-              classs={"inputs normal"}
-              placeholder="Cantidad total de producto"
-              inputRef={formRefs.quantity}
-              value={form.quantity}
-              onBlur={handleBlur}
-              onChange={handleChange}
-              required
-              isNumber={true}
-            />
+            <h4>Colores / Variantes</h4>
+
+            {form.variants.map((variant, index) => (
+              <div key={index} className="grid-4fr">
+                <BaseInput
+                  inputRef={(el) => {
+                    // Guardar referencia para cada variante
+                    if (!formRefs.variants.current) {
+                      formRefs.variants.current = [];
+                    }
+                    formRefs.variants.current[index] = {
+                      ...formRefs.variants.current[index],
+                      color: el,
+                    };
+                  }}
+                  id={`color-${index}`}
+                  name={`color-${index}`}
+                  classs="inputs normal"
+                  placeholder="Color (ej: rojo)"
+                  value={variant.name || variant.color || ""}
+                  onChange={(e) =>
+                    handleVariantChange(index, "name", e.target.value)
+                  }
+                />
+{/* 
+                <BaseInput
+                  id={`price-${index}`}
+                  name={`price-${index}`}
+                  classs="inputs normal"
+                  placeholder="Precio"
+                  value={variant.price || ""}
+                  onChange={(e) =>
+                    handleVariantChange(index, "price", e.target.value)
+                  }
+                  isNumber
+                /> */}
+
+                <BaseInput
+                  inputRef={(el) => {
+                    if (!formRefs.variants.current) {
+                      formRefs.variants.current = [];
+                    }
+                    formRefs.variants.current[index] = {
+                      ...formRefs.variants.current[index],
+                      stock: el,
+                    };
+                  }}
+                  id={`stock-${index}`}
+                  name={`stock-${index}`}
+                  classs="inputs normal"
+                  placeholder="Stock"
+                  value={variant.stock || ""}
+                  onChange={(e) =>
+                    handleVariantChange(index, "stock", e.target.value)
+                  }
+                  isNumber
+                />
+
+                <div className="flex-s">
+                  <button
+                    className="variants"
+                    type="button"
+                    onClick={addVariant}>
+                    ➕
+                  </button>
+                  <button
+                    className="variants"
+                    type="button"
+                    onClick={() => removeVariant(index)}>
+                    ❌
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
-          <div>
-            <BaseInput
-              id="description"
-              name="description"
-              classs={"inputs normal"}
-              placeholder="Descripción"
-              inputRef={formRefs.description}
-              value={form.description}
-              onBlur={handleBlur}
-              onChange={handleChange}
-              required
-              isTextarea={true}
-            />
-          </div>
-          <div>
-            <MultiDropZoneCloudinary
-              id="images"
-              name="img_url"
-              type="file"
-              onChange={handleImagesChange}
-              setImages={handleSetImages}
-              onBlur={handleBlur}
-            />
-          </div>
-          <div>
-            <BaseButton
-              disabled={!isFormComplete}
-              handleClick={handleSubmitProduct}
-              classs={"button primary"}
-              $colorbtn={"var(--primary)"}
-              $colortextbtnprimary={"var(--light)"}
-              $colorbtnhoverprimary={"var(--bg-primary-tr)"}
-              $colortextbtnhoverprimary={"var(--light)"}
-              textLabel={true}
-              label={"Añadir producto"}
-            />
-          </div>
+
+          {/* DESCRIPCIÓN */}
+          <BaseInput
+            id="description"
+            name="description"
+            placeholder="Descripción"
+            classs={"inputs normal"}
+            inputRef={formRefs.description}
+            value={form.description}
+            onBlur={handleBlur}
+            onChange={handleChange}
+            isTextarea
+          />
+
+          {/* IMÁGENES */}
+          <MultiDropZoneCloudinary
+            id="images"
+            name="img_url"
+            type="file"
+            onChange={handleImagesChange}
+            setImages={handleSetImages}
+            onBlur={handleBlur}
+          />
+          {/* <MultiDropZone
+            id="images"
+            name="img_url"
+            type="file"
+            onChange={handleImagesChange}
+            setImages={handleSetImages}
+            onBlur={handleBlur}
+          /> */}
+
+          {/* BOTÓN */}
+          <BaseButton
+            disabled={!isFormComplete}
+            handleClick={(e) => handleSubmitProduct(e, admin.id)}
+            classs={"button primary"}
+            $colorbtn={"var(--primary)"}
+            $colortextbtnprimary={"var(--light)"}
+            $colorbtnhoverprimary={"var(--bg-primary-tr)"}
+            $colortextbtnhoverprimary={"var(--light)"}
+            textLabel
+            label="Añadir producto"
+          />
         </form>
       </ProductUpload>
     </section>
   );
 };
 
-// css del componente con styled components
+/* =========================
+   STYLES
+========================= */
 const ProductUpload = styled.section`
   display: grid;
   width: 100%;
@@ -215,14 +333,23 @@ const ProductUpload = styled.section`
 
   .uploadproducts-form {
     display: grid;
-    width: 100%;
     gap: 15px;
-    width: 50%;
+    width: 100%;
     padding: 25px;
     margin: auto;
+
+    @media (max-width: 720px) {
+      width: 100%;
+      padding: 0;
+    }
   }
+
   .uploadproducts-h2 {
     font-size: 30px;
+    display: grid;
+    width: fit-content;
+  }
+  .variants {
     display: grid;
     width: fit-content;
     height: fit-content;

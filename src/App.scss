@@ -1,5 +1,6 @@
 @import './assets/sass/_colors.css';
 @import './assets/sass/displays';
+@import './assets/sass/icons.scss';
 @import './assets/sass/css/_paddings.scss';
 @import './assets/sass/css/_typography.css'; 
 @import './assets/sass/css/_resetFontSize.css';
@@ -42,12 +43,27 @@
 .orders{
       display: grid;
       gap: 15px;
+
   &-card{
     display: grid;
     border: 1px solid #e9ebeb;
-    gap: 25px;
+    gap: 10px;
     border-radius: 15px;
+    align-content: start;
+    align-items: center;
+    height: fit-content;
     padding: 10px;
+
+    &-flex{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 5px;
+      @media (max-width: 720px) {
+        flex-direction: column;
+        gap: 5px;
+      }
+    }
 
     &-actions{
       display: flex;
@@ -62,11 +78,13 @@
     }
 
     &-user{
-      display: grid;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       box-shadow: var(--ds-s);
       border-radius: 10px;
       padding: 10px;
-      gap: 5px;
+      gap: 10px;
     }
     &-admin{
       display: flex;
@@ -75,8 +93,15 @@
 
     &-capturepayment{
       display: grid;
+      text-align: center;
       gap: 10px;
+      img{
+        margin-bottom: 10px;
+      }
     }
+  }
+  &-proof-image{
+    width: fit-content;
   }
   &-pending{
     display: grid;
@@ -91,7 +116,6 @@
     }
     &-list{
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
       align-content: start;
       gap: 10px;
       @media (max-width: 680px) {
@@ -115,6 +139,50 @@
   }
 
 }
+  }
+
+  &-empty{
+    position: sticky;
+    align-items: center;
+    grid-column: 1 / 6;
+width: 100%;
+  }
+}
+.sent-success {
+  display: inline-flex;
+  position: relative;
+  align-items: center;
+  align-content: center;
+  width: fit-content;
+  height: fit-content;
+  gap: 8px;
+  padding: 8px 12px;
+  background: rgba(0, 200, 83, 0.206);
+  color: var(--success);
+  border-radius: 999px;
+  font-weight: 500;
+  font-size: 14px;
+
+  &::before {
+    content: "";
+    width: 20px;
+    height: 20px;
+    background: var(--success);
+    border-radius: 50%;
+    position: relative;
+    display: inline-block;
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    width: 6px;
+    height: 10px;
+    border-right: 2px solid white;
+    border-bottom: 2px solid white;
+    transform: rotate(45deg);
+    margin-left: 7px;
+    margin-top: -4px;
   }
 }
 // estilos de pantalla términos y condiciones y similares
@@ -173,6 +241,7 @@
   grid-template-columns: repeat(2, 1fr);
   width: 100%;
   padding: 0 5px;
+  gap: 5px;
   align-items: center;
 }
 .checkout{
@@ -714,7 +783,7 @@ gap: 7px;
   .swal-confirm-btn {
   background: var(--primary) !important;
   color: white !important;
-  border-radius: 8px !important;
+  border-radius: 6px !important;
   padding: 6px 18px !important;
   font-weight: 400 !important;
   font-size: 14px;
@@ -726,13 +795,20 @@ gap: 7px;
 }
 
   .swal-custom-popup{
-    border-radius: 10px !important;
+    display: grid !important;
+    border-radius: 8px !important;
+    width: 60% !important;
+    max-width: fit-content;
+    padding: 10px !important;
+    @media (max-width: 720px) {
+      width: 100% !important;
+    }
   }
 
   .swal-cancel-btn {
   background: var(--secondary) !important;
   color: var(--light) !important;
-  border-radius: 8px !important;
+  border-radius: 6px !important;
   padding: 6px 18px !important;
   font-weight: 400 !important;
   font-size: 14px;
@@ -771,6 +847,10 @@ gap: 7px;
 
 .swal2-success-ring {
   border-color: var(--primary) !important;
+}
+
+.swal2-close{
+  font-size: 35px;
 }
 
 .swal2-success-fix {

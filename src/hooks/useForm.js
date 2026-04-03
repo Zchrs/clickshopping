@@ -13,7 +13,6 @@ import {
 import { fetchWithoutToken } from "../helpers/fetch";
 import Swal from "sweetalert2";
 
-
 export const initialForm = {
   name: "",
   lastname: "",
@@ -23,10 +22,11 @@ export const initialForm = {
   phone: "",
   email: "",
   password: "",
-
+  brand: "",
   price: "",
   previousPrice: "",
   category: "",
+  subCategory: "",
   color: "",
   stock: "",
   quantity: "",
@@ -42,9 +42,11 @@ export const initialForm = {
   paymentMethod: "",
   bank: "",
   wallet: "",
+  cardNumber: "",
+  accountNumber: "",
+  moneybrokerAccount: "",
+  variants: [{ name: "", price: "", stock: "" }],
 };
-
-
 
 export const useForm = (initialForm, validateForm, countries = []) => {
   // ---------------- variables de estado -----------------------
@@ -58,9 +60,9 @@ export const useForm = (initialForm, validateForm, countries = []) => {
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selected, setSelected] = useState(null);
   const [checked, setChecked] = useState(false);
-   const [message, setMessage] = useState("");
+  const [message, setMessage] = useState("");
   const user = useSelector((state) => state.auth.user);
-  
+  const tokenAdmin = useSelector((state) => state.authAdmin.token);
   // ----------------- funciones form -------------------------
 
   const dispatch = useDispatch();
@@ -72,78 +74,75 @@ export const useForm = (initialForm, validateForm, countries = []) => {
       const res = await fetchWithoutToken(
         "auth/login",
         { email, password },
-        "POST"
+        "POST",
       );
       const body = await res.json();
       if (body.ok) {
         dispatch(
           loginSuccess({
             name: body.user.name,
-          })
+          }),
         );
       }
       setLoading(false);
     };
   };
 
-const handleCountryChange = (e) => {
-  const countryCode = e.target.value;
+  const handleCountryChange = (e) => {
+    const countryCode = e.target.value;
 
-  const selectedCountry = countries.find(
-    (c) => c.value === countryCode
-  );
+    const selectedCountry = countries.find((c) => c.value === countryCode);
 
-  if (!selectedCountry) {
-    setForm(prev => ({
-      ...prev,
-      country: "",
-      dialCode: "",
-      phone: ""
-    }));
-    return;
-  }
-
-  setForm(prev => {
-    const phoneWithoutDial = prev.phone
-      .replace(/^\+\d+[-\d]*\s?/, "");
-
-    return {
-      ...prev,
-      country: countryCode,
-      dialCode: selectedCountry.dialCode,
-      phone: `${selectedCountry.dialCode} ${phoneWithoutDial}`.trim()
-    };
-  });
-};
-
-const handlePhoneChange = (e) => {
-  const value = e.target.value;
-
-  setForm(prev => {
-    if (!prev.dialCode) {
-      return { ...prev, phone: value };
+    if (!selectedCountry) {
+      setForm((prev) => ({
+        ...prev,
+        country: "",
+        dialCode: "",
+        phone: "",
+      }));
+      return;
     }
 
-    if (!value.startsWith(prev.dialCode)) {
+    setForm((prev) => {
+      const phoneWithoutDial = prev.phone.replace(/^\+\d+[-\d]*\s?/, "");
+
       return {
         ...prev,
-        phone: prev.dialCode + " "
+        country: countryCode,
+        dialCode: selectedCountry.dialCode,
+        phone: `${selectedCountry.dialCode} ${phoneWithoutDial}`.trim(),
       };
-    }
+    });
+  };
 
-    return { ...prev, phone: value };
-  });
-};
+  const handlePhoneChange = (e) => {
+    const value = e.target.value;
 
-const handleGuestChange = (value, field) => {
-  setForm((prev) => ({
-    ...prev,
-    [field]: value,
-    ...(field !== "creditCard" && { creditCard: "" }),
-    ...(field !== "bank" && { bank: "" }),
-    ...(field !== "wallet" && { wallet: "" }),
-  }));
-};
+    setForm((prev) => {
+      if (!prev.dialCode) {
+        return { ...prev, phone: value };
+      }
+
+      if (!value.startsWith(prev.dialCode)) {
+        return {
+          ...prev,
+          phone: prev.dialCode + " ",
+        };
+      }
+
+      return { ...prev, phone: value };
+    });
+  };
+
+  const handleGuestChange = (value, field) => {
+    setForm((prev) => ({
+      ...prev,
+      [field]: value,
+      ...(field !== "creditCard" && { creditCard: "" }),
+      ...(field !== "bank" && { bank: "" }),
+      ...(field !== "wallet" && { wallet: "" }),
+    }));
+  };
   const handleClearCountry = (label, value) => {
     if (label) {
       setSelectedCountry(null);
@@ -203,14 +202,14 @@ const handleGuestChange = (value, field) => {
     });
   };
 
-    const handleSetImages = (imageUrls) => {
+  const handleSetImages = (imageUrls) => {
     setForm({
       ...form,
       img_url: imageUrls,
     });
   };
 
-    const handleImagesChange = (e) => {
+  const handleImagesChange = (e) => {
     const files = Array.from(e.target.files);
     const imgUrls = files.map((file) => URL.createObjectURL(file));
     setForm((form) => ({
@@ -229,243 +228,322 @@ const handleGuestChange = (value, field) => {
     });
   };
 
+  const addVariant = () => {
+    setForm((prev) => ({
+      ...prev,
+      variants: [...prev.variants, { name: "", price: "", stock: "" }],
+    }));
+  };
+
+  const removeVariant = (index) => {
+    setForm((prev) => ({
+      ...prev,
+      variants: prev.variants.filter((_, i) => i !== index),
+    }));
+  };
+
+  const handleVariantChange = (index, field, value) => {
+    setForm((prev) => ({
+      ...prev,
+      variants: prev.variants.map((variant, i) => {
+        if (i === index) {
+          return {
+            ...variant,
+            [field]:
+              field === "price" || field === "stock"
+                ? Number(value) || 0
+                : value,
+          };
+        }
+        return variant;
+      }),
+    }));
+  };
+
   const handleUpdateProduct = async (id) => {
-    
     setLoading(true);
-    
+
     Swal.fire({
-      title: 'Estás actualizando un producto',
-      text: '¿Deseas continuar actualizando este producto?',
-      icon: 'warning',
+      title: "Estás actualizando un producto",
+      text: "¿Deseas continuar actualizando este producto?",
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonText: 'Confirmar',
-      cancelButtonText: 'Volver',
-      background: '#f0f0f0',
+      confirmButtonText: "Confirmar",
+      cancelButtonText: "Volver",
+      background: "#f0f0f0",
       customClass: {
-        popup: 'swal-custom-popup',
-        title: 'custom-title',
-        content: 'custom-content',
-        confirmButton: 'swal-confirm-btn',
+        popup: "swal-custom-popup",
+        title: "custom-title",
+        content: "custom-content",
+        confirmButton: "swal-confirm-btn",
       },
     }).then((result) => {
       if (result.isConfirmed) {
+        try {
+          const formData = new FormData();
+          formData.append("name", form.name);
+          formData.append("price", form.price);
+          formData.append("previousPrice", form.previousPrice);
+          formData.append("category", form.category);
+          formData.append("quantity", form.quantity);
+          formData.append("description", form.description);
+          formData.append("img_url", form.img_url);
+          const response = axios.put(
+            `${import.meta.env.VITE_APP_API_UPDATE_PRODUCT_URL}/${id}`,
+            formData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+                Accept: "application/json",
+              },
+            },
+          );
 
-    try {
-      const formData = new FormData();
-      formData.append('name', form.name);
-      formData.append('price', form.price);
-      formData.append('previousPrice', form.previousPrice);
-      formData.append('category', form.category);
-      formData.append('quantity', form.quantity);
-      formData.append('description', form.description);
-      formData.append('img_url', form.img_url);
-      const response = axios.put(
-        `${import.meta.env.VITE_APP_API_UPDATE_PRODUCT_URL}/${id}`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Accept: "application/json",
-          },
+          if (response.status === 200) {
+            Swal.fire({
+              title: "¡Éxito!",
+              text: "Producto actualizado correctamente.",
+              icon: "success",
+              showCancelButton: false,
+              confirmButtonText: "Volver",
+              background: "#f0f0f0",
+              customClass: {
+                popup: "swal-custom-popup",
+                title: "custom-title",
+                content: "custom-content",
+                confirmButton: "swal-confirm-btn",
+              },
+            });
+            console.log("Product updated successfully", response.data);
+          } else {
+            console.log("Failed to update product", response.data);
+          }
+        } catch (error) {
+          Swal.fire({
+            title: "Error",
+            text: "Hubo un error al intentar actualizar este producto.",
+            icon: "error",
+            background: "#f0f0f0",
+            customClass: {
+              popup: "swal-custom-popup",
+              title: "custom-title",
+              content: "custom-content",
+              confirmButton: "swal-confirm-btn",
+            },
+          });
+          setLoading(false);
+          throw error.response?.data || error.message;
         }
-      );
-
-      if (response.status === 200) {
-        Swal.fire({
-          title: '¡Éxito!',
-          text: 'Producto actualizado correctamente.',
-          icon: 'success',
-          showCancelButton: false,
-          confirmButtonText: 'Volver',
-          background: '#f0f0f0',
-          customClass: {
-            popup: 'swal-custom-popup',
-            title: 'custom-title',
-            content: 'custom-content',
-            confirmButton: 'swal-confirm-btn',
-          },
-        })
-        console.log("Product updated successfully", response.data);
       } else {
-        console.log("Failed to update product", response.data);
+        return;
       }
-    } catch (error) {
-      Swal.fire({
-        title: 'Error',
-        text: 'Hubo un error al intentar actualizar este producto.',
-        icon: 'error',
-        background: '#f0f0f0',
-        customClass: {
-            popup: 'swal-custom-popup',
-            title: 'custom-title',
-            content: 'custom-content',
-            confirmButton: 'swal-confirm-btn',
-        },
     });
-    setLoading(false);
-    throw error.response?.data || error.message;
-    }
-  }else{
-    return
-  }
-  });
   };
 
-  const handleSubmitProduct = async (e) => {
+  const handleSubmitProduct = async (e, sellerId) => {
     e.preventDefault();
-   
+
+    const token = tokenAdmin || localStorage.getItem("tokenAdmin");
+
+    if (!token) {
+      Swal.fire({
+        icon: "error",
+        title: "No hay sesión de administrador",
+        customClass: {
+          popup: "swal-custom-popup",
+          title: "swal-custom-title",
+          htmlContainer: "swal-text",
+          confirmButton: "swal-confirm-btn",
+        },
+      });
+      return;
+    }
+
+    // Validar que haya al menos una variante válida
+    const validVariants = form.variants.filter((v) => v.name && v.stock);
+
+    if (validVariants.length === 0) {
+      Swal.fire({
+        icon: "warning",
+        title: "Faltan datos",
+        text: "Debes agregar al menos una variante con color, precio y stock",
+        customClass: {
+          popup: "swal-custom-popup",
+          title: "swal-custom-title",
+          htmlContainer: "swal-text",
+          confirmButton: "swal-confirm-btn",
+        },
+      });
+      return;
+    }
+
     const formData = {
       name: form.name,
+      description: form.description,
       price: form.price,
       previousPrice: form.previousPrice,
       category: form.category,
-      color: form.color,
-      stock: form.stock,
-      quantity: form.quantity,
-      description: form.description,
-      img_url: form.img_url// Asumiendo que img_url es un array de objetos con una propiedad 'url'
+      subCategory: form.subCategory,
+      sellerId: sellerId,
+      brand: form.brand,
+      variants: validVariants, // Enviar variantes válidas
+      img_url: form.img_url,
     };
-  
+
     if (!Array.isArray(formData.img_url) || formData.img_url.length === 0) {
-      console.error("img_url debe ser un array de URLs");
+      Swal.fire({
+        icon: "warning",
+        title: "Debes subir al menos una imagen",
+        customClass: {
+          popup: "swal-custom-popup",
+          title: "swal-custom-title",
+          htmlContainer: "swal-text",
+          confirmButton: "swal-confirm-btn",
+        },
+      });
       return;
     }
-    
-    setLoading(true);
 
-    Swal.fire({
-      title: 'Estás agregando un producto',
-      text: '¿Deseas agregar este producto?',
-      icon: 'warning',
+    const confirm = await Swal.fire({
+      title: "¿Agregar producto?",
+      text: `Se agregará con ${validVariants.length} variante(s) de color`,
+      icon: "question",
       showCancelButton: true,
-      confirmButtonText: 'Confirmar',
-      cancelButtonText: 'Volver',
-      background: '#f0f0f0',
+      confirmButtonText: "Confirmar",
+      cancelButtonText: "Cancelar",
+      background: "#f0f0f0",
       customClass: {
-        popup: 'swal-custom-popup',
-        title: 'custom-title',
-        content: 'custom-content',
-        confirmButton: 'swal-confirm-btn',
+        popup: "swal-custom-popup",
+        title: "swal-custom-title",
+        htmlContainer: "swal-text",
+        confirmButton: "swal-confirm-btn",
+        cancelButton: "swal-cancel-btn",
       },
-    }).then((result) => {
-      if (result.isConfirmed) {
+    });
+
+    if (!confirm.isConfirmed) return;
+
     try {
-      const response = axios.post(
+      setLoading(true);
+
+      Swal.fire({
+        title: "Agregando producto...",
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
+
+      const response = await axios.post(
         import.meta.env.VITE_APP_API_UPLOAD_PRODUCT_URL,
         formData,
         {
           headers: {
-            "Content-type": "application/json",
-            Accept: "application/json",
+            "x-token": token,
+            "Content-Type": "application/json",
           },
-        }
+        },
       );
-  
-          Swal.fire({
-      title: "Estamos agregando un producto.",
-      text: "Cargando",
-      allowOutsideClick: false,
-      background: "#f9fafb",
-      customClass: {
-        popup: "swal-popup",
-        title: "swal-title",
-        htmlContainer: "swal-text",
-        confirmButton: "swal-confirm-btn",
-      },
-      didOpen: () => Swal.showLoading(),
-    });
 
-      console.log(response)
       setResponse(true);
       setForm(initialForm);
-      
+
       Swal.fire({
-        title: '¡Éxito!',
-        text: 'Producto agregado correctamente.',
-        icon: 'success',
-        showCancelButton: false,
-        confirmButtonText: 'Volver',
-        background: '#f0f0f0',
+        icon: "success",
+        title: "Producto agregado correctamente",
+        html: `Se agregaron ${validVariants.length} variante(s) de color`,
+        confirmButtonText: "Continuar",
         customClass: {
-          popup: 'swal-custom-popup',
-          title: 'custom-title',
-          content: 'custom-content',
-          confirmButton: 'swal-confirm-btn',
+          popup: "swal-custom-popup",
+          title: "swal-custom-title",
+          htmlContainer: "swal-text",
+          confirmButton: "swal-confirm-btn",
         },
-      })
-          // Manejar acciones adicionales si es necesario
-     
+      });
     } catch (error) {
-      console.error('Error al enviar el producto:', error);
+      console.error("Error al crear producto:", error);
+
+      Swal.fire({
+        icon: "error",
+        title: "Error al crear el producto",
+        text: error?.response?.data?.message || "Intenta nuevamente",
+        customClass: {
+          popup: "swal-custom-popup",
+          title: "swal-custom-title",
+          htmlContainer: "swal-text",
+          confirmButton: "swal-confirm-btn",
+        },
+      });
+    } finally {
       setLoading(false);
-      // Manejar el error de manera adecuada, como mostrar un mensaje al usuario
     }
-  }else{
-    return
-  }
-  });
-};
+  };
 
   const deleteProduct = async (id) => {
-        if (!id || typeof id === "object") {
-        console.error("❌ deleteProduct recibió algo inválido:", id);
-        return;
+    if (!id || typeof id === "object") {
+      console.error("❌ deleteProduct recibió algo inválido:", id);
+      return;
     }
     try {
-        const result = await Swal.fire({
-            title: 'Vas a eliminar un producto',
-            text: '¡Estás seguro que deseas eliminar este producto?',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Confirmar',
-            cancelButtonText: 'Volver',
-            background: '#f0f0f0',
-            customClass: {
-                popup: 'swal-custom-popup',
-                title: 'custom-title',
-                content: 'custom-content',
-                confirmButton: 'swal-confirm-btn',
-                cancelButton: 'custom-cancel-button',
-            },
-        });
+      const result = await Swal.fire({
+        title: "Vas a eliminar un producto",
+        text: "¡Estás seguro que deseas eliminar este producto?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Confirmar",
+        cancelButtonText: "Volver",
+        background: "#f0f0f0",
+        customClass: {
+          popup: "swal-custom-popup",
+          title: "custom-title",
+          content: "custom-content",
+          confirmButton: "swal-confirm-btn",
+          cancelButton: "custom-cancel-button",
+        },
+      });
 
-        if (result.isConfirmed) {
-            const response = await axios.delete(`${import.meta.env.VITE_APP_API_DELETE_PRODUCT_URL}/${id}`);
-            console.log(response.data); // Mensaje de éxito o información adicional
-            Swal.fire({
-                title: 'Eliminado!',
-                text: 'El producto ha sido eliminado exitosamente.',
-                icon: 'success',
-                background: '#f0f0f0',
-                customClass: {
-                    popup: 'swal-custom-popup',
-                    title: 'custom-title',
-                    content: 'custom-content',
-                    confirmButton: 'swal-confirm-btn',
-                },
-            });
-            return response.data;
-        } else {
-            return;
-        }
-    } catch (error) {
-        console.error('Error deleting product:', error.response?.data || error.message);
+      if (result.isConfirmed) {
+        const response = await axios.delete(
+          `${import.meta.env.VITE_APP_API_DELETE_PRODUCT_URL}/${id}`,
+        );
+        console.log(response.data); // Mensaje de éxito o información adicional
         Swal.fire({
-            title: 'Error',
-            text: 'Hubo un error al intentar eliminar el producto.',
-            icon: 'error',
-            background: '#f0f0f0',
-            customClass: {
-                popup: 'swal-custom-popup',
-                title: 'custom-title',
-                content: 'custom-content',
-                confirmButton: 'swal-confirm-btn',
-            },
+          title: "Eliminado!",
+          text: "El producto ha sido eliminado exitosamente.",
+          icon: "success",
+          background: "#f0f0f0",
+          customClass: {
+            popup: "swal-custom-popup",
+            title: "custom-title",
+            content: "custom-content",
+            confirmButton: "swal-confirm-btn",
+          },
         });
-        throw error.response?.data || error.message;
+        return response.data;
+      } else {
+        return;
+      }
+    } catch (error) {
+      console.error(
+        "Error deleting product:",
+        error.response?.data || error.message,
+      );
+      Swal.fire({
+        title: "Error",
+        text: "Hubo un error al intentar eliminar el producto.",
+        icon: "error",
+        background: "#f0f0f0",
+        customClass: {
+          popup: "swal-custom-popup",
+          title: "custom-title",
+          content: "custom-content",
+          confirmButton: "swal-confirm-btn",
+        },
+      });
+      throw error.response?.data || error.message;
     }
-};
-// fin de funciones y estados del producto
+  };
+  // fin de funciones y estados del producto
 
   const validateEmails = async (email) => {
     const finalForm = {
@@ -483,7 +561,7 @@ const handleGuestChange = (value, field) => {
             "Content-type": "application/json",
             Accept: "application/json",
           },
-        }
+        },
       );
     } catch (error) {
       console.log(error, "error al verificar emails desde front");
@@ -520,7 +598,7 @@ const handleGuestChange = (value, field) => {
           setForm(initialForm);
           setTimeout(
             () => setResponse(false, initialForm, window.location.reload()),
-            500
+            500,
           );
         });
     } else {
@@ -531,7 +609,7 @@ const handleGuestChange = (value, field) => {
   const handleLogin = (e) => {
     if (!form.email) return;
     if (!form.password) return;
-    
+
     Swal.fire({
       title: "Iniciando sesión...",
       text: "Validando credenciales",
@@ -549,76 +627,178 @@ const handleGuestChange = (value, field) => {
     dispatch(startLogin(form.email, form.password));
   };
 
-const handleSubmitAddCart = async (productData) => {
+const handleSubmitAddCart = async (product, quantity = 1, activeColor) => {
+  if (!product) return;
+
+  // ✅ NORMALIZAR COLORES
+  const colors = product.colors || [];
+  const hasMultipleColors = Array.isArray(colors) && colors.length > 1;
+
+  // ✅ VALIDACIÓN CLAVE
+  if (hasMultipleColors && !activeColor) {
+    Swal.fire({
+      title: "Selecciona un color",
+      text: "Debes elegir un color antes de agregar al carrito",
+      icon: "warning",
+      customClass: {
+        popup: "swal-custom-popup",
+        title: "custom-title",
+        content: "custom-content",
+        confirmButton: "swal-confirm-btn",
+      },
+    });
+    return; // 🔴 IMPORTANTE: detener ejecución
+  }
 
   setLoading(true);
 
   try {
-
     const token = user?.token || null;
 
-    const payload = {
-      product_id: productData.product_id,
-      price: productData.price,
-      quantity: productData.quantity,
-      user_id: user?.id || null,
-      guest_id: localStorage.getItem("guest_id") || null
-    };
+    // ✅ COLOR FINAL
+    const finalColor =
+      hasMultipleColors
+        ? activeColor
+        : colors.length === 1
+        ? colors[0]
+        : null;
 
-    console.log("PAYLOAD:", payload);
+    // ---------------- USUARIO LOGUEADO ----------------
+    if (user && user.id) {
+      const payload = {
+        user_id: user.id,
+        product_id: product.id,
+        variant_id: product.variant_id || null,
+        price: product.price || product.previousPrice,
+        quantity,
+        color: finalColor, // ✅ agregado
+      };
 
+      console.log("📝 Enviando al carrito (usuario):", payload);
 
-    const response = await axios.post(
-      import.meta.env.VITE_APP_API_POST_CART_URL,
-      payload,
-      {
-        headers: {
-          ...(token && { Authorization: `Bearer ${token}` }),
-          "Content-Type": "application/json",
-        },
+      await axios.post(
+        import.meta.env.VITE_APP_API_POST_CART_URL,
+        payload,
+        {
+          headers: {
+            ...(token && { Authorization: `Bearer ${token}` }),
+            "Content-Type": "application/json",
+          },
+        }
+      );
+    }
+
+    // ---------------- USUARIO INVITADO ----------------
+    else {
+      let guestId = localStorage.getItem("guest_id");
+
+      if (!guestId) {
+        guestId = `guest_${Date.now()}_${Math.random()
+          .toString(36)
+          .substr(2, 9)}`;
+        localStorage.setItem("guest_id", guestId);
       }
-    );
 
-    console.log(response.data);
+      let guestUser = localStorage.getItem("guestUser");
+      let guestData = guestUser ? JSON.parse(guestUser) : null;
 
-    setLoading(false);
+      if (!guestData) {
+        guestData = {
+          id: guestId,
+          name: "Invitado",
+          role: "guest",
+          guest: true,
+          createdAt: new Date().toISOString(),
+        };
+        localStorage.setItem("guestUser", JSON.stringify(guestData));
+      }
 
-Swal.fire({
-  title: "¡Correcto!",
-  text: "Agregaste un producto al carrito!",
-  icon: "success",
-  showCancelButton: true,
-  confirmButtonText: "Ir al carrito",
-  cancelButtonText: "Seguir comprando",
-        customClass: {
+      // ✅ PRODUCTO CON COLOR FINAL
+      const productData = {
+        id: product.id,
+        product_id: product.id,
+        guest_id: guestId,
+        name: product.name,
+        price: product.price || product.previousPrice,
+        color: finalColor, // ✅ FIX
+        quantity,
+        img:
+          Array.isArray(product.images)
+            ? product.images[0]
+            : product.img_url || product.image || "",
+        img_urls: Array.isArray(product.images)
+          ? product.images
+          : product.img_urls || [],
+        variant_id: product.variant_id || null,
+        added_at: new Date().toISOString(),
+      };
+
+      console.log("📝 Agregando al carrito:", productData);
+
+      const CART_STORAGE_KEY = "cart";
+      let cart = JSON.parse(localStorage.getItem(CART_STORAGE_KEY)) || [];
+
+      const existingIndex = cart.findIndex(
+        (item) =>
+          item.product_id === product.id &&
+          item.guest_id === guestId &&
+          item.color === finalColor // ✅ IMPORTANTE
+      );
+
+      if (existingIndex !== -1) {
+        cart[existingIndex].quantity += quantity;
+      } else {
+        cart.push(productData);
+      }
+
+      localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
+
+      window.dispatchEvent(
+        new CustomEvent("cart-updated", { detail: { cart } })
+      );
+    }
+
+    // ---------------- SUCCESS ----------------
+    const productName =
+      product.name || product.title || "Producto";
+
+    Swal.fire({
+      title: "¡Producto agregado!",
+      text: `${productName} fue agregado al carrito`,
+      icon: "success",
+      showCancelButton: true,
+      confirmButtonText: "Ir al carrito",
+      cancelButtonText: "Seguir comprando",
+      customClass: {
         popup: "swal-custom-popup",
         title: "custom-title",
         content: "custom-content",
         confirmButton: "swal-confirm-btn",
         cancelButton: "swal-cancel-btn",
       },
-}).then((result) => {
-  if (result.isConfirmed) {
-    window.location.href = "/my-cart"; // Cambia esta ruta por la URL de tu carrito
-  }
-});
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const guestId = localStorage.getItem("guest_id");
+        navigate(guestId ? "/cart-guest" : "/dashboard/my-cart");
+      }
+    });
 
   } catch (error) {
-
-    console.error("ERROR CART:", error.response?.data || error.message);
-
-    setLoading(false);
+    console.error("❌ ERROR CART:", error.response?.data || error.message);
 
     Swal.fire({
-      title: "No se pudo agregar al carrito",
-      text: "Regresa al producto e inténtalo de nuevo",
-      icon: "warning",
+      title: "Error",
+      text:
+        error?.response?.data?.message ||
+        "No se pudo agregar el producto",
+      icon: "error",
     });
+  } finally {
+    setLoading(false);
   }
 };
-  const handleSubmitAddWishlist = async (e) => {
 
-  
+  const handleSubmitAddWishlist = async (e) => {
     const finalFormAddWishlist = {
       ...form,
     };
@@ -637,7 +817,7 @@ Swal.fire({
             "Content-type": "application/json",
             Accept: "application/json",
           },
-        }
+        },
       );
       console.log(response);
       setLoading(false);
@@ -650,39 +830,39 @@ Swal.fire({
             false,
             initialForm,
             Swal.fire({
-              title: '¡Correcto!',
+              title: "¡Correcto!",
               text: `Agregaste un producto en la lista de deseos!`,
-              icon: 'success',
+              icon: "success",
               showCancelButton: false,
-              confirmButtonText: 'Volver',
-              cancelButtonText: 'Volver',
-              background: '#f0f0f0',
+              confirmButtonText: "Volver",
+              cancelButtonText: "Volver",
+              background: "#f0f0f0",
               customClass: {
-                popup: 'swal-custom-popup',
-                title: 'custom-title',
-                content: 'custom-content',
-                confirmButton: 'swal-confirm-btn',
+                popup: "swal-custom-popup",
+                title: "custom-title",
+                content: "custom-content",
+                confirmButton: "swal-confirm-btn",
               },
-            })
+            }),
           ),
-        200
+        200,
       );
     } catch (error) {
       Swal.fire({
-        title: 'No se pudo agregar al carrito',
-        text: 'Regresa al producto e inténtalo de nuevo',
-        icon: 'warning',
+        title: "No se pudo agregar al carrito",
+        text: "Regresa al producto e inténtalo de nuevo",
+        icon: "warning",
         showCancelButton: false,
-        confirmButtonText: 'Volver',
-        cancelButtonText: 'Volver',
-        background: '#f0f0f0',
+        confirmButtonText: "Volver",
+        cancelButtonText: "Volver",
+        background: "#f0f0f0",
         customClass: {
-          popup: 'swal-custom-popup',
-          title: 'custom-title',
-          content: 'custom-content',
-          confirmButton: 'swal-confirm-btn',
+          popup: "swal-custom-popup",
+          title: "custom-title",
+          content: "custom-content",
+          confirmButton: "swal-confirm-btn",
         },
-      })
+      });
       return;
     }
   };
@@ -717,7 +897,7 @@ Swal.fire({
             "Content-type": "application/json",
             Accept: "application/json",
           },
-        }
+        },
       );
       setLoading(false);
       setResponse(true);
@@ -728,9 +908,9 @@ Swal.fire({
             false,
             initialForm,
             (window.location.href =
-              import.meta.env.VITE_APP_API_LOGIN_ADMIN_FRONT)
+              import.meta.env.VITE_APP_API_LOGIN_ADMIN_FRONT),
           ),
-        200
+        200,
       );
     } catch (error) {
       console.log(error.response.data);
@@ -751,10 +931,9 @@ Swal.fire({
   };
 
   const handleLoginAdmin = (e) => {
-    debugger
     if (!form.email) return;
-    if (!form.pass) return;
-    
+    if (!form.password) return;
+
     Swal.fire({
       title: "Iniciando sesión...",
       text: "Validando credenciales",
@@ -769,12 +948,11 @@ Swal.fire({
       didOpen: () => Swal.showLoading(),
     });
     e.preventDefault();
-    dispatch(startLoginAdmin(form.email, form.pass));
+    dispatch(startLoginAdmin(form.email, form.password));
 
     // console.log(form)
     loadingActive();
     navigate("/admin/dashboard");
-   
   };
 
   const handleSubmits = async (e, label) => {
@@ -803,7 +981,7 @@ Swal.fire({
             "Content-type": "application/json",
             Accept: "application/json",
           },
-        }
+        },
       );
       console.log(response);
       setLoading(false);
@@ -816,39 +994,39 @@ Swal.fire({
             false,
             initialForm,
             Swal.fire({
-              title: '¡Hecho!',
+              title: "¡Hecho!",
               html: `Te has registrado correctamente`,
-              icon: 'success',
+              icon: "success",
               showCancelButton: false,
-              cancelButtonText: 'Volver',
-              background: '#f0f0f0',
+              cancelButtonText: "Volver",
+              background: "#f0f0f0",
               customClass: {
-                popup: 'swal-custom-popup',
-                title: 'custom-title',
-                content: 'custom-content',
-                confirmButton: 'swal-confirm-btn',
-                cancelButton: 'custom-cancel-button',
+                popup: "swal-custom-popup",
+                title: "custom-title",
+                content: "custom-content",
+                confirmButton: "swal-confirm-btn",
+                cancelButton: "custom-cancel-button",
               },
-            })
+            }),
           ),
-        200
+        200,
       );
     } catch (error) {
-                  Swal.fire({
-              title: '¡Error!',
-              html: `No se pudo registrar el usuario`,
-              icon: 'warning',
-              cancelButtonText: 'Reintentar',
-              confirmlButtonText: 'Reintentar',
-              background: '#f0f0f0',
-              customClass: {
-                popup: 'swal-custom-popup',
-                title: 'custom-title',
-                content: 'custom-content',
-                confirmButton: 'swal-confirm-btn',
-                cancelButton: 'custom-cancel-button',
-              },
-            })
+      Swal.fire({
+        title: "¡Error!",
+        html: `No se pudo registrar el usuario`,
+        icon: "warning",
+        cancelButtonText: "Reintentar",
+        confirmlButtonText: "Reintentar",
+        background: "#f0f0f0",
+        customClass: {
+          popup: "swal-custom-popup",
+          title: "custom-title",
+          content: "custom-content",
+          confirmButton: "swal-confirm-btn",
+          cancelButton: "custom-cancel-button",
+        },
+      });
       console.log(error);
       return;
     }
@@ -879,7 +1057,7 @@ Swal.fire({
             "Content-type": "application/json",
             Accept: "application/json",
           },
-        }
+        },
       );
       console.log(response);
       setLoading(false);
@@ -895,7 +1073,7 @@ Swal.fire({
     setModal(true);
   };
 
-    const handleChangePassword = async (e) => {
+  const handleChangePassword = async (e) => {
     e.preventDefault();
 
     if (!form.password || !form.rePassword) return;
@@ -919,7 +1097,7 @@ Swal.fire({
             "Content-Type": "application/json",
             Accept: "application/json",
           },
-        }
+        },
       );
 
       console.log(response.data);
@@ -933,14 +1111,13 @@ Swal.fire({
         icon: "success",
         background: "#f0f0f0",
         customClass: {
-          popup: "custom-popup",
+          popup: "swal-custom-popup",
           title: "custom-title",
           content: "custom-content",
-          confirmButton: "custom-confirm-button",
-          cancelButton: "custom-cancel-button",
+          confirmButton: "swal-confirm-btn",
         },
       }).then(() => {
-        navigate("/advisor/auth/login"); // ✅ Redirige después del éxito
+        navigate("/auth/login"); // ✅ Redirige después del éxito
       });
     } catch (error) {
       console.error(error);
@@ -950,11 +1127,10 @@ Swal.fire({
         icon: "warning",
         background: "#f0f0f0",
         customClass: {
-          popup: "custom-popup",
+          popup: "swal-custom-popup",
           title: "custom-title",
           content: "custom-content",
-          confirmButton: "custom-confirm-button",
-          cancelButton: "custom-cancel-button",
+          confirmButton: "swal-confirm-btn",
         },
       });
     } finally {
@@ -963,7 +1139,7 @@ Swal.fire({
     }
   };
 
-    const handleRequestCode = async (e) => {
+  const handleRequestCode = async (e) => {
     e.preventDefault();
 
     const finalForm = { ...form };
@@ -981,7 +1157,7 @@ Swal.fire({
             "Content-type": "application/json",
             Accept: "application/json",
           },
-        }
+        },
       );
 
       console.log(response);
@@ -996,11 +1172,10 @@ Swal.fire({
           icon: "success",
           background: "#f0f0f0",
           customClass: {
-            popup: "custom-popup",
+            popup: "swal-custom-popup",
             title: "custom-title",
             content: "custom-content",
-            confirmButton: "custom-confirm-button",
-            cancelButton: "custom-cancel-button",
+            confirmButton: "swal-confirm-btn",
           },
         });
       }, 200);
@@ -1040,11 +1215,10 @@ Swal.fire({
           icon: "warning",
           background: "#f0f0f0",
           customClass: {
-            popup: "custom-popup",
+            popup: "swal-custom-popup",
             title: "custom-title",
             content: "custom-content",
-            confirmButton: "custom-confirm-button",
-            cancelButton: "custom-cancel-button",
+            confirmButton: "swal-confirm-btn",
           },
         });
         return;
@@ -1056,11 +1230,10 @@ Swal.fire({
         icon: "success",
         background: "#f0f0f0",
         customClass: {
-          popup: "custom-popup",
+          popup: "swal-custom-popup",
           title: "custom-title",
           content: "custom-content",
-          confirmButton: "custom-confirm-button",
-          cancelButton: "custom-cancel-button",
+          confirmButton: "swal-confirm-btn",
         },
       });
 
@@ -1074,17 +1247,15 @@ Swal.fire({
         icon: "warning",
         background: "#f0f0f0",
         customClass: {
-          popup: "custom-popup",
+          popup: "swal-custom-popup",
           title: "custom-title",
           content: "custom-content",
-          confirmButton: "custom-confirm-button",
-          cancelButton: "custom-cancel-button",
+          confirmButton: "swal-confirm-btn",
         },
       });
       return false;
     }
   };
-
 
   return {
     form,
@@ -1124,6 +1295,9 @@ Swal.fire({
     handleRequestCode,
     handleChangePassword,
     handlePhoneChange,
-    handleVerifyCode
+    handleVerifyCode,
+    addVariant,
+    removeVariant,
+    handleVariantChange,
   };
 };

@@ -4,7 +4,7 @@ import styled from "styled-components"
 import { formatPrice, getFile } from "../../../globalActions"
 
 
-export const CardProductCart = ({ name, quantity, price, img, onRemove, onWishlist }) => {
+export const CardProductCart = ({ name, quantity, price, img, onRemove, color, onWishlist }) => {
   return (
     <ProductCartCard>
         <div className="cardproductcart">
@@ -27,10 +27,11 @@ export const CardProductCart = ({ name, quantity, price, img, onRemove, onWishli
                 <div className="cardproductcart-left-flex">
                     <div>
                         <h4>{formatPrice(price) }</h4>
+                        <p>{color}</p>
                         <p>Envío: gratis</p>
                     </div>
                     <div>
-                    {quantity}
+                    <strong>{quantity}</strong>
                     </div>
                 </div>
                     <div>
@@ -52,10 +53,8 @@ const ProductCartCard = styled.div`
         grid-template-columns: 15% 1fr;
         height: fit-content;
         /* background: white; */
-        padding: 10px;
         gap: 10px;
         align-items: center;
-        /* box-shadow: 1px 1px 3px #ebe9e9, -1px -1px 3px #ebe9e9; */
 
         h3{
             font-weight: 500;
@@ -90,10 +89,10 @@ const ProductCartCard = styled.div`
             gap: 15px;
 
             img{
-                width: 10px;
+                width: 15px;
                 cursor: pointer;
                 &:first-child{
-                    width: 14px;
+                    width: 18px;
                     filter: invert(50%);
                 }
             }

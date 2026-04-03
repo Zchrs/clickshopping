@@ -1,8 +1,9 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import { useMemo, useState } from "react";
 import Swal from "sweetalert2";
 import { formatPrice, getFile } from "../../../globalActions";
-import { DropZoneCloudinary, BaseButton } from "../../../index";
+import { DropZoneCloudinary, BaseButton, Empty } from "../../../index";
 import styled from "styled-components";
 
 export const OrdersListUser = ({
@@ -36,6 +37,13 @@ export const OrdersListUser = ({
         icon: "warning",
         title: "Falta comprobante",
         text: "Debes subir una imagen antes de enviarla",
+        customClass: {
+          popup: "custom-popup",
+          title: "custom-title",
+          content: "custom-content",
+          htmlContainer: "swal-text",
+          confirmButton: "swal-confirm-btn",
+        },
       });
       return;
     }
@@ -47,6 +55,13 @@ export const OrdersListUser = ({
         icon: "success",
         title: "Comprobante enviado",
         text: "Tu pago será validado pronto",
+        customClass: {
+          popup: "custom-popup",
+          title: "custom-title",
+          content: "custom-content",
+          htmlContainer: "swal-text",
+          confirmButton: "swal-confirm-btn",
+        },
       });
 
       setImagesByOrder((prev) => {
@@ -60,6 +75,13 @@ export const OrdersListUser = ({
         icon: "error",
         title: "Error",
         text: "No se pudo enviar el comprobante",
+          customClass: {
+            popup: "custom-popup",
+            title: "custom-title",
+            content: "custom-content",
+            htmlContainer: "swal-text",
+            confirmButton: "swal-confirm-btn",
+          },
       });
     }
   };
@@ -112,7 +134,9 @@ export const OrdersListUser = ({
       <p>{note}</p>
 
       {!filteredOrders.length ? (
-        <p>{emptyMessage}</p>
+        <div>
+          <Empty img="box-empty" message={emptyMessage}/>
+        </div>
       ) : (
         <div className="orders">
           <div className="orders-pending-list">
@@ -120,38 +144,37 @@ export const OrdersListUser = ({
 
               const image = imagesByOrder[order.id];
               const canSend = Boolean(image?.url);
+              // 🔥 CONDICIÓN CORREGIDA: Verificar si ya se envió un comprobante
+              const hasProof = order.proof_img && order.proof_status !== 'unprooff';
 
               /* ================= APPROVED ================= */
-              if (order.status === "approved") {
+              if (order.status === "shipped") {
                 return (
-                  <div key={order.id} className="orders-card">
+                  <div key={order.id} className="orders-card horizontal">
                     <div className="orders-card-user">
-                      <p><strong>Pedido #</strong> {order.id}</p>
-                      <p><strong>Usuario ID:</strong> {order.user.id || order.user?.id}</p>
-                      <p>
-                        <strong>Nombre:</strong>{" "}
-                        {order.name || order.user?.name}{" "}
-                        {order.lastname || order.user?.lastname}
-                      </p>
-                      <p><strong>Email:</strong> {order.email || order.user?.email}</p>
-                      <p><strong>Total:</strong> {formatPrice(order.total)}</p>
-                      <p><strong>Fecha:</strong> {new Date(order.created_at).toLocaleString()}</p>
-                      <p><strong>Estado:</strong> {order.status}</p>
-
                       {renderProductImages(order)}
+                      
+                        <div>
+                          <p><strong>Número de pedido:</strong> {order.id}</p>
+                          <p><strong>Usuario ID:</strong> {order.user.id || order.user?.id}</p>
+                          <p>
+                            <strong>Nombre:</strong>{" "}
+                            {order.name || order.user?.name}{" "}
+                            {order.lastname || order.user?.lastname}
+                          </p>
+                        </div>
+
+                        <div>
+                          <p><strong>Email:</strong> {order.email || order.user?.email}</p>
+                          <p><strong>Total:</strong> {formatPrice(order.total)}</p>
+                          <p><strong>Fecha:</strong> {new Date(order.created_at).toLocaleString()}</p>
+                          <p><strong>Estado:</strong> {order.status === "shipped" ? "Pedido enviado" : "" }</p>
+                        </div>
+                    
+
 
                       <div className="orders-card-actions">
-                        <BaseButton
-                          textLabel
-                          label="Aprobada"
-                          icon="success"
-                          img
-                          classs="button primary"
-                          $colorbtn="var(--success)"
-                          $colortextbtnprimary="var(--light)"
-                          $colorbtnhoverprimary="var(--success)"
-                          $colortextbtnhoverprimary="white"
-                        />
+                        <span className="sent-success"> Pedido enviado </span>
                       </div>
                     </div>
                   </div>
@@ -159,26 +182,27 @@ export const OrdersListUser = ({
               }
 
               /* ================= PENDING SEND ================= */
-              if (order.status === "pending send") {
+              if (order.status === "pending shipment") {
                 return (
                   <div key={order.id} className="order-card">
-                    <div className="order-card-header">
-                      <strong>Pedido #{order.id}</strong>
-                      <span className="badge pending">Pendiente</span>
-                    </div>
-
                     <div className="orders-card-user">
-                      <p>
-                        <strong>Nombre:</strong>{" "}
-                        {order.name || order.user?.name}{" "}
-                        {order.lastname || order.user?.lastname}
-                      </p>
-                      <p><strong>Email:</strong> {order.email || order.user?.email}</p>
-                      <p><strong>Total:</strong> {formatPrice(order.total)}</p>
-                      <p><strong>Fecha:</strong> {new Date(order.created_at).toLocaleString()}</p>
-                      <p><strong>Estado:</strong> {order.status}</p>
-
                       {renderProductImages(order)}
+                      <div>
+                        <strong>Pedido #{order.id}</strong>
+                        <p>
+                          <strong>Nombre:</strong>{" "}
+                          {order.name || order.user?.name}{" "}
+                          {order.lastname || order.user?.lastname}
+                        </p>
+                        <p><strong>Email:</strong> {order.email || order.user?.email}</p>
+                      </div>
+
+                        <div>
+                          <p><strong>Total:</strong> {formatPrice(order.total)}</p>
+                          <p><strong>Fecha:</strong> {new Date(order.created_at).toLocaleString()}</p>
+                          <p><strong>Estado:</strong> {order.status === "pending shipment" ? "Pendiente de envío" : ""}</p>
+                        </div>
+
 
                       <LinK>
                         <a
@@ -206,37 +230,94 @@ export const OrdersListUser = ({
               return (
                 <div key={order.id} className="orders-card">
                   <div className="orders-card-user">
-                    <p><strong>Pedido #</strong> {order.id}</p>
-                    <p><strong>Total:</strong> {formatPrice(order.total)}</p>
-                    <p><strong>Fecha:</strong> {new Date(order.created_at).toLocaleString()}</p>
-                    <p><strong>Estado:</strong> {order.status}</p>
-
-                    {renderProductImages(order)}
-                  </div>
+                      {renderProductImages(order)}
+                    <div>
+                      <p><strong>Número de pedido:</strong> {order.id}</p>
+                      <p><strong>Total:</strong> {formatPrice(order.total)}</p>
+                      <p><strong>Fecha:</strong> {new Date(order.created_at).toLocaleString()}</p>
+                      <p><strong>Estado: </strong>
+                        {order.status === "pending shipment" ? 'Pendiente de envío' : ""
+                        || order.status === "shipped" ? 'Pedido enviado' : ""
+                        || order.status === "pending approval" ? 'Pago en revisión, por favor enviar comprobante' : ""
+                        }
+                      </p>
+                    </div>
 
                   <div className="orders-card-capturepayment">
-                    <DropZoneCloudinary
-                      id={`proof_${order.id}`}
-                      name={`proof_${order.id}`}
-                      setImage={(img) =>
-                        handleImageUploaded(order.id, img)
-                      }
-                      paymentProof
-                    />
 
-                    <BaseButton
-                      type="button"
-                      textLabel
-                      label="Enviar comprobante"
-                      handleClick={() => handleSend(order.id)}
-                      disabled={!canSend}
-                      classs="button primary"
-                      $colorbtn="var(--primary)"
-                      $colortextbtnprimary="var(--light)"
-                      $colorbtnhoverprimary="var(--primary-semi)"
-                      $colortextbtnhoverprimary="white"
-                    />
+                    {/* 🔥 SI YA SE ENVIÓ EL COMPROBANTE */}
+                    {hasProof ? (
+                      <div style={{ marginTop: "10px" }}>
+                        <p style={{ color: "green", fontWeight: "bold" }}>
+                          ✅ Comprobante enviado
+                        </p>
+                        {order.proof_status && (
+                          <p style={{ fontSize: "12px", color: "#666", marginTop: "4px" }}>
+                            Estado: {order.proof_status === 'received' ? 'Recibido' : 'Pendiente de validación'}
+                          </p>
+                        )}
+                        {order.proof_img && (
+                          <img
+                            src={order.proof_img}
+                            alt="Comprobante"
+                            style={{
+                              width: "150px",
+                              marginTop: "10px",
+                              borderRadius: "8px",
+                              border: "1px solid #ccc",
+                              cursor: "pointer"
+                            }}
+                            onClick={() => {
+                              Swal.fire({
+                                imageUrl: order.proof_img,
+                                imageAlt: "Comprobante de pago",
+                                imageWidth: 600,
+                                showCloseButton: true,
+                                showConfirmButton: false,
+                              });
+                            }}
+                          />
+                        )}
+                        <BaseButton
+                          textLabel
+                          label={order.proof_status === 'received' ? "Comprobante recibido" : "Comprobante enviado"}
+                          disabled
+                          classs="button primary"
+                          $colorbtn="var(--gray)"
+                          $colortextbtnprimary="white"
+                        />
+                      </div>
+                    ) : (
+                      <>
+                      <strong>Carga tu comprobante de pago aquí</strong>
+                        {/* 🔥 SUBIR IMAGEN SOLO SI NO SE HA ENVIADO */}
+                        <DropZoneCloudinary
+                          id={`proof_${order.id}`}
+                          name={`proof_${order.id}`}
+                          setImage={(img) =>
+                            handleImageUploaded(order.id, img)
+                          }
+                          paymentProof
+                        />
+
+                        <BaseButton
+                          type="button"
+                          textLabel
+                          label="Enviar comprobante"
+                          handleClick={() => handleSend(order.id)}
+                          disabled={!canSend}
+                          classs="button primary"
+                          $colorbtn="var(--primary)"
+                          $colortextbtnprimary="var(--light)"
+                          $colorbtnhoverprimary="var(--primary-semi)"
+                          $colortextbtnhoverprimary="white"
+                        />
+                      </>
+                    )}
+
                   </div>
+                  </div>
+
                 </div>
               );
 
@@ -262,4 +343,5 @@ const LinK = styled.div`
   img{
     width: 40px;
   }
+
 `;

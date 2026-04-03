@@ -4,6 +4,7 @@ export const types = {
     login: `[auth], login`,
     logout: `[auth], logout`,
     logged: false,
+    
 
     // types para el estado de autenticación 
     authCheckingFinish: '[auth] Finish checking login state',

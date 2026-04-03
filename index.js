@@ -31,6 +31,10 @@ export * from './src/views/admin/comunications/ComunicationsScreen'
 export * from './src/views/admin/users/UsersScreen'
 export * from './src/views/admin/users/ValidationsScreen'
 export * from './src/views/admin/users/UserVerifications'
+export * from './src/views/admin/users/UsersGuest'
+export * from './src/views/admin/users/ClientsScreen'
+export * from './src/views/admin/users/AdvisorsScreen'
+export * from './src/views/admin/users/SellersScreen'
 
 // membresías
  export * from './src/views/admin/memberships/MembershipsScreen'
